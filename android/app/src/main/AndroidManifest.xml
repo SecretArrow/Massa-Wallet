@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Network (RPC to public API / custom node) -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -45,11 +46,13 @@
             </intent-filter>
         </activity>
 
-        <!-- flutter_background_service foreground service (dataSync, Android 14+) -->
+        <!-- flutter_background_service foreground service (dataSync, Android 14+).
+             Overrides the plugin's own declaration to pin the FGS type. -->
         <service
             android:name="id.flutter.flutter_background_service.BackgroundService"
             android:foregroundServiceType="dataSync"
-            android:exported="false" />
+            android:exported="false"
+            tools:replace="android:exported" />
 
         <meta-data
             android:name="flutterEmbedding"
