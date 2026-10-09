@@ -1,0 +1,22 @@
+# Lint rules — strict but pragmatic.
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+  errors:
+    unused_import: warning
+    dead_code: warning
+
+linter:
+  rules:
+    - prefer_single_quotes
+    - always_declare_return_types
+    - avoid_redundant_argument_values
+    - unawaited_futures
+    - unnecessary_lambdas
+    - avoid_print
+    - require_trailing_commas
+    - prefer_final_locals
+    - sort_child_properties_last
+    - use_super_parameters
