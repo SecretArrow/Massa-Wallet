@@ -5,3 +5,6 @@
 # Flutter plugin linkage
 -keep class io.flutter.** { *; }
 -keep class io.flutter.plugins.** { *; }
+
+# Flutter Play Store deferred components are optional (not used here)
+-dontwarn com.google.android.play.core.**
