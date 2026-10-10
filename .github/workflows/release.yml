@@ -39,6 +39,11 @@ jobs:
       - name: Install cargo-ndk
         run: cargo install cargo-ndk --locked
 
+      - name: Install Android Rust target (explicit)
+        run: |
+          rustup target add aarch64-linux-android
+          rustup target list --installed
+
       - name: Locate Android NDK
         run: echo "ANDROID_NDK_HOME=$(ls -d $ANDROID_HOME/ndk/* | head -n 1)" >> "$GITHUB_ENV"
 
