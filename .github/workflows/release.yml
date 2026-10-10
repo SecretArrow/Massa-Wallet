@@ -67,6 +67,7 @@ jobs:
         with:
           workspaces: massa
           prefix-key: massa-node-android-arm64
+          cache-on-failure: true
 
       - name: Patch jemalloc off for Android (bionic)
         working-directory: massa
@@ -84,7 +85,10 @@ jobs:
           RUSTFLAGS: "-C link-arg=-Wl,-z,max-page-size=16384"
           CARGO_TERM_COLOR: always
         run: |
-          cargo ndk -t arm64-v8a build --release -p massa-node
+          # --platform android-24: RocksDB's io_posix.cc needs posix_madvise
+          # (POSIX_MADV_*) which bionic only exposes from API 23+; the app's
+          # minSdk is 24, so compile against 24.
+          cargo ndk --platform android-24 -t arm64-v8a build --release -p massa-node
           file target/aarch64-linux-android/release/massa-node
 
       - name: Stage binary as jniLib
