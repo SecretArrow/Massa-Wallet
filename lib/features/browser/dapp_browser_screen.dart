@@ -310,7 +310,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
         return [
           {
             'address': a.address,
-            'name': a.nickname.isEmpty ? 'Massa Wallet' : a.nickname,
+            'name': a.nickname.isEmpty ? 'Pyramids Wallet' : a.nickname,
           },
         ];
       case 'accounts':
@@ -319,7 +319,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
         return [
           {
             'address': a.address,
-            'name': a.nickname.isEmpty ? 'Massa Wallet' : a.nickname,
+            'name': a.nickname.isEmpty ? 'Pyramids Wallet' : a.nickname,
           },
         ];
       case 'network':

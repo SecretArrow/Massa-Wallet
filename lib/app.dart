@@ -28,7 +28,7 @@ import 'features/tokens/tokens_screen.dart';
 import 'features/wallet/dashboard_screen.dart';
 import 'ui/theme.dart';
 
-/// Massa Wallet application widget.
+/// Pyramids Wallet application widget.
 class PyramidsWalletApp extends StatefulWidget {
   /// Creates the app.
   const PyramidsWalletApp({super.key});

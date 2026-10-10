@@ -57,7 +57,7 @@ class SecurityService extends ChangeNotifier {
   Future<bool> unlock({String reason = ''}) async {
     try {
       final ok = await _localAuth.authenticate(
-        localizedReason: reason.isEmpty ? 'Unlock Massa Wallet' : reason,
+        localizedReason: reason.isEmpty ? 'Unlock Pyramids Wallet' : reason,
         persistAcrossBackgrounding: true,
       );
       if (ok) {

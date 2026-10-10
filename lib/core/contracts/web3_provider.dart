@@ -17,7 +17,7 @@ String massaProviderScript({
 }) {
   final account = json.encode({
     'address': address,
-    'name': nickname.isEmpty ? 'Massa Wallet' : nickname,
+    'name': nickname.isEmpty ? 'Pyramids Wallet' : nickname,
   });
   return '''
 (function () {
