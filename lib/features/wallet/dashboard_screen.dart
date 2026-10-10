@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/api/massa_rpc.dart' show MassaNetwork;
 import '../../core/i18n/app_i18n.dart';
+import '../../ui/theme.dart';
 import '../../core/services/embedded_node_service.dart';
 import '../../core/services/price_service.dart';
 import '../../core/services/settings_provider.dart';
@@ -50,10 +51,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.account_balance_wallet,
                 size: 64,
-                color: Color(0xFF30363D),
+                color: Theme.of(context).colorScheme.outlineVariant,
               ),
               const SizedBox(height: 16),
               Text(
@@ -63,7 +64,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 8),
               Text(
                 context.t('wallet.empty.body'),
-                style: const TextStyle(color: Color(0xFF8B949E)),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 24),
               FilledButton(
@@ -143,8 +146,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   decoration: BoxDecoration(
                     color: settings.network == MassaNetwork.mainnet
-                        ? const Color(0xFFF0883E)
-                        : const Color(0xFF1C2330),
+                        ? PyramidsColors.orange
+                        : Theme.of(context).colorScheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -160,7 +163,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF18C8C8).withValues(alpha: 0.15),
+                      color: PyramidsColors.brand.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -169,7 +172,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         const Icon(
                           Icons.visibility,
                           size: 12,
-                          color: Color(0xFF18C8C8),
+                          color: PyramidsColors.brand,
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -225,7 +228,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   icon: Icons.token,
                   label: context.t('wallet.tokens'),
                   onTap: () => Navigator.of(context).pushNamed('/tokens'),
-                  color: const Color(0xFF18C8C8),
+                  color: PyramidsColors.brand,
                 ),
                 ActionTile(
                   icon: Icons.receipt_long,
@@ -267,8 +270,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ? Icons.radio_button_checked
                         : Icons.radio_button_off,
                     color: a.isActive
-                        ? const Color(0xFF18C8C8)
-                        : const Color(0xFF8B949E),
+                        ? PyramidsColors.brand
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   title: Text(
                     a.nickname.isEmpty ? _shortAddr(a.address) : a.nickname,
@@ -281,12 +284,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (a.isWatchOnly)
-                        const Padding(
-                          padding: EdgeInsets.only(right: 8),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
                           child: Icon(
                             Icons.remove_red_eye_outlined,
                             size: 16,
-                            color: Color(0xFF8B949E),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       Text(
@@ -350,7 +355,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _showAccountSheet(BuildContext context, WalletProvider wallet) {
     showModalBottomSheet<void>(
       context: context,
-      backgroundColor: const Color(0xFF1C2330),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -368,7 +372,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               (a) => ListTile(
                 leading: const Icon(
                   Icons.account_circle,
-                  color: Color(0xFF18C8C8),
+                  color: PyramidsColors.brand,
                 ),
                 title: Text(
                   a.nickname.isEmpty ? _shortAddr(a.address) : a.nickname,
@@ -377,9 +381,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 trailing: a.isActive
                     ? Chip(
                         label: Text(sheetCtx.t('wallet.active')),
-                        backgroundColor: const Color(
-                          0xFF18C8C8,
-                        ).withValues(alpha: 0.15),
+                        backgroundColor: PyramidsColors.brand.withValues(
+                          alpha: 0.15,
+                        ),
                       )
                     : null,
                 onTap: () {
@@ -436,7 +440,10 @@ class _PriceTicker extends StatelessWidget {
       child: Card(
         child: ListTile(
           dense: true,
-          leading: const Icon(Icons.attach_money, color: Color(0xFF18C8C8)),
+          leading: const Icon(
+            Icons.currency_exchange,
+            color: PyramidsColors.brand,
+          ),
           title: Text(
             '$symbol${_formatNumber(value)} $currencyLabel',
             style: const TextStyle(fontWeight: FontWeight.w600),

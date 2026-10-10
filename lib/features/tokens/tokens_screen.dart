@@ -338,10 +338,10 @@ class _TokensScreenState extends State<TokensScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.token_outlined,
               size: 56,
-              color: Color(0xFF30363D),
+              color: Theme.of(context).colorScheme.outlineVariant,
             ),
             const SizedBox(height: 12),
             Text(context.t('tokens.empty')),
@@ -379,12 +379,12 @@ class _TokensScreenState extends State<TokensScreen> {
             (r) => Card(
               child: ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: MassaColors.teal.withValues(alpha: 0.15),
+                  backgroundColor: PyramidsColors.brand.withValues(alpha: 0.15),
                   child: Text(
                     r.token.symbol.isNotEmpty
                         ? r.token.symbol.substring(0, 1)
                         : '?',
-                    style: const TextStyle(color: MassaColors.teal),
+                    style: const TextStyle(color: PyramidsColors.brand),
                   ),
                 ),
                 title: Text(r.token.name),
@@ -408,7 +408,7 @@ class _TokensScreenState extends State<TokensScreen> {
             context.t('tokens.registryNote'),
             style: const TextStyle(
               fontSize: 11,
-              color: MassaColors.textSecondary,
+              color: PyramidsColors.textSecondary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -463,7 +463,7 @@ class _TokensScreenState extends State<TokensScreen> {
                       style: const TextStyle(
                         fontFamily: 'monospace',
                         fontSize: 11,
-                        color: MassaColors.textSecondary,
+                        color: PyramidsColors.textSecondary,
                       ),
                     ),
                   ),

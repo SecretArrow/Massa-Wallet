@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Pyramids Wallet launch splash: near-black backdrop + centered red
+     pyramid logo. Pre-Android-12 variant (v31+ uses windowSplashScreen*). -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@android:color/black" />
-    <item>
-        <shape android:shape="rectangle">
-            <gradient android:angle="315" android:startColor="#0B6E6E" android:endColor="#0D1117" />
-        </shape>
-    </item>
+    <item android:drawable="@color/launch_background" />
+    <item
+        android:gravity="center"
+        android:width="192dp"
+        android:height="192dp"
+        android:drawable="@drawable/splash_logo" />
 </layer-list>

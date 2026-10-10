@@ -557,7 +557,10 @@ class _KV extends StatelessWidget {
             width: 130,
             child: Text(
               label,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF8B949E)),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
           Expanded(

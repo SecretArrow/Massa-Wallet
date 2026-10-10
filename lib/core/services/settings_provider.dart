@@ -67,7 +67,7 @@ class SettingsProvider extends ChangeNotifier {
   SharedPreferences? _prefs;
 
   MassaNetwork _network = MassaNetwork.buildnet;
-  AppLanguage _language = AppLanguage.indonesian;
+  AppLanguage _language = AppLanguage.english;
   int _autoLockSeconds = 120;
   bool _biometricRequired = true;
   bool _backgroundSync = true;
@@ -76,7 +76,7 @@ class SettingsProvider extends ChangeNotifier {
   String _customNodeUrl = '';
   bool _useCustomNode = false;
   NodeConnectionMode _connectionMode = NodeConnectionMode.publicRpc;
-  ThemeMode _themeMode = ThemeMode.dark;
+  ThemeMode _themeMode = ThemeMode.system;
   bool _showFiat = true;
   bool _autoCompound = false;
 
@@ -143,9 +143,10 @@ class SettingsProvider extends ChangeNotifier {
     _network = p.getString(_kNetwork) == 'mainnet'
         ? MassaNetwork.mainnet
         : MassaNetwork.buildnet;
-    _language = p.getString(_kLanguage) == 'en'
-        ? AppLanguage.english
-        : AppLanguage.indonesian;
+    // English is the default; only an explicit 'id' selects Indonesian.
+    _language = p.getString(_kLanguage) == 'id'
+        ? AppLanguage.indonesian
+        : AppLanguage.english;
     _autoLockSeconds = p.getInt(_kAutoLockSeconds) ?? 120;
     _biometricRequired = p.getBool(_kBiometricRequired) ?? true;
     _backgroundSync = p.getBool(_kBackgroundSync) ?? true;
@@ -165,8 +166,8 @@ class SettingsProvider extends ChangeNotifier {
     };
     _themeMode = switch (p.getString(_kThemeMode)) {
       'light' => ThemeMode.light,
-      'system' => ThemeMode.system,
-      _ => ThemeMode.dark,
+      'dark' => ThemeMode.dark,
+      _ => ThemeMode.system,
     };
     _showFiat = p.getBool(_kShowFiat) ?? true;
     _autoCompound = p.getBool(_kAutoCompound) ?? false;
@@ -243,8 +244,8 @@ class SettingsProvider extends ChangeNotifier {
     _themeMode = mode;
     await _set(_kThemeMode, switch (mode) {
       ThemeMode.light => 'light',
-      ThemeMode.system => 'system',
-      _ => 'dark',
+      ThemeMode.dark => 'dark',
+      _ => 'system',
     });
   }
 

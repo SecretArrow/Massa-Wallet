@@ -1,6 +1,6 @@
-/// Massa Wallet visual identity — Material 3, light & dark.
+/// Pyramids Wallet visual identity — Material 3, light & dark.
 ///
-/// Brand: Massa-inspired teal/cyan accent. Both themes build a full
+/// Brand: crimson-red pyramid accent. Both themes build a full
 /// M3 `ColorScheme.fromSeed` with modern component themes and force
 /// transparent system bars (edge-to-edge) with per-theme icon brightness.
 library;
@@ -9,12 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 /// Brand colors.
-abstract final class MassaColors {
-  /// Primary teal.
-  static const Color teal = Color(0xFF18C8C8);
+abstract final class PyramidsColors {
+  /// Primary brand red (dark-theme primary).
+  static const Color brand = Color(0xFFE5344A);
 
-  /// Deep teal for gradients.
-  static const Color deepTeal = Color(0xFF0B6E6E);
+  /// Deep brand red (light-theme primary, gradients).
+  static const Color deepBrand = Color(0xFFB3122B);
+
+  /// Highlight red (gradient start).
+  static const Color brandLight = Color(0xFFFF5C6E);
 
   /// Background dark.
   static const Color bg = Color(0xFF0D1117);
@@ -32,7 +35,7 @@ abstract final class MassaColors {
   static const Color green = Color(0xFF3FB950);
 
   /// Error red.
-  static const Color red = Color(0xFFF85149);
+  static const Color error = Color(0xFFF85149);
 
   /// Text primary.
   static const Color textPrimary = Color(0xFFE6EDF3);
@@ -67,30 +70,30 @@ class AppTheme {
   static ThemeData get dark {
     final scheme =
         ColorScheme.fromSeed(
-          seedColor: MassaColors.teal,
+          seedColor: PyramidsColors.brand,
           brightness: Brightness.dark,
         ).copyWith(
-          primary: MassaColors.teal,
-          secondary: MassaColors.orange,
-          surface: MassaColors.surface,
-          error: MassaColors.red,
+          primary: PyramidsColors.brand,
+          secondary: PyramidsColors.orange,
+          surface: PyramidsColors.surface,
+          error: PyramidsColors.error,
         );
 
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
       splashFactory: InkSparkle.splashFactory,
-      scaffoldBackgroundColor: MassaColors.bg,
+      scaffoldBackgroundColor: PyramidsColors.bg,
       appBarTheme: const AppBarTheme(
-        backgroundColor: MassaColors.bg,
-        foregroundColor: MassaColors.textPrimary,
+        backgroundColor: PyramidsColors.bg,
+        foregroundColor: PyramidsColors.textPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
         systemOverlayStyle: overlayDark,
       ),
       cardTheme: const CardThemeData(
-        color: MassaColors.card,
+        color: PyramidsColors.card,
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
@@ -99,7 +102,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: MassaColors.surface,
+        fillColor: PyramidsColors.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Color(0xFF30363D)),
@@ -110,15 +113,15 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: MassaColors.teal, width: 2),
+          borderSide: const BorderSide(color: PyramidsColors.brand, width: 2),
         ),
-        labelStyle: const TextStyle(color: MassaColors.textSecondary),
-        hintStyle: const TextStyle(color: MassaColors.textSecondary),
+        labelStyle: const TextStyle(color: PyramidsColors.textSecondary),
+        hintStyle: const TextStyle(color: PyramidsColors.textSecondary),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: MassaColors.teal,
-          foregroundColor: const Color(0xFF062A2A),
+          backgroundColor: PyramidsColors.brand,
+          foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(52),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
@@ -128,9 +131,9 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: MassaColors.teal,
+          foregroundColor: PyramidsColors.brand,
           minimumSize: const Size.fromHeight(52),
-          side: const BorderSide(color: MassaColors.teal),
+          side: const BorderSide(color: PyramidsColors.brand),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -142,15 +145,15 @@ class AppTheme {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           side: WidgetStatePropertyAll(
-            BorderSide(color: MassaColors.teal.withValues(alpha: 0.5)),
+            BorderSide(color: PyramidsColors.brand.withValues(alpha: 0.5)),
           ),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: MassaColors.surface,
-        indicatorColor: MassaColors.teal.withValues(alpha: 0.18),
+        backgroundColor: PyramidsColors.surface,
+        indicatorColor: PyramidsColors.brand.withValues(alpha: 0.18),
         labelTextStyle: WidgetStateProperty.all(
-          const TextStyle(fontSize: 12, color: MassaColors.textSecondary),
+          const TextStyle(fontSize: 12, color: PyramidsColors.textSecondary),
         ),
       ),
       dividerTheme: const DividerThemeData(
@@ -158,39 +161,39 @@ class AppTheme {
         thickness: 1,
       ),
       listTileTheme: const ListTileThemeData(
-        iconColor: MassaColors.textSecondary,
-        textColor: MassaColors.textPrimary,
+        iconColor: PyramidsColors.textSecondary,
+        textColor: PyramidsColors.textPrimary,
       ),
       snackBarTheme: const SnackBarThemeData(
-        backgroundColor: MassaColors.card,
-        contentTextStyle: TextStyle(color: MassaColors.textPrimary),
+        backgroundColor: PyramidsColors.card,
+        contentTextStyle: TextStyle(color: PyramidsColors.textPrimary),
         behavior: SnackBarBehavior.floating,
       ),
       bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: MassaColors.surface,
-        modalBackgroundColor: MassaColors.surface,
+        backgroundColor: PyramidsColors.surface,
+        modalBackgroundColor: PyramidsColors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
         showDragHandle: true,
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: MassaColors.surface,
+        backgroundColor: PyramidsColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       ),
       chipTheme: const ChipThemeData(
-        backgroundColor: MassaColors.card,
+        backgroundColor: PyramidsColors.card,
         side: BorderSide(color: Color(0xFF30363D)),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
       ),
       popupMenuTheme: PopupMenuThemeData(
-        color: MassaColors.card,
+        color: PyramidsColors.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: MassaColors.teal,
+        color: PyramidsColors.brand,
         linearTrackColor: Color(0xFF21262D),
       ),
       expansionTileTheme: const ExpansionTileThemeData(
@@ -200,20 +203,24 @@ class AppTheme {
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? MassaColors.teal
-              : MassaColors.textSecondary,
+              ? PyramidsColors.brand
+              : PyramidsColors.textSecondary,
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? MassaColors.teal.withValues(alpha: 0.35)
+              ? PyramidsColors.brand.withValues(alpha: 0.35)
               : const Color(0xFF30363D),
         ),
+      ),
+      sliderTheme: const SliderThemeData(
+        activeTrackColor: PyramidsColors.brand,
+        thumbColor: PyramidsColors.brand,
       ),
     );
     return base.copyWith(
       textTheme: base.textTheme.apply(
-        bodyColor: MassaColors.textPrimary,
-        displayColor: MassaColors.textPrimary,
+        bodyColor: PyramidsColors.textPrimary,
+        displayColor: PyramidsColors.textPrimary,
       ),
     );
   }
@@ -229,13 +236,13 @@ class AppTheme {
 
     final scheme =
         ColorScheme.fromSeed(
-          seedColor: MassaColors.teal,
+          seedColor: PyramidsColors.deepBrand,
           brightness: Brightness.light,
         ).copyWith(
-          primary: MassaColors.deepTeal,
-          secondary: MassaColors.orange,
+          primary: PyramidsColors.deepBrand,
+          secondary: PyramidsColors.orange,
           surface: surface,
-          error: MassaColors.red,
+          error: const Color(0xFFC93C37),
         );
 
     final base = ThemeData(
@@ -273,14 +280,17 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: MassaColors.deepTeal, width: 2),
+          borderSide: const BorderSide(
+            color: PyramidsColors.deepBrand,
+            width: 2,
+          ),
         ),
         labelStyle: const TextStyle(color: textSecondary),
         hintStyle: const TextStyle(color: textSecondary),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: MassaColors.deepTeal,
+          backgroundColor: PyramidsColors.deepBrand,
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(52),
           shape: RoundedRectangleBorder(
@@ -291,9 +301,9 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: MassaColors.deepTeal,
+          foregroundColor: PyramidsColors.deepBrand,
           minimumSize: const Size.fromHeight(52),
-          side: const BorderSide(color: MassaColors.deepTeal),
+          side: const BorderSide(color: PyramidsColors.deepBrand),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -305,13 +315,13 @@ class AppTheme {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           side: WidgetStatePropertyAll(
-            BorderSide(color: MassaColors.deepTeal.withValues(alpha: 0.5)),
+            BorderSide(color: PyramidsColors.deepBrand.withValues(alpha: 0.5)),
           ),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surface,
-        indicatorColor: MassaColors.deepTeal.withValues(alpha: 0.12),
+        indicatorColor: PyramidsColors.deepBrand.withValues(alpha: 0.12),
         labelTextStyle: WidgetStateProperty.all(
           const TextStyle(fontSize: 12, color: textSecondary),
         ),
@@ -350,7 +360,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: MassaColors.deepTeal,
+        color: PyramidsColors.deepBrand,
         linearTrackColor: Color(0xFFD0D7DE),
       ),
       expansionTileTheme: const ExpansionTileThemeData(
@@ -360,14 +370,18 @@ class AppTheme {
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? MassaColors.deepTeal
+              ? PyramidsColors.deepBrand
               : textSecondary,
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? MassaColors.deepTeal.withValues(alpha: 0.35)
+              ? PyramidsColors.deepBrand.withValues(alpha: 0.35)
               : border,
         ),
+      ),
+      sliderTheme: const SliderThemeData(
+        activeTrackColor: PyramidsColors.deepBrand,
+        thumbColor: PyramidsColors.deepBrand,
       ),
     );
     return base.copyWith(

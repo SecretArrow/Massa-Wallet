@@ -16,14 +16,14 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:src="@mipmap/ic_launcher"
-            android:contentDescription="Massa Wallet" />
+            android:contentDescription="Pyramids Wallet" />
 
         <TextView
             android:id="@+id/widget_network"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
-            android:text="Massa Wallet"
+            android:text="Pyramids Wallet"
             android:textColor="#8B949E"
             android:textSize="11sp" />
     </LinearLayout>
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="— MAS"
-        android:textColor="#18C8C8"
+        android:textColor="#E5344A"
         android:textSize="24sp"
         android:textStyle="bold" />
 

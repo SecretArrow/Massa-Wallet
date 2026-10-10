@@ -137,7 +137,9 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
               Text(
                 context.t('receive.hint'),
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Color(0xFF8B949E)),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 24),
               Center(
@@ -196,9 +198,9 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
                 Text(
                   context.t('receive.faucet.hint'),
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
-                    color: Color(0xFF8B949E),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],

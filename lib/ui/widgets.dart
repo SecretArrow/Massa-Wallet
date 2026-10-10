@@ -4,6 +4,8 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'theme.dart';
+
 /// Rounded gradient balance card.
 class BalanceCard extends StatelessWidget {
   /// Balance string to display.
@@ -37,11 +39,11 @@ class BalanceCard extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF0B6E6E), Color(0xFF18C8C8)],
+          colors: [PyramidsColors.deepBrand, PyramidsColors.brandLight],
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF18C8C8).withValues(alpha: 0.25),
+            color: PyramidsColors.brand.withValues(alpha: 0.25),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -54,14 +56,14 @@ class BalanceCard extends StatelessWidget {
             hidden ? '••••••' : balance,
             style: Theme.of(context).textTheme.displaySmall?.copyWith(
               fontWeight: FontWeight.w700,
-              color: const Color(0xFF062A2A),
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             unit,
             style: TextStyle(
-              color: const Color(0xFF062A2A).withValues(alpha: 0.7),
+              color: Colors.white.withValues(alpha: 0.85),
               fontWeight: FontWeight.w600,
               letterSpacing: 1.2,
             ),
@@ -72,7 +74,7 @@ class BalanceCard extends StatelessWidget {
               candidateBalance!,
               style: TextStyle(
                 fontSize: 12,
-                color: const Color(0xFF062A2A).withValues(alpha: 0.6),
+                color: Colors.white.withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -100,6 +102,7 @@ class AddressChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
       borderRadius: BorderRadius.circular(10),
       onTap: () {
@@ -111,7 +114,7 @@ class AddressChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: const Color(0xFF21262D),
+          color: scheme.surfaceContainerHighest.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -120,15 +123,15 @@ class AddressChip extends StatelessWidget {
             Flexible(
               child: Text(
                 _display,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'monospace',
                   fontSize: 13,
-                  color: Color(0xFF18C8C8),
+                  color: scheme.primary,
                 ),
               ),
             ),
             const SizedBox(width: 6),
-            const Icon(Icons.copy, size: 14, color: Color(0xFF8B949E)),
+            Icon(Icons.copy, size: 14, color: scheme.onSurfaceVariant),
           ],
         ),
       ),
@@ -156,20 +159,21 @@ class ActionTile extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
-    this.color = const Color(0xFF18C8C8),
+    this.color = PyramidsColors.brand,
   });
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFF1C2330),
+          color: scheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF21262D)),
+          border: Border.all(color: scheme.outlineVariant),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -178,7 +182,7 @@ class ActionTile extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               label,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF8B949E)),
+              style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
           ],
@@ -201,10 +205,10 @@ class SectionHeader extends StatelessWidget {
     padding: const EdgeInsets.only(top: 16, bottom: 8),
     child: Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w600,
-        color: Color(0xFF8B949E),
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
         letterSpacing: 0.5,
       ),
     ),

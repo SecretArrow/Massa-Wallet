@@ -550,7 +550,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
                 e.key,
                 style: const TextStyle(
                   fontSize: 12,
-                  color: MassaColors.textSecondary,
+                  color: PyramidsColors.textSecondary,
                 ),
               ),
               SelectableText(
@@ -665,7 +665,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
                   value: _progress == 0 ? null : _progress,
                   minHeight: 2,
                   backgroundColor: Colors.transparent,
-                  color: MassaColors.teal,
+                  color: PyramidsColors.brand,
                 ),
               )
             : null,
@@ -698,8 +698,10 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
   Widget _buildBottomBar() {
     return SafeArea(
       child: Container(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: Color(0xFF21262D))),
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(color: Theme.of(context).dividerColor),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -799,7 +801,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
                 style: const TextStyle(
                   fontFamily: 'monospace',
                   fontSize: 12,
-                  color: MassaColors.teal,
+                  color: PyramidsColors.brand,
                 ),
               ),
               const SizedBox(height: 12),
@@ -807,7 +809,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
                 '${ctx.t('browser.servedLocally')}',
                 style: const TextStyle(
                   fontSize: 12,
-                  color: MassaColors.textSecondary,
+                  color: PyramidsColors.textSecondary,
                 ),
               ),
             ],

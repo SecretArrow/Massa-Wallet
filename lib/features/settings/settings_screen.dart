@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/api/massa_rpc.dart' show MassaNetwork;
 import '../../core/i18n/app_i18n.dart';
+import '../../ui/theme.dart';
 import '../../core/services/security_service.dart';
 import '../../core/services/settings_provider.dart';
 import '../../core/services/wallet_provider.dart';
@@ -25,7 +26,6 @@ class SettingsScreen extends StatelessWidget {
   ) async {
     await showModalBottomSheet<void>(
       context: context,
-      backgroundColor: const Color(0xFF1C2330),
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -50,8 +50,8 @@ class SettingsScreen extends StatelessWidget {
             title: Text(context.t('settings.language')),
             trailing: SegmentedButton<String>(
               segments: const [
-                ButtonSegment(value: 'id', label: Text('ID')),
                 ButtonSegment(value: 'en', label: Text('EN')),
+                ButtonSegment(value: 'id', label: Text('ID')),
               ],
               selected: {settings.language.code},
               onSelectionChanged: (s) =>
@@ -74,7 +74,7 @@ class SettingsScreen extends StatelessWidget {
               settings.network == MassaNetwork.buildnet
                   ? Icons.radio_button_checked
                   : Icons.radio_button_off,
-              color: const Color(0xFF18C8C8),
+              color: PyramidsColors.brand,
             ),
             onTap: () => context.read<SettingsProvider>().setNetwork(
               MassaNetwork.buildnet,
@@ -86,13 +86,12 @@ class SettingsScreen extends StatelessWidget {
               settings.network == MassaNetwork.mainnet
                   ? Icons.radio_button_checked
                   : Icons.radio_button_off,
-              color: const Color(0xFF18C8C8),
+              color: PyramidsColors.brand,
             ),
             onTap: () async {
               final ok = await showDialog<bool>(
                 context: context,
                 builder: (dCtx) => AlertDialog(
-                  backgroundColor: const Color(0xFF1C2330),
                   title: Text(dCtx.t('settings.network.mainnet')),
                   content: Text(dCtx.t('settings.network.warning')),
                   actions: [
@@ -127,19 +126,19 @@ class SettingsScreen extends StatelessWidget {
             onChanged: (v) =>
                 context.read<SettingsProvider>().setBiometricRequired(v),
             title: Text(context.t('settings.biometric')),
-            activeThumbColor: const Color(0xFF18C8C8),
+            activeThumbColor: PyramidsColors.brand,
           ),
           SwitchListTile(
             value: true,
             onChanged: security.setSecureFlag,
             title: Text(context.t('settings.secureFlag')),
-            activeThumbColor: const Color(0xFF18C8C8),
+            activeThumbColor: PyramidsColors.brand,
           ),
           ListTile(
             title: Text(context.t('settings.autoLock')),
             trailing: DropdownButton<int>(
               value: settings.autoLockSeconds,
-              dropdownColor: const Color(0xFF1C2330),
+              dropdownColor: Theme.of(context).colorScheme.surfaceContainerHigh,
               items: [
                 DropdownMenuItem(
                   value: 60,
@@ -172,13 +171,13 @@ class SettingsScreen extends StatelessWidget {
             onChanged: (v) =>
                 context.read<SettingsProvider>().setBackgroundSync(v),
             title: Text(context.t('settings.background')),
-            activeThumbColor: const Color(0xFF18C8C8),
+            activeThumbColor: PyramidsColors.brand,
           ),
           ListTile(
             title: Text(context.t('settings.background.interval')),
             trailing: DropdownButton<int>(
               value: settings.syncIntervalSeconds,
-              dropdownColor: const Color(0xFF1C2330),
+              dropdownColor: Theme.of(context).colorScheme.surfaceContainerHigh,
               items: [
                 DropdownMenuItem(
                   value: 60,
@@ -208,14 +207,14 @@ class SettingsScreen extends StatelessWidget {
             onChanged: (v) =>
                 context.read<SettingsProvider>().setHideBalances(v),
             title: Text(context.t('settings.privacy')),
-            activeThumbColor: const Color(0xFF18C8C8),
+            activeThumbColor: PyramidsColors.brand,
           ),
           SwitchListTile(
-            secondary: const Icon(Icons.attach_money),
+            secondary: const Icon(Icons.currency_exchange),
             value: settings.showFiat,
             onChanged: (v) => context.read<SettingsProvider>().setShowFiat(v),
             title: Text(context.t('settings.showFiat')),
-            activeThumbColor: const Color(0xFF18C8C8),
+            activeThumbColor: PyramidsColors.brand,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
@@ -395,7 +394,10 @@ class _BackupSheetState extends State<_BackupSheet> {
           const SizedBox(height: 8),
           Text(
             context.t('settings.backup.hint'),
-            style: const TextStyle(fontSize: 12, color: Color(0xFF8B949E)),
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 16),
           if (_exported == null) ...[
@@ -504,7 +506,10 @@ class _RestoreSheetState extends State<_RestoreSheet> {
           const SizedBox(height: 8),
           Text(
             context.t('settings.restore.hint'),
-            style: const TextStyle(fontSize: 12, color: Color(0xFF8B949E)),
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 16),
           if (_result == null) ...[
@@ -611,7 +616,10 @@ class _ExportSheetState extends State<_ExportSheet> {
           const SizedBox(height: 8),
           Text(
             context.t('settings.export.hint'),
-            style: const TextStyle(fontSize: 12, color: Color(0xFF8B949E)),
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 16),
           if (_exported == null) ...[

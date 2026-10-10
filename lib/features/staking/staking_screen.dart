@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/api/massa_amount.dart';
 import '../../core/i18n/app_i18n.dart';
+import '../../ui/theme.dart';
 import '../../core/services/auto_compound_service.dart';
 import '../../core/services/settings_provider.dart';
 import '../../core/services/wallet_provider.dart';
@@ -164,7 +165,9 @@ class _StakingScreenState extends State<StakingScreen> {
                   children: [
                     Text(
                       context.t('staking.activeRolls'),
-                      style: const TextStyle(color: Color(0xFF8B949E)),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -177,9 +180,9 @@ class _StakingScreenState extends State<StakingScreen> {
                     const SizedBox(height: 4),
                     Text(
                       context.t('staking.rollCost'),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Color(0xFF8B949E),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -192,7 +195,7 @@ class _StakingScreenState extends State<StakingScreen> {
                 padding: const EdgeInsets.all(12),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline, color: Color(0xFF18C8C8)),
+                    const Icon(Icons.info_outline, color: PyramidsColors.brand),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -232,9 +235,9 @@ class _StakingScreenState extends State<StakingScreen> {
                     ),
                     Text(
                       context.t('ac.body'),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Color(0xFF8B949E),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -251,7 +254,7 @@ class _StakingScreenState extends State<StakingScreen> {
                         _acStatus!,
                         style: const TextStyle(
                           fontSize: 11,
-                          color: Color(0xFF18C8C8),
+                          color: PyramidsColors.brand,
                         ),
                       ),
                     ],

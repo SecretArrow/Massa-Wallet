@@ -153,10 +153,10 @@ class _AddressBookScreenState extends State<AddressBookScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.import_contacts_outlined,
                     size: 56,
-                    color: Color(0xFF30363D),
+                    color: Theme.of(context).colorScheme.outlineVariant,
                   ),
                   const SizedBox(height: 12),
                   Text(context.t('book.empty')),
@@ -178,16 +178,20 @@ class _AddressBookScreenState extends State<AddressBookScreen> {
                 return Card(
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: MassaColors.teal.withValues(alpha: 0.15),
+                      backgroundColor: PyramidsColors.brand.withValues(
+                        alpha: 0.15,
+                      ),
                       child: c.domain.isNotEmpty
                           ? const Icon(
                               Icons.dns_outlined,
-                              color: MassaColors.teal,
+                              color: PyramidsColors.brand,
                               size: 20,
                             )
                           : Text(
                               c.name.isEmpty ? '?' : c.name[0].toUpperCase(),
-                              style: const TextStyle(color: MassaColors.teal),
+                              style: const TextStyle(
+                                color: PyramidsColors.brand,
+                              ),
                             ),
                     ),
                     title: Text(c.domain.isNotEmpty ? c.domain : c.name),

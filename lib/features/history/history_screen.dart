@@ -123,10 +123,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.receipt_long_outlined,
                     size: 56,
-                    color: Color(0xFF30363D),
+                    color: Theme.of(context).colorScheme.outlineVariant,
                   ),
                   const SizedBox(height: 12),
                   Text(context.t('history.empty')),
@@ -138,7 +138,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 12,
-                        color: MassaColors.textSecondary,
+                        color: PyramidsColors.textSecondary,
                       ),
                     ),
                   ),
@@ -215,27 +215,31 @@ class _ActivityCard extends StatelessWidget {
       case ActivityKind.send:
         return (
           Icons.north_east,
-          MassaColors.orange,
+          PyramidsColors.orange,
           context.t('history.sent'),
         );
       case ActivityKind.receive:
         return (
           Icons.south_west,
-          MassaColors.green,
+          PyramidsColors.green,
           context.t('history.received'),
         );
       case ActivityKind.rollBuy:
         return (
           Icons.stacked_bar_chart,
-          MassaColors.teal,
+          PyramidsColors.brand,
           context.t('history.rollBuy'),
         );
       case ActivityKind.rollSell:
-        return (Icons.south, MassaColors.teal, context.t('history.rollSell'));
+        return (
+          Icons.south,
+          PyramidsColors.brand,
+          context.t('history.rollSell'),
+        );
       case ActivityKind.callSC:
         return (
           Icons.code,
-          MassaColors.deepTeal,
+          PyramidsColors.deepBrand,
           item.function?.isNotEmpty == true
               ? '${context.t('history.call')}: ${item.function}'
               : context.t('history.call'),
@@ -243,11 +247,15 @@ class _ActivityCard extends StatelessWidget {
       case ActivityKind.tokenTransfer:
         return (
           Icons.token,
-          MassaColors.deepTeal,
+          PyramidsColors.deepBrand,
           '${context.t('history.token')} ${item.tokenSymbol ?? ''}',
         );
       case ActivityKind.dapp:
-        return (Icons.public, MassaColors.deepTeal, context.t('history.dapp'));
+        return (
+          Icons.public,
+          PyramidsColors.deepBrand,
+          context.t('history.dapp'),
+        );
     }
   }
 
@@ -270,10 +278,16 @@ class _ActivityCard extends StatelessWidget {
     final (label, color) = switch (item.status) {
       ActivityStatus.submitted => (
         context.t('history.pending'),
-        MassaColors.orange,
+        PyramidsColors.orange,
       ),
-      ActivityStatus.final_ => (context.t('history.final'), MassaColors.green),
-      ActivityStatus.failed => (context.t('history.failed'), MassaColors.red),
+      ActivityStatus.final_ => (
+        context.t('history.final'),
+        PyramidsColors.green,
+      ),
+      ActivityStatus.failed => (
+        context.t('history.failed'),
+        PyramidsColors.error,
+      ),
     };
     return Container(
       margin: const EdgeInsets.only(top: 4),

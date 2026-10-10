@@ -40,7 +40,7 @@ class PyramidsWalletApp extends StatefulWidget {
 class _PyramidsWalletAppState extends State<PyramidsWalletApp>
     with WidgetsBindingObserver {
   final ValueNotifier<AppLanguage> _language = ValueNotifier(
-    AppLanguage.indonesian,
+    AppLanguage.english,
   );
 
   @override
@@ -65,7 +65,7 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
       await service.configure(
         autoStart: true,
         title: 'Pyramids Wallet',
-        content: 'Sinkronisasi saldo aktif',
+        content: 'Balance sync active',
       );
       await service.start();
     } on Exception {
@@ -194,7 +194,36 @@ class _RootGateState extends State<_RootGate> {
   Widget build(BuildContext context) {
     final security = context.watch<SecurityService>();
     if (!_decided) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      // Branded splash: red pyramid logo while accounts are loading.
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/icon/pyramids_logo.png',
+                width: 112,
+                height: 112,
+                filterQuality: FilterQuality.high,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Pyramids Wallet',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.4,
+                ),
+              ),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(strokeWidth: 2.4),
+              ),
+            ],
+          ),
+        ),
+      );
     }
     if (_hasAccounts && security.gate == SecurityGate.locked) {
       return Scaffold(
@@ -202,7 +231,7 @@ class _RootGateState extends State<_RootGate> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.lock, size: 64, color: Color(0xFF18C8C8)),
+              Icon(Icons.lock, size: 64, color: PyramidsColors.brand),
               const SizedBox(height: 16),
               Text(
                 context.t('common.locked'),

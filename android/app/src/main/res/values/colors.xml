@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Pyramids brand backdrop for the launch splash. -->
+    <color name="launch_background">#0D1117</color>
+    <color name="splash_icon_background">#0D1117</color>
+    <!-- Adaptive launcher icon backdrop (flutter_launcher_icons). -->
     <color name="ic_launcher_background">#0D1117</color>
 </resources>

@@ -1,19 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:massa_wallet/core/api/massa_rpc.dart';
+import 'package:massa_wallet/core/i18n/app_i18n.dart';
 import 'package:massa_wallet/core/services/settings_provider.dart';
 import 'package:massa_wallet/ui/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('SettingsProvider', () {
-    test('defaults: buildnet, dark theme, publicRpc mode', () async {
+    test('defaults: buildnet, system theme, publicRpc mode, English', () async {
       SharedPreferences.setMockInitialValues({});
       final settings = SettingsProvider();
       await settings.load();
       expect(settings.network, MassaNetwork.buildnet);
-      expect(settings.themeMode, ThemeMode.dark);
+      expect(settings.themeMode, ThemeMode.system);
       expect(settings.connectionMode, NodeConnectionMode.publicRpc);
+      expect(settings.language, AppLanguage.english);
+    });
+
+    test('language: English default, explicit id selects Indonesian', () async {
+      SharedPreferences.setMockInitialValues({});
+      final settings = SettingsProvider();
+      await settings.load();
+      expect(settings.language, AppLanguage.english);
+
+      SharedPreferences.setMockInitialValues({'settings.language': 'id'});
+      final idSettings = SettingsProvider();
+      await idSettings.load();
+      expect(idSettings.language, AppLanguage.indonesian);
+
+      await idSettings.setLanguage(AppLanguage.english);
+      final reloaded = SettingsProvider();
+      await reloaded.load();
+      expect(reloaded.language, AppLanguage.english);
     });
 
     test('theme mode round-trips (light / system)', () async {

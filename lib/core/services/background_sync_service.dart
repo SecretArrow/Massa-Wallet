@@ -82,7 +82,7 @@ Future<void> _onStart(ServiceInstance service) async {
             final delta = BigInt.parse(value) - BigInt.parse(previous);
             final direction = delta > BigInt.zero ? '↑' : '↓';
             await _notify(
-              title: 'Pyramids Wallet — saldo berubah',
+              title: 'Pyramids Wallet — balance changed',
               body:
                   '$direction ${_formatNano(delta.abs())} MAS · ${_short(key)}',
             );
@@ -160,7 +160,7 @@ Future<void> _onStart(ServiceInstance service) async {
           service.setForegroundNotificationInfo(
             title: 'Pyramids Wallet',
             content:
-                'Sinkronisasi aktif · terakhir ${now.hour}:${now.minute.toString().padLeft(2, '0')}',
+                'Sync active · last ${now.hour}:${now.minute.toString().padLeft(2, '0')}',
           ),
         );
       }

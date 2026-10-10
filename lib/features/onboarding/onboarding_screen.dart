@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/i18n/app_i18n.dart';
+import '../../ui/theme.dart';
 import '../../core/services/security_service.dart';
 import '../../core/services/wallet_provider.dart';
 
@@ -48,7 +49,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       context: context,
       isDismissible: false,
       enableDrag: false,
-      backgroundColor: const Color(0xFF1C2330),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -69,7 +69,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const SizedBox(height: 8),
               Text(
                 sheetCtx.t('onboarding.security.body'),
-                style: const TextStyle(color: Color(0xFF8B949E)),
+                style: TextStyle(
+                  color: Theme.of(sheetCtx).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 16),
               InkWell(
@@ -79,12 +81,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0D1117),
+                    color: Theme.of(
+                      sheetCtx,
+                    ).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0xFFF0883E),
-                      width: 1,
-                    ),
+                    border: Border.all(color: PyramidsColors.orange, width: 1),
                   ),
                   child: Text(
                     revealed
@@ -94,8 +95,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       fontFamily: 'monospace',
                       fontSize: 13,
                       color: revealed
-                          ? const Color(0xFFF0883E)
-                          : const Color(0xFF8B949E),
+                          ? PyramidsColors.orange
+                          : Theme.of(sheetCtx).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -146,20 +147,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             children: [
               const Spacer(),
               Center(
-                child: Container(
-                  width: 96,
-                  height: 96,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(28),
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF0B6E6E), Color(0xFF18C8C8)],
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.currency_exchange,
-                    size: 52,
-                    color: Color(0xFF062A2A),
-                  ),
+                child: Image.asset(
+                  'assets/icon/pyramids_logo.png',
+                  width: 128,
+                  height: 128,
+                  filterQuality: FilterQuality.high,
                 ),
               ),
               const SizedBox(height: 24),
@@ -175,7 +167,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Text(
                 context.t('app.tagline'),
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Color(0xFF8B949E)),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 32),
               Card(
@@ -185,16 +179,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     children: [
                       const Icon(
                         Icons.shield,
-                        color: Color(0xFF18C8C8),
+                        color: PyramidsColors.brand,
                         size: 28,
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           context.t('welcome.body'),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Color(0xFF8B949E),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),
@@ -228,9 +224,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
                 child: Text(
                   context.t('welcome.title'),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
-                    color: Color(0xFF30363D),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurfaceVariant.withValues(alpha: 0.35),
                   ),
                 ),
               ),
@@ -357,7 +355,7 @@ class _ImportScreenState extends State<ImportScreen> {
                     children: [
                       const Icon(
                         Icons.visibility,
-                        color: Color(0xFF18C8C8),
+                        color: PyramidsColors.brand,
                         size: 20,
                       ),
                       const SizedBox(width: 8),

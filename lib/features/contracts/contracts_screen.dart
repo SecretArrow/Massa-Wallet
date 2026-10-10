@@ -165,9 +165,9 @@ class _ContractsScreenState extends State<ContractsScreen> {
                       const SizedBox(height: 4),
                       Text(
                         '${context.t('contracts.gas')}: ${_result!.gasCost}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
-                          color: Color(0xFF8B949E),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
