@@ -85,6 +85,18 @@ class SecurityService extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Opens the gate without biometric authentication.
+  ///
+  /// Used at startup when the biometric requirement is disabled or the
+  /// device has no usable biometrics — previously the gate stayed locked
+  /// forever in that case, showing the lock screen on every launch.
+  void markUnlocked() {
+    _gate = SecurityGate.unlocked;
+    _lastInteraction = DateTime.now();
+    _restartAutoLock();
+    notifyListeners();
+  }
+
   /// Called on user interaction — resets the auto-lock countdown.
   void registerInteraction() {
     _lastInteraction = DateTime.now();

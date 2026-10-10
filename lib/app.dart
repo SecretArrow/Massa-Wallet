@@ -193,6 +193,11 @@ class _RootGateState extends State<_RootGate> {
         // Never brick the gate on an auth subsystem error.
         unlocked = true;
       }
+    } else {
+      // No biometric requirement — open the gate silently. Without this
+      // the gate stayed SecurityGate.locked and the lock screen blocked
+      // every launch for users with biometrics disabled.
+      security.markUnlocked();
     }
     if (!mounted) return;
     setState(() {
