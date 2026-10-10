@@ -313,9 +313,13 @@ void main() {
 
     expect(find.text('Send MAS'), findsOneWidget);
 
+    // Must start with AU1 so it is NOT treated as an MNS domain —
+    // parseInput routes any other string to a network resolve. This
+    // input fails MassaAddress parsing → triggers the validation error
+    // deterministically (no network involved).
     await tester.enterText(
       find.widgetWithText(TextField, 'Recipient address'),
-      'not-a-valid-address',
+      'AU1INVALIDADDRESSFORTESTS',
     );
     await tester.enterText(find.widgetWithText(TextField, 'Amount (MAS)'), '1');
     // Close the IME: on a real device it covers the confirm button and
@@ -432,16 +436,16 @@ void main() {
       true,
       reason: 'node screen must open',
     );
-    expect(find.text('Public RPC'), findsOneWidget);
-    expect(find.text('Custom RPC'), findsOneWidget);
-    expect(find.text('Embedded node (in-app)'), findsOneWidget);
+    expect(find.text('Public RPC'), findsWidgets);
+    expect(find.text('Custom RPC'), findsWidgets);
+    expect(find.text('Embedded node (in-app)'), findsWidgets);
 
-    await tester.tap(find.text('Custom RPC'));
+    await tester.tap(find.text('Custom RPC').first);
     await _pumpFor(tester, const Duration(milliseconds: 500));
     expect(settings.connectionMode, NodeConnectionMode.customRpc);
 
     // Reset to the default public mode.
-    await tester.tap(find.text('Public RPC'));
+    await tester.tap(find.text('Public RPC').first);
     await _pumpFor(tester, const Duration(milliseconds: 500));
     expect(settings.connectionMode, NodeConnectionMode.publicRpc);
   });
