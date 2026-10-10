@@ -45,5 +45,15 @@ class MainActivity : FlutterFragmentActivity() {
                     else -> result.notImplemented()
                 }
             }
+        // Embedded node channel: exposes the native library directory,
+        // where the bundled massa-node executable (libmassa_node.so)
+        // is extracted and may be exec()'d (W^X-compliant location).
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "site.massawallet.app/embedded")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "getNativeLibDir" -> result.success(applicationInfo.nativeLibraryDir)
+                    else -> result.notImplemented()
+                }
+            }
     }
 }

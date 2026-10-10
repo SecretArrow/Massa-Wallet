@@ -18,6 +18,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/massa_rpc.dart';
 import 'auto_compound_service.dart';
+import 'embedded_node_service.dart';
+import 'settings_provider.dart' show SettingsProvider, resolveEndpoint;
 import 'wallet_repository.dart';
 
 /// Notification channel id (must match AndroidConfiguration).
@@ -45,14 +47,28 @@ Future<void> _onStart(ServiceInstance service) async {
           .toList();
       if (accounts.isEmpty) return;
 
-      final useCustom = prefs.getBool('settings.useCustomNode') ?? false;
+      final mode = prefs.getString('settings.connectionMode') ??
+          ((prefs.getBool('settings.useCustomNode') ?? false)
+              ? 'customRpc'
+              : 'publicRpc');
       final customUrl = prefs.getString('settings.customNodeUrl') ?? '';
       final isMainnet = prefs.getString('settings.network') == 'mainnet';
-      final endpoint = useCustom && customUrl.isNotEmpty
-          ? customUrl
-          : (isMainnet
-                ? MassaNetwork.mainnet.apiUrl
-                : MassaNetwork.buildnet.apiUrl);
+      final defaultUrl = isMainnet
+          ? MassaNetwork.mainnet.apiUrl
+          : MassaNetwork.buildnet.apiUrl;
+      final endpoint = resolveEndpoint(
+        mode: mode,
+        customUrl: customUrl,
+        defaultUrl: defaultUrl,
+        embeddedUrl:
+            'http://127.0.0.1:${SettingsProvider.embeddedApiPort}/api/v2',
+        embeddedUsable: !isMainnet,
+      );
+
+      // Keepalive for the embedded node (respawn via prefs, best-effort).
+      if (mode == 'embedded' && !isMainnet) {
+        await EmbeddedNodeService.ensureRunningFromPrefs();
+      }
 
       final client = MassaRpcClient(endpoint: endpoint);
       try {

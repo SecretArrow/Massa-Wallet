@@ -1,7 +1,7 @@
 name: massa_wallet
 description: "Massa Wallet - Secure self-custodial Flutter wallet for the Massa blockchain with light client, staking and background sync."
 publish_to: "none"
-version: 1.2.0+3
+version: 1.3.0+4
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
@@ -43,3 +43,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  # Embedded node base config (official massa DEVN.30.2 buildnet profile,
+  # patched to loopback binds at runtime). See lib/core/services/
+  # embedded_node_service.dart.
+  assets:
+    - assets/node/
+    - assets/node/gas_costs/

@@ -218,31 +218,45 @@ class SettingsScreen extends StatelessWidget {
             title: Text(context.t('settings.showFiat')),
             activeThumbColor: const Color(0xFF18C8C8),
           ),
-          ListTile(
-            leading: const Icon(Icons.palette_outlined),
-            title: Text(context.t('settings.theme')),
-            trailing: DropdownButton<ThemeMode>(
-              value: settings.themeMode,
-              dropdownColor: const Color(0xFF1C2330),
-              items: [
-                DropdownMenuItem(
-                  value: ThemeMode.dark,
-                  child: Text(context.t('settings.theme.dark')),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.palette_outlined),
+                    const SizedBox(width: 16),
+                    Text(context.t('settings.theme')),
+                  ],
                 ),
-                DropdownMenuItem(
-                  value: ThemeMode.light,
-                  child: Text(context.t('settings.theme.light')),
-                ),
-                DropdownMenuItem(
-                  value: ThemeMode.system,
-                  child: Text(context.t('settings.theme.system')),
+                const SizedBox(height: 10),
+                SegmentedButton<ThemeMode>(
+                  segments: [
+                    ButtonSegment(
+                      value: ThemeMode.dark,
+                      icon: const Icon(Icons.dark_mode_outlined, size: 18),
+                      label: Text(context.t('settings.theme.dark')),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.light,
+                      icon: const Icon(Icons.light_mode_outlined, size: 18),
+                      label: Text(context.t('settings.theme.light')),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.system,
+                      icon: const Icon(Icons.brightness_auto_outlined, size: 18),
+                      label: Text(context.t('settings.theme.system')),
+                    ),
+                  ],
+                  selected: {settings.themeMode},
+                  onSelectionChanged: (selection) {
+                    context.read<SettingsProvider>().setThemeMode(
+                          selection.first,
+                        );
+                  },
                 ),
               ],
-              onChanged: (v) {
-                if (v != null) {
-                  context.read<SettingsProvider>().setThemeMode(v);
-                }
-              },
             ),
           ),
           const Divider(),
@@ -289,7 +303,7 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: Text(context.t('settings.version')),
-            trailing: const Text('1.2.0'),
+            trailing: const Text('1.3.0'),
           ),
         ],
       ),

@@ -1,22 +1,9 @@
-/// Experimental "Embedded Node" mode.
+/// Node connectivity health checks.
 ///
-/// Massa full nodes require ~4 cores and ~8 GB RAM (see docs.massa.net),
-/// which is beyond what most phones can sustain 24/7. This app therefore
-/// ships a **hybrid architecture**:
-///
-/// 1. *Light client (default)* — talks to the public JSON-RPC v2 endpoint
-///    (buildnet/mainnet). Zero setup, low battery.
-/// 2. *Node mode (experimental)* — talks to a **local node** through a
-///    user-configured endpoint (e.g. `http://127.0.0.1:33035` when a
-///    massa-node runs in Termux, on the same Wi-Fi, or a self-hosted VPS).
-///    When the endpoint is local the wallet effectively communicates with
-///    a node embedded in the device ecosystem, including all background
-///    processes (staking checks, balance sync) through the foreground
-///    service.
-///
-/// A true in-process Rust node can be cross-compiled to Android with
-/// cargo-ndk and spawned from a foreground service; the wiring in this
-/// class isolates that integration point (see README roadmap).
+/// Covers all three connection modes:
+/// 1. *Public RPC* — official endpoints (default light client).
+/// 2. *Custom RPC* — a user-operated node (LAN/VPS/Termux).
+/// 3. *Embedded* — the in-app massa-node binary on loopback.
 library;
 
 import '../api/massa_rpc.dart';
@@ -49,19 +36,17 @@ class NodeHealth {
   });
 }
 
-/// Manages the experimental node mode.
+/// Manages node connectivity health.
 class NodeModeService {
   final SettingsProvider settings;
 
   /// Creates the service.
   NodeModeService({required this.settings});
 
-  /// Probes the configured custom node.
+  /// Probes the endpoint the wallet would actually use for the active
+  /// mode (custom URL, embedded loopback, or the public RPC).
   Future<NodeHealth> probe() async {
-    if (!settings.useCustomNode || settings.customNodeUrl.isEmpty) {
-      return const NodeHealth(reachable: false, error: 'node mode disabled');
-    }
-    final client = MassaRpcClient(endpoint: settings.customNodeUrl);
+    final client = MassaRpcClient(endpoint: settings.effectiveEndpoint);
     final sw = Stopwatch()..start();
     try {
       final status = await client.getStatus();
@@ -79,10 +64,10 @@ class NodeModeService {
     }
   }
 
-  /// Returns true when the wallet should use the custom node.
-  bool get isEnabled => settings.useCustomNode;
+  /// True when the wallet deviates from the default public RPC.
+  bool get isEnabled => settings.connectionMode != NodeConnectionMode.publicRpc;
 
-  /// Warn-level check: a custom node on a different chain id than the
+  /// Warn-level check: a node on a different chain id than the
   /// selected network would produce signatures that nodes reject.
   Future<String?> validateChainId() async {
     final health = await probe();

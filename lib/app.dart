@@ -4,6 +4,7 @@ library;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'core/i18n/app_i18n.dart';
@@ -111,6 +112,22 @@ class _MassaWalletAppState extends State<MassaWalletApp>
             locale: Locale(settings.language.code),
             supportedLocales: const [Locale('id'), Locale('en')],
             initialRoute: '/',
+            // Edge-to-edge: keep system-bar icon brightness correct on
+            // screens that have no AppBar (covers the whole navigator).
+            builder: (context, child) {
+              final platformDark =
+                  MediaQuery.platformBrightnessOf(context) ==
+                  Brightness.dark;
+              final dark = switch (settings.themeMode) {
+                ThemeMode.light => false,
+                ThemeMode.dark => true,
+                ThemeMode.system => platformDark,
+              };
+              return AnnotatedRegion<SystemUiOverlayStyle>(
+                value: dark ? AppTheme.overlayDark : AppTheme.overlayLight,
+                child: child ?? const SizedBox.shrink(),
+              );
+            },
             routes: {
               '/': (_) => const _RootGate(),
               '/onboarding': (_) => const OnboardingScreen(),

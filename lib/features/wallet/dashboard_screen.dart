@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/api/massa_rpc.dart' show MassaNetwork;
 import '../../core/i18n/app_i18n.dart';
+import '../../core/services/embedded_node_service.dart';
 import '../../core/services/price_service.dart';
 import '../../core/services/settings_provider.dart';
 import '../../core/services/wallet_provider.dart';
@@ -120,6 +121,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(16),
           children: [
+            // Embedded-node offline banner (only in embedded mode).
+            _EmbeddedNodeBanner(settings: settings),
             BalanceCard(
               balance: wallet.formatBalance(account.address),
               hidden: settings.hideBalances,
@@ -468,5 +471,57 @@ class _PriceTicker extends StatelessWidget {
     if (v >= 1000) return v.toStringAsFixed(0);
     if (v >= 1) return v.toStringAsFixed(2);
     return v.toStringAsFixed(v < 0.01 ? 6 : 4);
+  }
+}
+
+/// Amber banner shown when the wallet is in embedded-node mode but the
+/// in-app node is not running. Tapping it opens the node screen.
+class _EmbeddedNodeBanner extends StatelessWidget {
+  final SettingsProvider settings;
+  const _EmbeddedNodeBanner({required this.settings});
+
+  @override
+  Widget build(BuildContext context) {
+    if (settings.connectionMode != NodeConnectionMode.embedded) {
+      return const SizedBox.shrink();
+    }
+    final node = context.watch<EmbeddedNodeService>();
+    final ok =
+        node.state == EmbeddedNodeState.running && settings.embeddedUsable;
+    if (ok) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Card(
+        color: Theme.of(context).colorScheme.tertiaryContainer,
+        margin: EdgeInsets.zero,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => Navigator.of(context).pushNamed('/node'),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.dns_outlined,
+                  color: Theme.of(context).colorScheme.onTertiaryContainer,
+                  size: 20,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    context.t('dashboard.nodeOffline'),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onTertiaryContainer,
+                    ),
+                  ),
+                ),
+                const Icon(Icons.chevron_right, size: 18),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

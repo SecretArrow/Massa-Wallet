@@ -1,9 +1,12 @@
-/// Massa Wallet visual identity.
+/// Massa Wallet visual identity — Material 3, light & dark.
 ///
-/// Dark premium theme with Massa-inspired teal/cyan accents.
+/// Brand: Massa-inspired teal/cyan accent. Both themes build a full
+/// M3 `ColorScheme.fromSeed` with modern component themes and force
+/// transparent system bars (edge-to-edge) with per-theme icon brightness.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Brand colors.
 abstract final class MassaColors {
@@ -40,6 +43,26 @@ abstract final class MassaColors {
 
 /// App theme.
 class AppTheme {
+  /// Overlay style for dark surfaces (light icons).
+  static const overlayDark = SystemUiOverlayStyle(
+    statusBarColor: Color(0x00000000),
+    systemNavigationBarColor: Color(0x00000000),
+    systemNavigationBarDividerColor: Color(0x00000000),
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
+    systemNavigationBarIconBrightness: Brightness.light,
+  );
+
+  /// Overlay style for light surfaces (dark icons).
+  static const overlayLight = SystemUiOverlayStyle(
+    statusBarColor: Color(0x00000000),
+    systemNavigationBarColor: Color(0x00000000),
+    systemNavigationBarDividerColor: Color(0x00000000),
+    statusBarIconBrightness: Brightness.dark,
+    statusBarBrightness: Brightness.light,
+    systemNavigationBarIconBrightness: Brightness.dark,
+  );
+
   /// Builds the dark Material 3 theme.
   static ThemeData get dark {
     final scheme =
@@ -56,16 +79,20 @@ class AppTheme {
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
+      splashFactory: InkSparkle.splashFactory,
       scaffoldBackgroundColor: MassaColors.bg,
       appBarTheme: const AppBarTheme(
         backgroundColor: MassaColors.bg,
         foregroundColor: MassaColors.textPrimary,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: true,
+        systemOverlayStyle: overlayDark,
       ),
       cardTheme: const CardThemeData(
         color: MassaColors.card,
         elevation: 0,
+        margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(16)),
         ),
@@ -109,6 +136,16 @@ class AppTheme {
           ),
         ),
       ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          side: WidgetStatePropertyAll(
+            BorderSide(color: MassaColors.teal.withValues(alpha: 0.5)),
+          ),
+        ),
+      ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: MassaColors.surface,
         indicatorColor: MassaColors.teal.withValues(alpha: 0.18),
@@ -128,6 +165,53 @@ class AppTheme {
         backgroundColor: MassaColors.card,
         contentTextStyle: TextStyle(color: MassaColors.textPrimary),
         behavior: SnackBarBehavior.floating,
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: MassaColors.surface,
+        modalBackgroundColor: MassaColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        showDragHandle: true,
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: MassaColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(28),
+        ),
+      ),
+      chipTheme: const ChipThemeData(
+        backgroundColor: MassaColors.card,
+        side: BorderSide(color: Color(0xFF30363D)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: MassaColors.card,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: MassaColors.teal,
+        linearTrackColor: Color(0xFF21262D),
+      ),
+      expansionTileTheme: const ExpansionTileThemeData(
+        backgroundColor: Colors.transparent,
+        collapsedBackgroundColor: Colors.transparent,
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? MassaColors.teal
+              : MassaColors.textSecondary,
+        ),
+        trackColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? MassaColors.teal.withValues(alpha: 0.35)
+              : const Color(0xFF30363D),
+        ),
       ),
     );
     return base.copyWith(
@@ -160,16 +244,20 @@ class AppTheme {
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
+      splashFactory: InkSparkle.splashFactory,
       scaffoldBackgroundColor: bg,
       appBarTheme: const AppBarTheme(
         backgroundColor: bg,
         foregroundColor: textPrimary,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: true,
+        systemOverlayStyle: overlayLight,
       ),
       cardTheme: const CardThemeData(
         color: card,
         elevation: 0,
+        margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(16)),
           side: BorderSide(color: border),
@@ -214,6 +302,16 @@ class AppTheme {
           ),
         ),
       ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          side: WidgetStatePropertyAll(
+            BorderSide(color: MassaColors.deepTeal.withValues(alpha: 0.5)),
+          ),
+        ),
+      ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surface,
         indicatorColor: MassaColors.deepTeal.withValues(alpha: 0.12),
@@ -230,6 +328,53 @@ class AppTheme {
         backgroundColor: Color(0xFF24292F),
         contentTextStyle: TextStyle(color: Colors.white),
         behavior: SnackBarBehavior.floating,
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: surface,
+        modalBackgroundColor: surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        showDragHandle: true,
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(28),
+        ),
+      ),
+      chipTheme: const ChipThemeData(
+        backgroundColor: Color(0xFFF0F3F6),
+        side: BorderSide(color: border),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: MassaColors.deepTeal,
+        linearTrackColor: Color(0xFFD0D7DE),
+      ),
+      expansionTileTheme: const ExpansionTileThemeData(
+        backgroundColor: Colors.transparent,
+        collapsedBackgroundColor: Colors.transparent,
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? MassaColors.deepTeal
+              : textSecondary,
+        ),
+        trackColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? MassaColors.deepTeal.withValues(alpha: 0.35)
+              : border,
+        ),
       ),
     );
     return base.copyWith(

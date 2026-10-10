@@ -173,6 +173,47 @@ const Map<String, Map<String, String>> translations = {
         'Always verify the SHA-256 checksum of the archive before running:',
     'node.latency': 'Latency',
     'node.chainMismatch': 'Chain ID does not match the selected network',
+    // Connection modes (v1.3.0)
+    'node.custom.saved': 'Node URL saved',
+    'node.custom.save': 'Save URL',
+    'node.mode.public.title': 'Public RPC',
+    'node.mode.public.sub': 'Official endpoints — light client, low battery',
+    'node.mode.public.body':
+        'The wallet talks to the official public JSON-RPC v2 endpoint for the selected network. Simplest and most battery-friendly; you trust the public infra.',
+    'node.mode.custom.title': 'Custom RPC',
+    'node.mode.custom.sub': 'Your own node — LAN, VPS or Termux',
+    'node.mode.custom.body':
+        'Point the wallet at any massa-node you operate. Data stays under your infrastructure — the wallet only sends JSON-RPC calls to the URL below.',
+    'node.mode.embedded.title': 'Embedded node (in-app)',
+    'node.mode.embedded.sub':
+        'A real massa-node binary running inside the app sandbox',
+    'node.mode.embedded.body':
+        'The official massa-node binary (DEVN.30.2, buildnet) is bundled in this APK and executed inside the app sandbox on loopback — no root, no Termux. RPC is loopback-only.',
+    'node.embedded.state.stopped': 'Stopped',
+    'node.embedded.state.starting': 'Starting… first bootstrap can take a while',
+    'node.embedded.state.running': 'Running',
+    'node.embedded.state.failed': 'Failed',
+    'node.embedded.state.unsupported': 'Not available in this build',
+    'node.embedded.unavailable':
+        'This APK was built without the embedded node binary. Download the arm64 release that includes the embedded node, or use Public/Custom RPC.',
+    'node.embedded.mainnet':
+        'The embedded node targets Buildnet only. While Mainnet is selected the wallet keeps using the public RPC.',
+    'node.embedded.start': 'Start node',
+    'node.embedded.stop': 'Stop node',
+    'node.embedded.uptime': 'Uptime',
+    'node.embedded.port': 'API port',
+    'node.embedded.keepalive':
+        'The foreground service keeps the node alive in the background and restarts it if it dies.',
+    'node.embedded.logs': 'Node logs',
+    'node.embedded.logs.copy': 'Copy logs',
+    'node.embedded.reset': 'Reset node data',
+    'node.embedded.reset.confirm':
+        'Delete ALL embedded node data (ledger database, caches, logs)? The wallet keys are not affected. You will need to bootstrap again (long).',
+    'node.embedded.warning':
+        'Experimental: a full node uses 1–3 GB RAM, keeps the CPU busy, drains battery and stores several GB of ledger data. The first bootstrap can take 10+ minutes on Wi-Fi. Keep it plugged in.',
+    // Dashboard
+    'dashboard.nodeOffline':
+        'Embedded node is not running — tap to open node settings',
     // Settings
     'settings.title': 'Settings',
     'settings.security': 'Security',
@@ -492,6 +533,47 @@ const Map<String, Map<String, String>> translations = {
         'Selalu verifikasi checksum SHA-256 arsip sebelum dijalankan:',
     'node.latency': 'Latensi',
     'node.chainMismatch': 'Chain ID tidak cocok dengan jaringan terpilih',
+    // Mode koneksi (v1.3.0)
+    'node.custom.saved': 'URL node tersimpan',
+    'node.custom.save': 'Simpan URL',
+    'node.mode.public.title': 'RPC Publik',
+    'node.mode.public.sub': 'Endpoint resmi — client ringan, hemat baterai',
+    'node.mode.public.body':
+        'Wallet terhubung ke endpoint JSON-RPC v2 publik resmi untuk jaringan terpilih. Paling sederhana dan hemat baterai; Anda mempercayai infrastruktur publik.',
+    'node.mode.custom.title': 'RPC Kustom',
+    'node.mode.custom.sub': 'Node milik Anda — LAN, VPS, atau Termux',
+    'node.mode.custom.body':
+        'Arahkan wallet ke massa-node apa pun yang Anda kelola sendiri. Data tetap di infrastruktur Anda — wallet hanya mengirim panggilan JSON-RPC ke URL di bawah.',
+    'node.mode.embedded.title': 'Node Tertanam (dalam app)',
+    'node.mode.embedded.sub':
+        'Binary massa-node asli berjalan di dalam sandbox app',
+    'node.mode.embedded.body':
+        'Binary massa-node resmi (DEVN.30.2, buildnet) dibundel dalam APK ini dan dieksekusi di dalam sandbox app lewat loopback — tanpa root, tanpa Termux. RPC hanya diakses dari perangkat sendiri (loopback).',
+    'node.embedded.state.stopped': 'Berhenti',
+    'node.embedded.state.starting': 'Menyalakan… bootstrap pertama bisa lama',
+    'node.embedded.state.running': 'Berjalan',
+    'node.embedded.state.failed': 'Gagal',
+    'node.embedded.state.unsupported': 'Tidak tersedia di build ini',
+    'node.embedded.unavailable':
+        'APK ini dibangun tanpa binary node tertanam. Unduh rilis arm64 yang menyertakan embedded node, atau pakai RPC Publik/Kustom.',
+    'node.embedded.mainnet':
+        'Node tertanam hanya untuk Buildnet. Selama Mainnet terpilih, wallet tetap memakai RPC publik.',
+    'node.embedded.start': 'Jalankan Node',
+    'node.embedded.stop': 'Hentikan Node',
+    'node.embedded.uptime': 'Berjalan selama',
+    'node.embedded.port': 'Port API',
+    'node.embedded.keepalive':
+        'Layanan latar depan menjaga node tetap hidup di latar belakang dan menyalakannya ulang bila mati.',
+    'node.embedded.logs': 'Log node',
+    'node.embedded.logs.copy': 'Salin log',
+    'node.embedded.reset': 'Reset data node',
+    'node.embedded.reset.confirm':
+        'Hapus SEMUA data node tertanam (database ledger, cache, log)? Kunci wallet tidak terpengaruh. Anda harus bootstrap ulang (lama).',
+    'node.embedded.warning':
+        'Eksperimental: node penuh memakai RAM 1–3 GB, menjaga CPU sibuk, menguras baterai, dan menyimpan beberapa GB data ledger. Bootstrap pertama bisa 10+ menit lewat Wi-Fi. Sambungkan ke pengisi daya.',
+    // Dashboard
+    'dashboard.nodeOffline':
+        'Node tertanam tidak berjalan — ketuk untuk membuka pengaturan node',
     'settings.title': 'Pengaturan',
     'settings.security': 'Keamanan',
     'settings.language': 'Bahasa',
