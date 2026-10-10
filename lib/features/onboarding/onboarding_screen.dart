@@ -255,14 +255,16 @@ class _ImportScreenState extends State<ImportScreen> {
   final _skController = TextEditingController();
   final _pwController = TextEditingController();
   final _nickController = TextEditingController();
+  final _watchController = TextEditingController();
   bool _busy = false;
-  int _mode = 0; // 0 = secret key, 1 = keystore
+  int _mode = 0; // 0 = secret key, 1 = keystore, 2 = watch-only
 
   @override
   void dispose() {
     _skController.dispose();
     _pwController.dispose();
     _nickController.dispose();
+    _watchController.dispose();
     super.dispose();
   }
 
@@ -275,11 +277,16 @@ class _ImportScreenState extends State<ImportScreen> {
           _skController.text,
           nickname: _nickController.text.trim(),
         );
-      } else {
+      } else if (_mode == 1) {
         // Keystore contents pasted into the same field for simplicity.
         await wallet.importKeyStore(
           _skController.text,
           _pwController.text,
+          nickname: _nickController.text.trim(),
+        );
+      } else {
+        await wallet.addWatchOnly(
+          _watchController.text,
           nickname: _nickController.text.trim(),
         );
       }
@@ -289,7 +296,11 @@ class _ImportScreenState extends State<ImportScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(context.t('onboarding.invalidKey')),
+            content: Text(
+              _mode == 2
+                  ? context.t('send.invalidRecipient')
+                  : context.t('onboarding.invalidKey'),
+            ),
             backgroundColor: const Color(0xFFF85149),
           ),
         );
@@ -328,11 +339,47 @@ class _ImportScreenState extends State<ImportScreen> {
                   label: Text(context.t('onboarding.import.keystore')),
                   icon: const Icon(Icons.file_open),
                 ),
+                ButtonSegment(
+                  value: 2,
+                  label: Text(context.t('onboarding.import.watch')),
+                  icon: const Icon(Icons.visibility),
+                ),
               ],
               selected: {_mode},
               onSelectionChanged: (s) => setState(() => _mode = s.first),
             ),
             const SizedBox(height: 24),
+            if (_mode == 2) ...[
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.visibility,
+                        color: Color(0xFF18C8C8),
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          context.t('onboarding.import.watch.hint'),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _watchController,
+                decoration: InputDecoration(
+                  labelText: context.t('wallet.address'),
+                  hintText: 'AU1...',
+                ),
+              ),
+            ] else ...[
             TextField(
               controller: _skController,
               maxLines: _mode == 0 ? 2 : 6,
@@ -352,6 +399,7 @@ class _ImportScreenState extends State<ImportScreen> {
                   labelText: context.t('onboarding.password'),
                 ),
               ),
+            ],
             ],
             const SizedBox(height: 16),
             TextField(

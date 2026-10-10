@@ -1,11 +1,15 @@
-/// Address book screen: saved recipients.
+/// Address book screen: saved recipients (with MNS domain support).
 library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
+import '../../core/api/massa_rpc.dart';
+import '../../core/contracts/mns_service.dart';
 import '../../core/i18n/app_i18n.dart';
 import '../../core/services/address_book_service.dart';
+import '../../core/services/settings_provider.dart';
 import '../../ui/theme.dart';
 
 /// Address book screen.
@@ -62,7 +66,8 @@ class _AddressBookScreenState extends State<AddressBookScreen> {
               controller: addrCtrl,
               decoration: InputDecoration(
                 labelText: ctx.t('book.address'),
-                hintText: 'AU1…',
+                hintText: 'AU1… atau name.massa',
+                helperText: ctx.t('book.mnsHint'),
               ),
             ),
           ],
@@ -81,14 +86,50 @@ class _AddressBookScreenState extends State<AddressBookScreen> {
     );
     if (ok != true) return;
     final name = nameCtrl.text.trim();
-    final address = addrCtrl.text.trim();
-    if (name.isEmpty || !(address.startsWith('AU1') || address.startsWith('AS1'))) {
+    final raw = addrCtrl.text.trim();
+
+    // MNS: allow adding via name.massa — resolve to the target address.
+    var address = raw;
+    var domain = '';
+    final parsed = MnsService.parseInput(raw);
+    if (parsed.domain != null) {
+      try {
+        final settings = context.read<SettingsProvider>();
+        final service = MnsService(
+          clientFactory: () =>
+              MassaRpcClient(endpoint: settings.effectiveEndpoint),
+        );
+        final res = await service.resolve(
+          parsed.domain!,
+          mainnet: settings.network == MassaNetwork.mainnet,
+        );
+        address = res.target;
+        domain = '${res.domain}.massa';
+      } on MnsException catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: const Color(0xFFF85149),
+          ),
+        );
+        return;
+      }
+    }
+    if (name.isEmpty ||
+        !(address.startsWith('AU1') || address.startsWith('AS1'))) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.t('book.invalid'))),
       );
       return;
     }
-    await _book.save(Contact(name: name, address: address));
+    await _book.save(
+      Contact(
+        name: name.isEmpty ? domain : name,
+        address: address,
+        domain: domain,
+      ),
+    );
     await _load();
   }
 
@@ -141,14 +182,28 @@ class _AddressBookScreenState extends State<AddressBookScreen> {
                         leading: CircleAvatar(
                           backgroundColor:
                               MassaColors.teal.withValues(alpha: 0.15),
-                          child: Text(
-                            c.name.isEmpty ? '?' : c.name[0].toUpperCase(),
-                            style: const TextStyle(color: MassaColors.teal),
-                          ),
+                          child: c.domain.isNotEmpty
+                              ? const Icon(
+                                  Icons.dns_outlined,
+                                  color: MassaColors.teal,
+                                  size: 20,
+                                )
+                              : Text(
+                                  c.name.isEmpty
+                                      ? '?'
+                                      : c.name[0].toUpperCase(),
+                                  style: const TextStyle(
+                                    color: MassaColors.teal,
+                                  ),
+                                ),
                         ),
-                        title: Text(c.name),
+                        title: Text(
+                          c.domain.isNotEmpty ? c.domain : c.name,
+                        ),
                         subtitle: Text(
-                          '${c.address.substring(0, 12)}…${c.address.substring(c.address.length - 6)}',
+                          c.domain.isNotEmpty
+                              ? '${c.name} · ${c.address.substring(0, 8)}…'
+                              : '${c.address.substring(0, 12)}…${c.address.substring(c.address.length - 6)}',
                           style: const TextStyle(
                             fontFamily: 'monospace',
                             fontSize: 11,

@@ -1,9 +1,12 @@
 /// Central wallet state: accounts, balances, transactions and sending.
 library;
 
+import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/massa_amount.dart';
 import '../api/massa_models.dart';
@@ -11,8 +14,12 @@ import '../api/massa_rpc.dart';
 import '../crypto/massa_keys.dart';
 import '../crypto/operation_serializer.dart';
 import 'activity_history_service.dart';
+import 'address_book_service.dart';
+import 'auto_compound_service.dart';
+import 'backup_service.dart';
 import 'settings_provider.dart';
 import 'wallet_repository.dart';
+import 'widget_service.dart';
 
 /// Balance snapshot for one account.
 class AccountBalance {
@@ -105,6 +112,19 @@ class WalletProvider extends ChangeNotifier {
     return account;
   }
 
+  /// Adds a watch-only address (monitoring without a private key).
+  Future<StoredAccount> addWatchOnly(
+    String address, {
+    String nickname = '',
+  }) async {
+    final account = await repository.addWatchOnly(
+      address,
+      nickname: nickname,
+    );
+    await loadAccounts();
+    return account;
+  }
+
   /// Imports a Massa Standard keystore file.
   Future<StoredAccount> importKeyStore(
     String contents,
@@ -127,6 +147,69 @@ class WalletProvider extends ChangeNotifier {
   /// Reveals the secret key (caller must enforce auth).
   Future<String> revealSecretKey(String address) =>
       repository.revealSecretKey(address);
+
+  /// Builds an encrypted multi-account backup (all accounts + address
+  /// book). Watch-only entries are included without key material.
+  Future<String> exportBackup(String password) async {
+    final accounts = <BackupAccount>[];
+    for (final a in _accounts) {
+      accounts.add(await BackupAccount.capture(a, repository));
+    }
+    final contacts = await AddressBookService().load();
+    return MassaBackup.export(
+      accounts: accounts,
+      contacts: contacts,
+      password: password,
+    );
+  }
+
+  /// Restores an encrypted backup: re-adds missing accounts (importing
+  /// secret keys / watch-only entries) and merges address-book contacts.
+  /// Returns the number of accounts restored.
+  Future<int> importBackup(String contents, String password) async {
+    final bundle = MassaBackup.import(contents, password);
+    var restored = 0;
+    for (final a in bundle.accounts) {
+      final exists = _accounts.any((x) => x.address == a.address);
+      if (exists) continue;
+      if (a.isWatchOnly || a.secretKeyB64 == null) {
+        await repository.addWatchOnly(a.address, nickname: a.nickname);
+      } else {
+        await repository.importSecretKeyBytes(
+          Uint8List.fromList(base64.decode(a.secretKeyB64!)),
+          nickname: a.nickname,
+        );
+      }
+      restored++;
+    }
+    final book = AddressBookService();
+    final known = await book.load();
+    for (final c in bundle.contacts) {
+      if (!known.any((x) => x.address == c.address)) {
+        await book.save(c);
+      }
+    }
+    await loadAccounts();
+    return restored;
+  }
+
+  /// Runs one auto-compound evaluation for the active account.
+  Future<AutoCompoundOutcome> runAutoCompound() async {
+    final account = activeAccount;
+    if (account == null) {
+      throw StateError('no active account');
+    }
+    final prefs = await SharedPreferences.getInstance();
+    final service = AutoCompoundService(prefs: prefs, repository: repository);
+    final outcome = await service.tick(
+      address: account.address,
+      endpoint: settings.effectiveEndpoint,
+    );
+    if (outcome.action == AutoCompoundAction.bought) {
+      await refreshBalances();
+    }
+    return outcome;
+  }
 
   /// Removes an account.
   Future<void> deleteAccount(String address) async {
@@ -179,6 +262,22 @@ class WalletProvider extends ChangeNotifier {
     } finally {
       _loading = false;
       notifyListeners();
+    }
+    // Keep the homescreen widget in sync (best-effort, Android only).
+    final active = activeAccount;
+    if (active != null) {
+      final b = _balances[active.address];
+      if (b != null) {
+        unawaited(
+          updateBalanceWidget(
+            balance: formatNano(b.finalBalance),
+            rolls: b.rolls,
+            address: active.address,
+            network: settings.network.name,
+            hideBalances: settings.hideBalances,
+          ),
+        );
+      }
     }
   }
 
@@ -332,6 +431,10 @@ class WalletProvider extends ChangeNotifier {
     String? tokenAmount,
     String? note,
   }) async {
+    final account = _accounts.where((a) => a.address == fromAddress).firstOrNull;
+    if (account != null && account.isWatchOnly) {
+      throw StateError('watch-only account cannot sign operations');
+    }
     final client = MassaRpcClient(endpoint: settings.effectiveEndpoint);
     try {
       final status = await client.getStatus();

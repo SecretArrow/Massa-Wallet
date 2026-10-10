@@ -17,6 +17,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/massa_rpc.dart';
+import 'auto_compound_service.dart';
+import 'wallet_repository.dart';
 
 /// Notification channel id (must match AndroidConfiguration).
 const String bgChannelId = 'massa_wallet_bg';
@@ -73,8 +75,47 @@ Future<void> _onStart(ServiceInstance service) async {
         service.invoke('balances_updated', {
           'at': DateTime.now().toIso8601String(),
         });
+        // Feed the homescreen widget (it redraws on its own schedule —
+        // the MethodChannel nudge is only possible from the UI isolate).
+        final active = accounts.first;
+        for (final info in infos) {
+          if (info.address == active) {
+            await prefs.setString(
+              'massa_widget',
+              json.encode({
+                'balance': _formatNano(info.finalBalance),
+                'rolls': info.finalRollCount.toString(),
+                'address': info.address,
+                'network': isMainnet ? 'Mainnet' : 'Buildnet',
+                'updatedAt': DateTime.now().toIso8601String(),
+                'hideBalances': prefs.getBool('settings.hideBalances') ?? false,
+              }),
+            );
+            break;
+          }
+        }
       } finally {
         client.dispose();
+      }
+      // Roll auto-compound (cycle-aware) — best-effort, uses the secure
+      // store for signing when rewards arrive at cycle rollover.
+      if (prefs.getBool('ac.enabled') ?? false) {
+        try {
+          final ac = AutoCompoundService(
+            prefs: prefs,
+            repository: WalletRepository(),
+          );
+          final outcome = await ac.tick(address: accounts.first, endpoint: endpoint);
+          if (outcome.action == AutoCompoundAction.bought) {
+            await _notify(
+              title: 'Massa Wallet — auto-compound',
+              body:
+                  'Reinvested ${outcome.rollsBought} roll(s) · cycle ${outcome.cycle}',
+            );
+          }
+        } catch (e) {
+          debugPrint('auto-compound tick failed: $e');
+        }
       }
     } catch (e) {
       debugPrint('bg sync tick failed: $e');

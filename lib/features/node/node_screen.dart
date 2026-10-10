@@ -148,6 +148,89 @@ class _NodeScreenState extends State<NodeScreen> {
                 ),
               ),
             ],
+            const SizedBox(height: 24),
+
+            // ── Official node binary (verify before you trust) ────────
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.verified_user,
+                          color: Color(0xFF3FB950),
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            context.t('node.official.title'),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      context.t('node.official.body'),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF8B949E),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SelectableText(
+                      'https://github.com/massalabs/massa/releases',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontFamily: 'monospace',
+                        color: Color(0xFF58A6FF),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    SelectableText(
+                      'https://docs.massa.net/docs/quickstart/run-node',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontFamily: 'monospace',
+                        color: Color(0xFF58A6FF),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      context.t('node.official.checksum'),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF8B949E),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0D1117),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const SelectableText(
+                        'sha256sum massa-node*.tar.gz\n'
+                        '# bandingkan dengan SHA256SUMS di release',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontFamily: 'monospace',
+                          color: Color(0xFF3FB950),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

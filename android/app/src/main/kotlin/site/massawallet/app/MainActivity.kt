@@ -34,5 +34,16 @@ class MainActivity : FlutterFragmentActivity() {
                     else -> result.notImplemented()
                 }
             }
+        // Homescreen widget refresh channel (widget_service.dart).
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "site.massawallet.app/widget")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "refresh" -> {
+                        MassaWidgetProvider.updateAll(applicationContext)
+                        result.success(true)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
     }
 }

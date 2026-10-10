@@ -20,6 +20,7 @@ class SettingsProvider extends ChangeNotifier {
   static const _kUseCustomNode = 'settings.useCustomNode';
   static const _kThemeMode = 'settings.themeMode';
   static const _kShowFiat = 'settings.showFiat';
+  static const _kAutoCompound = 'ac.enabled';
 
   SharedPreferences? _prefs;
 
@@ -34,6 +35,7 @@ class SettingsProvider extends ChangeNotifier {
   bool _useCustomNode = false;
   ThemeMode _themeMode = ThemeMode.dark;
   bool _showFiat = true;
+  bool _autoCompound = false;
 
   /// Active network.
   MassaNetwork get network => _network;
@@ -68,6 +70,10 @@ class SettingsProvider extends ChangeNotifier {
   /// Whether the fiat equivalent is shown on the dashboard.
   bool get showFiat => _showFiat;
 
+  /// Whether roll auto-compound is enabled (shares the `ac.enabled` key
+  /// with AutoCompoundService).
+  bool get autoCompoundEnabled => _autoCompound;
+
   /// Effective RPC endpoint in use.
   String get effectiveEndpoint => _useCustomNode && _customNodeUrl.isNotEmpty
       ? _customNodeUrl
@@ -96,6 +102,7 @@ class SettingsProvider extends ChangeNotifier {
       _ => ThemeMode.dark,
     };
     _showFiat = p.getBool(_kShowFiat) ?? true;
+    _autoCompound = p.getBool(_kAutoCompound) ?? false;
     notifyListeners();
   }
 
@@ -175,5 +182,11 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> setShowFiat(bool v) async {
     _showFiat = v;
     await _set(_kShowFiat, v);
+  }
+
+  /// Toggles roll auto-compound.
+  Future<void> setAutoCompound(bool v) async {
+    _autoCompound = v;
+    await _set(_kAutoCompound, v);
   }
 }

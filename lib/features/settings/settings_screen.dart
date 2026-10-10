@@ -2,8 +2,10 @@
 library;
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/api/massa_rpc.dart' show MassaNetwork;
@@ -254,6 +256,26 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
 
+          // Backup / restore (all accounts, encrypted)
+          ListTile(
+            leading: const Icon(Icons.backup_outlined, color: Color(0xFF3FB950)),
+            title: Text(context.t('settings.backup')),
+            subtitle: Text(context.t('settings.backup.sub'), style: const TextStyle(fontSize: 11)),
+            onTap: () => _confirmPinDialog(
+              context,
+              (sheetCtx) => const _BackupSheet(),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.restore),
+            title: Text(context.t('settings.restore')),
+            onTap: () => _confirmPinDialog(
+              context,
+              (sheetCtx) => const _RestoreSheet(),
+            ),
+          ),
+          const Divider(),
+
           // Export / reveal
           ListTile(
             leading: const Icon(Icons.file_download),
@@ -267,7 +289,7 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: Text(context.t('settings.version')),
-            trailing: const Text('1.1.0'),
+            trailing: const Text('1.2.0'),
           ),
         ],
       ),
@@ -277,6 +299,233 @@ class SettingsScreen extends StatelessWidget {
   String _activeAddress(BuildContext context) {
     final wallet = context.read<WalletProvider>();
     return wallet.activeAccount?.address ?? '';
+  }
+}
+
+/// Encrypted multi-account backup sheet.
+class _BackupSheet extends StatefulWidget {
+  const _BackupSheet();
+
+  @override
+  State<_BackupSheet> createState() => _BackupSheetState();
+}
+
+class _BackupSheetState extends State<_BackupSheet> {
+  final _pw = TextEditingController();
+  bool _busy = false;
+  String? _exported;
+  String? _path;
+
+  @override
+  void dispose() {
+    _pw.dispose();
+    super.dispose();
+  }
+
+  Future<void> _export() async {
+    if (_pw.text.isEmpty) return;
+    setState(() => _busy = true);
+    try {
+      final wallet = context.read<WalletProvider>();
+      final content = await wallet.exportBackup(_pw.text);
+      // Persist to Documents for easy sharing.
+      String? savedPath;
+      try {
+        final dir = await getApplicationDocumentsDirectory();
+        final stamp = DateTime.now().toIso8601String().substring(0, 10);
+        final f = File('${dir.path}/massa-wallet-backup-$stamp.massabak');
+        await f.writeAsString(content, flush: true);
+        savedPath = f.path;
+      } on Exception {
+        // File write is best-effort — the JSON is still shown below.
+      }
+      setState(() {
+        _exported = content;
+        _path = savedPath;
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${context.t('common.error')}: $e'),
+            backgroundColor: const Color(0xFFF85149),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 24,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.t('settings.backup'),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            context.t('settings.backup.hint'),
+            style: const TextStyle(fontSize: 12, color: Color(0xFF8B949E)),
+          ),
+          const SizedBox(height: 16),
+          if (_exported == null) ...[
+            TextField(
+              controller: _pw,
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: context.t('settings.backup.password'),
+              ),
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: _busy ? null : _export,
+              child: _busy
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(context.t('common.confirm')),
+            ),
+          ] else ...[
+            if (_path != null)
+              Card(
+                color: const Color(0xFF12261A),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    '${context.t('settings.backup.saved')}: $_path',
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                ),
+              ),
+            const SizedBox(height: 8),
+            Flexible(
+              child: SingleChildScrollView(
+                child: SelectableText(
+                  _exported!,
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Restore-from-backup sheet.
+class _RestoreSheet extends StatefulWidget {
+  const _RestoreSheet();
+
+  @override
+  State<_RestoreSheet> createState() => _RestoreSheetState();
+}
+
+class _RestoreSheetState extends State<_RestoreSheet> {
+  final _contents = TextEditingController();
+  final _pw = TextEditingController();
+  bool _busy = false;
+  String? _result;
+
+  @override
+  void dispose() {
+    _contents.dispose();
+    _pw.dispose();
+    super.dispose();
+  }
+
+  Future<void> _restore() async {
+    if (_pw.text.isEmpty || _contents.text.isEmpty) return;
+    setState(() => _busy = true);
+    try {
+      final wallet = context.read<WalletProvider>();
+      final n = await wallet.importBackup(_contents.text, _pw.text);
+      setState(() => _result = context.t('settings.restore.done', args: ['$n']));
+    } on FormatException catch (e) {
+      setState(() => _result = e.message);
+    } catch (e) {
+      setState(() => _result = e.toString());
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 24,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.t('settings.restore'),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            context.t('settings.restore.hint'),
+            style: const TextStyle(fontSize: 12, color: Color(0xFF8B949E)),
+          ),
+          const SizedBox(height: 16),
+          if (_result == null) ...[
+            TextField(
+              controller: _contents,
+              maxLines: 6,
+              decoration: InputDecoration(
+                labelText: context.t('settings.restore.contents'),
+                hintText: '{"Format": "massa-wallet-backup", ...}',
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _pw,
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: context.t('settings.backup.password'),
+              ),
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: _busy ? null : _restore,
+              child: _busy
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(context.t('settings.restore')),
+            ),
+          ] else
+            Card(
+              color: const Color(0xFF12261A),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text(_result!, style: const TextStyle(fontSize: 12)),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }
 

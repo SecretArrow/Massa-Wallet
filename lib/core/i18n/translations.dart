@@ -14,6 +14,9 @@ const Map<String, Map<String, String>> translations = {
     'onboarding.import': 'Import existing wallet',
     'onboarding.import.sk': 'Import secret key',
     'onboarding.import.keystore': 'Import keystore file',
+    'onboarding.import.watch': 'Watch only',
+    'onboarding.import.watch.hint':
+        'Track any address without a private key: balance, rolls and history are visible, but the wallet can never spend from it.',
     'onboarding.secretKey': 'Secret key (starts with S)',
     'onboarding.password': 'Keystore password',
     'onboarding.nickname': 'Nickname (optional)',
@@ -45,6 +48,8 @@ const Map<String, Map<String, String>> translations = {
     'wallet.empty.body': 'Create or import a wallet to get started.',
     'wallet.noAccounts': 'No accounts',
     'wallet.active': 'Active',
+    'wallet.watchOnly': 'Watch-only accounts cannot sign or send operations',
+    'wallet.watchOnly.short': 'Watch',
     'wallet.rename': 'Rename',
     'wallet.delete': 'Delete',
     'wallet.deleteConfirm':
@@ -70,6 +75,8 @@ const Map<String, Map<String, String>> translations = {
     'send.scan': 'Scan QR',
     'send.scanTitle': 'Scan Massa address QR',
     'send.cameraPermission': 'Camera permission is required to scan QR codes',
+    'send.mnsHint': 'Address (AU1…/AS1…) or Massa domain (name.massa)',
+    'send.resolveMns': 'Resolve .massa domain',
     // Receive
     'receive.title': 'Receive MAS',
     'receive.hint': 'Share this address to receive MAS',
@@ -137,17 +144,33 @@ const Map<String, Map<String, String>> translations = {
     'deferred.maxGas': 'Max gas',
     'deferred.sign': 'Sign & broadcast',
     'deferred.sent': 'Operation sent',
+    // Auto-compound
+    'ac.title': 'Roll auto-compound',
+    'ac.body':
+        'When a new staking cycle starts and rewards have landed (deferred credits), the surplus above the fee reserve is automatically reinvested into whole rolls.',
+    'ac.potential':
+        'Ready to reinvest now: {0} roll(s) · reserve kept: {1} MAS',
+    'ac.status.disabled': 'Auto-compound is off',
+    'ac.status.waiting': 'Cycle {0}: waiting for the next cycle rollover',
+    'ac.status.nothing': 'No whole roll to buy yet (below reserve + roll price)',
+    'ac.status.bought': 'Reinvested {0} roll(s) at cycle {1}',
+    'ac.status.failed': 'Last attempt failed: {0}',
     // Node mode
     'node.title': 'Node mode (experimental)',
     'node.enable': 'Use custom node',
     'node.url': 'Node endpoint URL',
     'node.hint':
-        'Default: light client via public RPC. Enable to connect to your own massa-node (e.g. Termux on this device at http://127.0.0.1:33035, LAN, or VPS). Full nodes need ~8 GB RAM.',
+        'Default: light client via public RPC. Enable to connect to your own massa-node (e.g. Termux on this device at http://127.0.0.1:33035, LAN, or VPS). Full nodes need ~8 GB RAM.\n\nThe wallet never bundles a node binary — always run the official massalabs release and verify its checksum.',
     'node.probe': 'Test connection',
     'node.reachable': 'Node reachable',
     'node.unreachable': 'Node unreachable',
     'node.version': 'Version',
     'node.chainId': 'Chain ID',
+    'node.official.title': 'Official node binary',
+    'node.official.body':
+        'Download massa-node ONLY from the official massalabs GitHub releases (or getmasa.run). This app bundles no binary, so nothing is patched in between.',
+    'node.official.checksum':
+        'Always verify the SHA-256 checksum of the archive before running:',
     'node.latency': 'Latency',
     'node.chainMismatch': 'Chain ID does not match the selected network',
     // Settings
@@ -293,6 +316,19 @@ const Map<String, Map<String, String>> translations = {
     'settings.theme.dark': 'Dark',
     'settings.theme.light': 'Light',
     'settings.theme.system': 'Follow system',
+    // Backup
+    'settings.backup': 'Encrypted backup',
+    'settings.backup.sub':
+        'All accounts + contacts into one .massabak file (PBKDF2 + AES-GCM)',
+    'settings.backup.hint':
+        'Exports every account (secret keys included) and the address book into ONE encrypted file. Choose a strong password — there is no recovery.',
+    'settings.backup.password': 'Backup password',
+    'settings.backup.saved': 'Backup saved to',
+    'settings.restore': 'Restore backup',
+    'settings.restore.hint':
+        'Paste the .massabak contents and its password. Existing accounts are kept; missing accounts and contacts are added back.',
+    'settings.restore.contents': 'Backup file contents (JSON)',
+    'settings.restore.done': 'Restore finished — {0} account(s) added',
   },
   'id': {
     'app.title': 'Massa Wallet',
@@ -304,6 +340,9 @@ const Map<String, Map<String, String>> translations = {
     'onboarding.import': 'Impor wallet yang sudah ada',
     'onboarding.import.sk': 'Impor secret key',
     'onboarding.import.keystore': 'Impor file keystore',
+    'onboarding.import.watch': 'Pantau saja',
+    'onboarding.import.watch.hint':
+        'Pantau alamat apa pun tanpa private key: saldo, roll, dan riwayat terlihat, tapi wallet tidak akan pernah bisa mengirim darinya.',
     'onboarding.secretKey': 'Secret key (diawali S)',
     'onboarding.password': 'Password keystore',
     'onboarding.nickname': 'Nama panggilan (opsional)',
@@ -334,6 +373,8 @@ const Map<String, Map<String, String>> translations = {
     'wallet.empty.body': 'Buat atau impor wallet untuk mulai.',
     'wallet.noAccounts': 'Tidak ada akun',
     'wallet.active': 'Aktif',
+    'wallet.watchOnly': 'Akun watch-only tidak bisa menandatangani atau mengirim operasi',
+    'wallet.watchOnly.short': 'Pantau',
     'wallet.rename': 'Ganti nama',
     'wallet.delete': 'Hapus',
     'wallet.deleteConfirm':
@@ -358,6 +399,8 @@ const Map<String, Map<String, String>> translations = {
     'send.scan': 'Pindai QR',
     'send.scanTitle': 'Pindai QR alamat Massa',
     'send.cameraPermission': 'Izin kamera diperlukan untuk memindai QR',
+    'send.mnsHint': 'Alamat (AU1…/AS1…) atau domain Massa (nama.massa)',
+    'send.resolveMns': 'Resolusi domain .massa',
     'receive.title': 'Terima MAS',
     'receive.hint': 'Bagikan alamat ini untuk menerima MAS',
     'staking.title': 'Staking',
@@ -421,16 +464,32 @@ const Map<String, Map<String, String>> translations = {
     'deferred.maxGas': 'Max gas',
     'deferred.sign': 'Tanda tangani & kirim',
     'deferred.sent': 'Operasi terkirim',
+    // Auto-compound
+    'ac.title': 'Auto-compound roll',
+    'ac.body':
+        'Saat siklus staking baru dimulai dan reward sudah masuk (deferred credits), surplus di atas cadangan fee otomatis direinvestasikan menjadi roll utuh.',
+    'ac.potential':
+        'Siap direinvestasi sekarang: {0} roll · cadangan: {1} MAS',
+    'ac.status.disabled': 'Auto-compound mati',
+    'ac.status.waiting': 'Siklus {0}: menunggu rollover siklus berikutnya',
+    'ac.status.nothing': 'Belum ada roll utuh untuk dibeli (di bawah cadangan + harga roll)',
+    'ac.status.bought': 'Reinvestasi {0} roll pada siklus {1}',
+    'ac.status.failed': 'Percobaan terakhir gagal: {0}',
     'node.title': 'Mode node (eksperimental)',
     'node.enable': 'Gunakan node kustom',
     'node.url': 'URL endpoint node',
     'node.hint':
-        'Default: light client via public RPC. Aktifkan untuk terhubung ke massa-node milik Anda (mis. Termux di perangkat ini di http://127.0.0.1:33035, LAN, atau VPS). Full node butuh ~8 GB RAM.',
+        'Default: light client via public RPC. Aktifkan untuk terhubung ke massa-node milik Anda (mis. Termux di perangkat ini di http://127.0.0.1:33035, LAN, atau VPS). Full node butuh ~8 GB RAM.\n\nWallet tidak pernah menyertakan binary node — selalu jalankan rilis resmi massalabs dan verifikasi checksum-nya.',
     'node.probe': 'Uji koneksi',
     'node.reachable': 'Node terjangkau',
     'node.unreachable': 'Node tidak terjangkau',
     'node.version': 'Versi',
     'node.chainId': 'Chain ID',
+    'node.official.title': 'Binary node resmi',
+    'node.official.body':
+        'Unduh massa-node HANYA dari rilis GitHub resmi massalabs (atau getmasa.run). App ini tidak membundel binary apa pun, jadi tidak ada yang bisa dimodifikasi di antaranya.',
+    'node.official.checksum':
+        'Selalu verifikasi checksum SHA-256 arsip sebelum dijalankan:',
     'node.latency': 'Latensi',
     'node.chainMismatch': 'Chain ID tidak cocok dengan jaringan terpilih',
     'settings.title': 'Pengaturan',
@@ -574,5 +633,18 @@ const Map<String, Map<String, String>> translations = {
     'settings.theme.dark': 'Gelap',
     'settings.theme.light': 'Terang',
     'settings.theme.system': 'Ikuti sistem',
+    // Backup
+    'settings.backup': 'Backup terenkripsi',
+    'settings.backup.sub':
+        'Semua akun + kontak dalam satu file .massabak (PBKDF2 + AES-GCM)',
+    'settings.backup.hint':
+        'Ekspor semua akun (termasuk secret key) dan buku alamat ke SATU file terenkripsi. Pilih password yang kuat — tidak ada pemulihan.',
+    'settings.backup.password': 'Password backup',
+    'settings.backup.saved': 'Backup tersimpan di',
+    'settings.restore': 'Pulihkan backup',
+    'settings.restore.hint':
+        'Tempel isi file .massabak dan password-nya. Akun yang sudah ada tetap; akun dan kontak yang hilang ditambahkan kembali.',
+    'settings.restore.contents': 'Isi file backup (JSON)',
+    'settings.restore.done': 'Restore selesai — {0} akun ditambahkan',
   },
 };

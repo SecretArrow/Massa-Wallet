@@ -32,6 +32,10 @@ class StoredAccount {
   /// network-agnostic in Massa).
   final String networkName;
 
+  /// Whether this is a watch-only entry (no private key stored — balance
+  /// and history are visible, spending is impossible).
+  final bool isWatchOnly;
+
   /// Creates a stored account.
   const StoredAccount({
     required this.address,
@@ -39,6 +43,7 @@ class StoredAccount {
     this.nickname = '',
     this.isActive = false,
     this.networkName = 'Buildnet',
+    this.isWatchOnly = false,
   });
 
   /// Serializes to JSON.
@@ -48,27 +53,32 @@ class StoredAccount {
     'nickname': nickname,
     'isActive': isActive,
     'networkName': networkName,
+    'isWatchOnly': isWatchOnly,
   };
 
   /// Deserializes from JSON.
   factory StoredAccount.fromJson(Map<String, dynamic> json) => StoredAccount(
     address: json['address'] as String,
-    publicKey: json['publicKey'] as String,
+    publicKey: (json['publicKey'] ?? '') as String,
     nickname: (json['nickname'] ?? '') as String,
     isActive: (json['isActive'] ?? false) as bool,
     networkName: (json['networkName'] ?? 'Buildnet') as String,
+    isWatchOnly: (json['isWatchOnly'] ?? false) as bool,
   );
 
   StoredAccount copyWith({
     String? nickname,
     bool? isActive,
     String? networkName,
+    bool? isWatchOnly,
+    String? publicKey,
   }) => StoredAccount(
     address: address,
-    publicKey: publicKey,
+    publicKey: publicKey ?? this.publicKey,
     nickname: nickname ?? this.nickname,
     isActive: isActive ?? this.isActive,
     networkName: networkName ?? this.networkName,
+    isWatchOnly: isWatchOnly ?? this.isWatchOnly,
   );
 }
 
@@ -124,6 +134,77 @@ class WalletRepository {
       return existing.first;
     }
     return _persistPrivateKey(priv, nickname: nickname);
+  }
+
+  /// Adds a watch-only address (no private key — monitoring only).
+  ///
+  /// Returns the stored account; dedupes by address. The public key is
+  /// unknown for arbitrary addresses (it is only required for signing),
+  /// so it is stored empty for watch-only entries.
+  Future<StoredAccount> addWatchOnly(
+    String address, {
+    String nickname = '',
+  }) async {
+    final clean = address.trim();
+    final parsed = MassaAddress.fromString(clean); // validates format
+    final accounts = await listAccounts();
+    final existing = accounts.where((a) => a.address == clean).toList();
+    if (existing.isNotEmpty) {
+      return existing.first;
+    }
+    final account = StoredAccount(
+      address: parsed.encoded,
+      publicKey: '',
+      nickname: nickname,
+      isActive: accounts.isEmpty,
+      isWatchOnly: true,
+    );
+    accounts.add(account);
+    await saveAccounts(accounts);
+    return account;
+  }
+
+  /// Restores an account from raw versioned secret-key bytes (used by the
+  /// encrypted multi-account backup import).
+  Future<StoredAccount> importSecretKeyBytes(
+    Uint8List versioned, {
+    String nickname = '',
+  }) async {
+    final priv = MassaPrivateKey.fromBytes(versioned.sublist(1));
+    final address = priv.publicKey.address.encoded;
+    final accounts = await listAccounts();
+    final existing = accounts.where((a) => a.address == address).toList();
+    if (existing.isNotEmpty) {
+      // Upgrade a watch-only entry into a full account if needed.
+      if (existing.first.isWatchOnly) {
+        await _storage.write(
+          key: 'mw.sk.$address',
+          value: base64.encode(versioned),
+        );
+        final upgraded = accounts
+            .map(
+              (a) => a.address == address
+                  ? a.copyWith(isWatchOnly: false, publicKey: priv.publicKey.encoded)
+                  : a,
+            )
+            .toList();
+        await saveAccounts(upgraded);
+      }
+      return existing.first;
+    }
+    await _storage.write(
+      key: 'mw.sk.$address',
+      value: base64.encode(versioned),
+    );
+    final account = StoredAccount(
+      address: address,
+      publicKey: priv.publicKey.encoded,
+      nickname: nickname,
+      isActive: accounts.isEmpty,
+    );
+    accounts.add(account);
+    await saveAccounts(accounts);
+    return account;
   }
 
   /// Imports a wallet from a Massa Standard keystore JSON file.

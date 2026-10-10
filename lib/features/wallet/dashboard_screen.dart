@@ -149,6 +149,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     style: const TextStyle(fontSize: 11),
                   ),
                 ),
+                if (account.isWatchOnly) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF18C8C8).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.visibility,
+                          size: 12,
+                          color: Color(0xFF18C8C8),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          context.t('wallet.watchOnly.short'),
+                          style: const TextStyle(fontSize: 11),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
             _PriceTicker(price: _price.cached, onRetry: _loadPrice),
@@ -230,7 +258,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               (a) => Card(
                 child: ListTile(
                   leading: Icon(
-                    a.isActive
+                    a.isWatchOnly
+                        ? Icons.visibility
+                        : a.isActive
                         ? Icons.radio_button_checked
                         : Icons.radio_button_off,
                     color: a.isActive
@@ -244,10 +274,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     _shortAddr(a.address),
                     style: const TextStyle(fontFamily: 'monospace'),
                   ),
-                  trailing: Text(
-                    wallet.balanceOf(a.address) == null
-                        ? '—'
-                        : '${wallet.formatBalance(a.address, decimals: 2)} MAS',
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (a.isWatchOnly)
+                        const Padding(
+                          padding: EdgeInsets.only(right: 8),
+                          child: Icon(
+                            Icons.remove_red_eye_outlined,
+                            size: 16,
+                            color: Color(0xFF8B949E),
+                          ),
+                        ),
+                      Text(
+                        wallet.balanceOf(a.address) == null
+                            ? '—'
+                            : '${wallet.formatBalance(a.address, decimals: 2)} MAS',
+                      ),
+                    ],
                   ),
                   onTap: () {
                     context

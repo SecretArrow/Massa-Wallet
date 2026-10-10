@@ -1,0 +1,28 @@
+# F-Droid build recipe (draft for fdroiddata MR)
+#
+# Place this file at fdroiddata/metadata/site.massawallet.app.yml
+# then open a merge request at https://gitlab.com/fdroid/fdroiddata
+Categories:
+  - Money
+License: Apache-2.0
+AuthorName: SecretArrow
+WebSite: https://github.com/SecretArrow/Massa-Wallet
+SourceCode: https://github.com/SecretArrow/Massa-Wallet
+IssueTracker: https://github.com/SecretArrow/Massa-Wallet/issues
+
+RepoType: git
+Repo: https://github.com/SecretArrow/Massa-Wallet.git
+
+Builds:
+  - versionName: 1.2.0
+    versionCode: 3
+    commit: v1.2.0
+    output: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+    srclibs:
+      - flutter@3.35.4
+    rm:
+      - ios
+    build:
+      - $$flutter$$/bin/flutter config --no-analytics
+      - $$flutter$$/bin/flutter pub get
+      - $$flutter$$/bin/flutter build apk --release --split-per-abi --target-platform=android-arm64

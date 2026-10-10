@@ -23,6 +23,18 @@ Flutter • Android • Bilingual (🇮🇩 Indonesia / 🇬🇧 English)
 
 **ID** — Wallet mobile self-custodial kualitas production untuk [blockchain Massa](https://massa.net), dibangun dengan Flutter. Berjalan sebagai **light client** yang terhubung ke API publik Massa JSON-RPC v2 (atau node milik Anda sendiri), dengan tumpukan kripto lokal yang diporting 1:1 dari SDK resmi `@massalabs/massa-web3` dan divalidasi terhadap test vector resminya. Termasuk **browser dApp bawaan untuk situs `.massa` on-chain (DeWeb)** dengan provider `window.massa` terinjeksi, **pengelolaan token MRC-20**, riwayat aktivitas, buku alamat, staking, panggilan smart contract, sinkronisasi saldo latar belakang dengan notifikasi, penyimpanan kunci hardware-backed, buka kunci biometrik, tema gelap/terang, dan mode eksperimental "hubungkan ke node sendiri".
 
+## 🆕 What's new in v1.2.0
+
+| Feature | Description / Keterangan |
+|---|---|
+| 🔄 **Roll auto-compound** | When a new staking cycle starts and rewards have landed (deferred credits), the surplus above a 1 MAS fee reserve is automatically reinvested into **whole rolls** (100 MAS each). Runs from the staking screen AND the background sync isolate, with a decision log (cycle, rolls bought, op id). / *Saat siklus baru dimulai dan reward masuk, surplus otomatis direinvestasi jadi roll utuh — jalan di layar staking maupun service latar belakang.* |
+| 👁️ **Watch-only addresses** | Track any address without a private key: balance, rolls and history visible; signing/spending impossible (guarded at provider level). Add via Import → "Watch only". / *Pantau alamat tanpa private key — lihat saldo & riwayat, tidak bisa kirim.* |
+| 🌐 **MNS everywhere** | Type `name.massa` (or a bare domain) in Send or Add-contact: it resolves through the MNS contracts and saves the domain into the contact. / *Kirim ke `nama.massa` langsung — resolusi otomatis via kontrak MNS, tersimpan di buku alamat.* |
+| 💾 **Encrypted multi-account backup** | Export **all accounts + address book into ONE `.massabak` file** (PBKDF2-SHA256 600k → AES-256-GCM, same primitives as the Massa Standard keystore). Restore merges back missing accounts/contacts; watch-only entries carry no key material. Settings → Encrypted backup / Restore backup. / *Ekspor semua akun ke satu file terenkripsi; pulihkan kapan pun.* |
+| 📱 **Homescreen balance widget** | Android AppWidget (RemoteViews) showing balance, rolls, address and network. Refreshed by the app and background sync, self-refresh every 30 min. / *Widget saldo di homescreen Android.* |
+| 🍎 **iOS build (unsigned)** | New `ios/` platform + CI job `build-ios` (macos, `--no-codesign`) producing a sideloadable `Payload/Runner.app` zip on every tag. See `docs/DISTRIBUTION.md` for Play Store (AAB), F-Droid (fdroiddata recipe included) and TestFlight paths. / *Build iOS unsigned di CI + panduan distribusi Play Store/F-Droid/iOS.* |
+| ✅ **Node binary honesty** | The wallet bundles **no node binary** — Node mode now shows the official massalabs release links and the `sha256sum` verification step right in the app. / *App tidak membundel binary node; layar Node kini menampilkan sumber resmi + cara verifikasi checksum.* |
+
 ## 🆕 What's new in v1.1.0
 
 | Feature | Description / Keterangan |

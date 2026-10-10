@@ -13,13 +13,20 @@ class Contact {
   /// Massa address (AU1…).
   final String address;
 
+  /// Optional MNS domain (`name.massa`) that resolves to [address].
+  final String domain;
+
   /// Creates a contact.
-  const Contact({required this.name, required this.address});
+  const Contact({required this.name, required this.address, this.domain = ''});
 
-  Map<String, String> _toJson() => {'name': name, 'address': address};
+  Map<String, String> _toJson() =>
+      {'name': name, 'address': address, 'domain': domain};
 
-  static Contact _fromJson(Map<String, dynamic> j) =>
-      Contact(name: (j['name'] ?? '') as String, address: (j['address'] ?? '') as String);
+  static Contact _fromJson(Map<String, dynamic> j) => Contact(
+        name: (j['name'] ?? '') as String,
+        address: (j['address'] ?? '') as String,
+        domain: (j['domain'] ?? '') as String,
+      );
 
   @override
   bool operator ==(Object other) =>
