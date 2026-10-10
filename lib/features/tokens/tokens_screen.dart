@@ -51,6 +51,7 @@ class TokensScreen extends StatefulWidget {
 
 class _TokensScreenState extends State<TokensScreen> {
   late final Mrc20Service _mrc20;
+  late final String _endpoint;
   final TokenListStore _store = TokenListStore();
   List<_TokenRow> _rows = [];
   bool _loading = true;
@@ -59,10 +60,12 @@ class _TokensScreenState extends State<TokensScreen> {
   @override
   void initState() {
     super.initState();
+    // Capture the endpoint eagerly: the factory closure is re-invoked by
+    // in-flight RPC loops AFTER this screen may be disposed — touching
+    // context there throws "deactivated widget's ancestor is unsafe".
+    _endpoint = context.read<SettingsProvider>().effectiveEndpoint;
     _mrc20 = Mrc20Service(
-      clientFactory: () => MassaRpcClient(
-        endpoint: context.read<SettingsProvider>().effectiveEndpoint,
-      ),
+      clientFactory: () => MassaRpcClient(endpoint: _endpoint),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
   }

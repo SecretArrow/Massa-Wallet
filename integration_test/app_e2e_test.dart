@@ -311,10 +311,20 @@ void main() {
     await tester.enterText(find.widgetWithText(TextField, 'Amount (MAS)'), '1');
     await _pumpFor(tester, const Duration(milliseconds: 300));
 
-    await tester.tap(find.text('Confirm & sign'));
-    await _pumpFor(tester, const Duration(seconds: 1));
-
-    expect(find.textContaining('Invalid recipient address'), findsOneWidget);
+    // The confirm button can sit below the fold on small screens.
+    final confirm = find.text('Confirm & sign');
+    await tester.ensureVisible(confirm);
+    await _pumpFor(tester, const Duration(milliseconds: 300));
+    await tester.tap(confirm);
+    expect(
+      await _waitUntil(
+        tester,
+        find.textContaining('Invalid recipient address'),
+        timeout: const Duration(seconds: 6),
+      ),
+      true,
+      reason: 'send must show the invalid-recipient validation error',
+    );
   });
 
   testWidgets('7. staking: screen opens', (tester) async {
@@ -399,7 +409,15 @@ void main() {
     final (settings, _) = await _pumpSeededApp(tester);
     await _goto(tester, '/node');
 
-    expect(find.text('Node mode (experimental)'), findsOneWidget);
+    expect(
+      await _waitUntil(
+        tester,
+        find.text('Node mode (experimental)'),
+        timeout: const Duration(seconds: 6),
+      ),
+      true,
+      reason: 'node screen must open',
+    );
     expect(find.text('Public RPC'), findsOneWidget);
     expect(find.text('Custom RPC'), findsOneWidget);
     expect(find.text('Embedded node (in-app)'), findsOneWidget);

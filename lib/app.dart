@@ -43,6 +43,7 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
   final ValueNotifier<AppLanguage> _language = ValueNotifier(
     AppLanguage.english,
   );
+  SettingsProvider? _observedSettings;
 
   @override
   void initState() {
@@ -50,6 +51,11 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
     WidgetsBinding.instance.addObserver(this);
     final settings = context.read<SettingsProvider>();
     final security = context.read<SecurityService>();
+    // Keep the i18n notifier in sync OUTSIDE the build phase — mutating a
+    // ValueNotifier during build throws "markNeedsBuild called during
+    // build" whenever the user switches language at runtime.
+    _observedSettings = settings;
+    settings.addListener(_onSettingsChanged);
     final syncEnabled = settings.backgroundSync;
     settings.load().then((_) {
       _language.value = settings.language;
@@ -58,6 +64,13 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
         unawaited(_startBackgroundSync());
       }
     });
+  }
+
+  void _onSettingsChanged() {
+    final settings = _observedSettings;
+    if (settings != null && _language.value != settings.language) {
+      _language.value = settings.language;
+    }
   }
 
   Future<void> _startBackgroundSync() async {
@@ -91,6 +104,7 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _observedSettings?.removeListener(_onSettingsChanged);
     _language.dispose();
     super.dispose();
   }
@@ -101,9 +115,8 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
       notifier: _language,
       child: Consumer<SettingsProvider>(
         builder: (context, settings, _) {
-          if (_language.value != settings.language) {
-            _language.value = settings.language;
-          }
+          // NOTE: never mutate _language here — build-phase notifications
+          // throw; sync happens via _onSettingsChanged instead.
           return MaterialApp(
             title: 'Pyramids Wallet',
             debugShowCheckedModeBanner: false,
