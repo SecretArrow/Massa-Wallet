@@ -32,7 +32,8 @@ class ScArgs {
 
   /// Adds a u64 little-endian.
   ScArgs addU64(BigInt value) {
-    final b = ByteData(8)..setUint64(0, value.toUnsigned(64).toInt(), Endian.little);
+    final b = ByteData(8)
+      ..setUint64(0, value.toUnsigned(64).toInt(), Endian.little);
     _add(b.buffer.asUint8List());
     return this;
   }
@@ -130,16 +131,22 @@ class ScArgsReader {
 
   /// Reads a u16 LE.
   int nextU16() {
-    final v = ByteData.sublistView(data, _offset, _offset + 2)
-        .getUint16(0, Endian.little);
+    final v = ByteData.sublistView(
+      data,
+      _offset,
+      _offset + 2,
+    ).getUint16(0, Endian.little);
     _offset += 2;
     return v;
   }
 
   /// Reads a u32 LE.
   int nextU32() {
-    final v = ByteData.sublistView(data, _offset, _offset + 4)
-        .getUint32(0, Endian.little);
+    final v = ByteData.sublistView(
+      data,
+      _offset,
+      _offset + 4,
+    ).getUint32(0, Endian.little);
     _offset += 4;
     return v;
   }

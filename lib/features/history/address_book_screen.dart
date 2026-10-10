@@ -57,9 +57,7 @@ class _AddressBookScreenState extends State<AddressBookScreen> {
             TextField(
               controller: nameCtrl,
               autofocus: true,
-              decoration: InputDecoration(
-                labelText: ctx.t('book.name'),
-              ),
+              decoration: InputDecoration(labelText: ctx.t('book.name')),
             ),
             const SizedBox(height: 12),
             TextField(
@@ -118,9 +116,9 @@ class _AddressBookScreenState extends State<AddressBookScreen> {
     }
     if (name.isEmpty ||
         !(address.startsWith('AU1') || address.startsWith('AS1'))) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.t('book.invalid'))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.t('book.invalid'))));
       return;
     }
     await _book.save(
@@ -151,95 +149,81 @@ class _AddressBookScreenState extends State<AddressBookScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _contacts.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.import_contacts_outlined,
-                        size: 56,
-                        color: Color(0xFF30363D),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(context.t('book.empty')),
-                      const SizedBox(height: 12),
-                      OutlinedButton.icon(
-                        onPressed: _addContact,
-                        icon: const Icon(Icons.person_add_alt),
-                        label: Text(context.t('book.add')),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.import_contacts_outlined,
+                    size: 56,
+                    color: Color(0xFF30363D),
                   ),
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.all(12),
-                  itemCount: _contacts.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 6),
-                  itemBuilder: (ctx, i) {
-                    final c = _contacts[i];
-                    return Card(
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor:
-                              MassaColors.teal.withValues(alpha: 0.15),
-                          child: c.domain.isNotEmpty
-                              ? const Icon(
-                                  Icons.dns_outlined,
-                                  color: MassaColors.teal,
-                                  size: 20,
-                                )
-                              : Text(
-                                  c.name.isEmpty
-                                      ? '?'
-                                      : c.name[0].toUpperCase(),
-                                  style: const TextStyle(
-                                    color: MassaColors.teal,
-                                  ),
-                                ),
-                        ),
-                        title: Text(
-                          c.domain.isNotEmpty ? c.domain : c.name,
-                        ),
-                        subtitle: Text(
-                          c.domain.isNotEmpty
-                              ? '${c.name} · ${c.address.substring(0, 8)}…'
-                              : '${c.address.substring(0, 12)}…${c.address.substring(c.address.length - 6)}',
-                          style: const TextStyle(
-                            fontFamily: 'monospace',
-                            fontSize: 11,
-                          ),
-                        ),
-                        onTap: () async {
-                          if (widget.pickerMode) {
-                            Navigator.pop(context, c.address);
-                            return;
-                          }
-                          await Clipboard.setData(
-                            ClipboardData(text: c.address),
-                          );
-                          if (!mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(context.t('receive.copied')),
+                  const SizedBox(height: 12),
+                  Text(context.t('book.empty')),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: _addContact,
+                    icon: const Icon(Icons.person_add_alt),
+                    label: Text(context.t('book.add')),
+                  ),
+                ],
+              ),
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.all(12),
+              itemCount: _contacts.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 6),
+              itemBuilder: (ctx, i) {
+                final c = _contacts[i];
+                return Card(
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: MassaColors.teal.withValues(alpha: 0.15),
+                      child: c.domain.isNotEmpty
+                          ? const Icon(
+                              Icons.dns_outlined,
+                              color: MassaColors.teal,
+                              size: 20,
+                            )
+                          : Text(
+                              c.name.isEmpty ? '?' : c.name[0].toUpperCase(),
+                              style: const TextStyle(color: MassaColors.teal),
                             ),
-                          );
-                        },
-                        trailing: !widget.pickerMode
-                            ? IconButton(
-                                icon: const Icon(
-                                  Icons.delete_outline,
-                                  size: 20,
-                                ),
-                                onPressed: () async {
-                                  await _book.delete(c.address);
-                                  await _load();
-                                },
-                              )
-                            : null,
+                    ),
+                    title: Text(c.domain.isNotEmpty ? c.domain : c.name),
+                    subtitle: Text(
+                      c.domain.isNotEmpty
+                          ? '${c.name} · ${c.address.substring(0, 8)}…'
+                          : '${c.address.substring(0, 12)}…${c.address.substring(c.address.length - 6)}',
+                      style: const TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 11,
                       ),
-                    );
-                  },
-                ),
+                    ),
+                    onTap: () async {
+                      if (widget.pickerMode) {
+                        Navigator.pop(context, c.address);
+                        return;
+                      }
+                      await Clipboard.setData(ClipboardData(text: c.address));
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(context.t('receive.copied'))),
+                      );
+                    },
+                    trailing: !widget.pickerMode
+                        ? IconButton(
+                            icon: const Icon(Icons.delete_outline, size: 20),
+                            onPressed: () async {
+                              await _book.delete(c.address);
+                              await _load();
+                            },
+                          )
+                        : null,
+                  ),
+                );
+              },
+            ),
     );
   }
 }

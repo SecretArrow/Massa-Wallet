@@ -426,8 +426,9 @@ class _PriceTicker extends StatelessWidget {
     final value = isId ? price!.idr : price!.usd;
     final symbol = isId ? 'Rp' : '\$';
     final change = price!.change24h;
-    final changeColor =
-        change >= 0 ? const Color(0xFF3FB950) : const Color(0xFFF85149);
+    final changeColor = change >= 0
+        ? const Color(0xFF3FB950)
+        : const Color(0xFFF85149);
     final changeSign = change >= 0 ? '+' : '';
     final currencyLabel = isId ? 'IDR' : 'USD';
     return Padding(
@@ -435,10 +436,7 @@ class _PriceTicker extends StatelessWidget {
       child: Card(
         child: ListTile(
           dense: true,
-          leading: const Icon(
-            Icons.attach_money,
-            color: Color(0xFF18C8C8),
-          ),
+          leading: const Icon(Icons.attach_money, color: Color(0xFF18C8C8)),
           title: Text(
             '$symbol${_formatNumber(value)} $currencyLabel',
             style: const TextStyle(fontWeight: FontWeight.w600),

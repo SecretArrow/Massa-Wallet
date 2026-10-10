@@ -176,9 +176,7 @@ class AppTheme {
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: MassaColors.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       ),
       chipTheme: const ChipThemeData(
         backgroundColor: MassaColors.card,
@@ -189,9 +187,7 @@ class AppTheme {
       ),
       popupMenuTheme: PopupMenuThemeData(
         color: MassaColors.card,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: MassaColors.teal,
@@ -231,15 +227,16 @@ class AppTheme {
     const textPrimary = Color(0xFF1F2328);
     const textSecondary = Color(0xFF656D76);
 
-    final scheme = ColorScheme.fromSeed(
-      seedColor: MassaColors.teal,
-      brightness: Brightness.light,
-    ).copyWith(
-      primary: MassaColors.deepTeal,
-      secondary: MassaColors.orange,
-      surface: surface,
-      error: MassaColors.red,
-    );
+    final scheme =
+        ColorScheme.fromSeed(
+          seedColor: MassaColors.teal,
+          brightness: Brightness.light,
+        ).copyWith(
+          primary: MassaColors.deepTeal,
+          secondary: MassaColors.orange,
+          surface: surface,
+          error: MassaColors.red,
+        );
 
     final base = ThemeData(
       useMaterial3: true,
@@ -339,9 +336,7 @@ class AppTheme {
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       ),
       chipTheme: const ChipThemeData(
         backgroundColor: Color(0xFFF0F3F6),
@@ -352,9 +347,7 @@ class AppTheme {
       ),
       popupMenuTheme: PopupMenuThemeData(
         color: surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: MassaColors.deepTeal,

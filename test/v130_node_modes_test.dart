@@ -211,8 +211,10 @@ void main() {
       );
       // Known buildnet bootstrap server from the official DEVN.30.2 tag.
       expect(config.contains('149.202.84.39:31245'), isTrue);
-      expect(config.contains('N12sNdL7YwSawpnJrk9XCWDjKbgfNamAobp62AX5qfkgpBkGh2wC'),
-          isTrue);
+      expect(
+        config.contains('N12sNdL7YwSawpnJrk9XCWDjKbgfNamAobp62AX5qfkgpBkGh2wC'),
+        isTrue,
+      );
       // API v2 port present for the patcher to rebind.
       expect(config.contains('bind_api = "0.0.0.0:33036"'), isTrue);
     });

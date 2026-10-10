@@ -31,7 +31,7 @@ void main() {
           ),
         ),
       ],
-      child: const MassaWalletApp(),
+      child: const PyramidsWalletApp(),
     ),
   );
 }

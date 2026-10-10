@@ -47,7 +47,8 @@ Future<void> _onStart(ServiceInstance service) async {
           .toList();
       if (accounts.isEmpty) return;
 
-      final mode = prefs.getString('settings.connectionMode') ??
+      final mode =
+          prefs.getString('settings.connectionMode') ??
           ((prefs.getBool('settings.useCustomNode') ?? false)
               ? 'customRpc'
               : 'publicRpc');
@@ -81,7 +82,7 @@ Future<void> _onStart(ServiceInstance service) async {
             final delta = BigInt.parse(value) - BigInt.parse(previous);
             final direction = delta > BigInt.zero ? '↑' : '↓';
             await _notify(
-              title: 'Massa Wallet — saldo berubah',
+              title: 'Pyramids Wallet — saldo berubah',
               body:
                   '$direction ${_formatNano(delta.abs())} MAS · ${_short(key)}',
             );
@@ -121,10 +122,13 @@ Future<void> _onStart(ServiceInstance service) async {
             prefs: prefs,
             repository: WalletRepository(),
           );
-          final outcome = await ac.tick(address: accounts.first, endpoint: endpoint);
+          final outcome = await ac.tick(
+            address: accounts.first,
+            endpoint: endpoint,
+          );
           if (outcome.action == AutoCompoundAction.bought) {
             await _notify(
-              title: 'Massa Wallet — auto-compound',
+              title: 'Pyramids Wallet — auto-compound',
               body:
                   'Reinvested ${outcome.rollsBought} roll(s) · cycle ${outcome.cycle}',
             );
@@ -154,7 +158,7 @@ Future<void> _onStart(ServiceInstance service) async {
         final now = DateTime.now();
         unawaited(
           service.setForegroundNotificationInfo(
-            title: 'Massa Wallet',
+            title: 'Pyramids Wallet',
             content:
                 'Sinkronisasi aktif · terakhir ${now.hour}:${now.minute.toString().padLeft(2, '0')}',
           ),
@@ -168,7 +172,7 @@ Future<void> _notify({required String title, required String body}) async {
   final plugin = FlutterLocalNotificationsPlugin();
   const android = AndroidNotificationDetails(
     alertChannelId,
-    'Massa Wallet alerts',
+    'Pyramids Wallet alerts',
     channelDescription: 'Balance change and staking alerts',
     importance: Importance.high,
     priority: Priority.high,
@@ -207,13 +211,13 @@ class BackgroundSyncService {
   }) async {
     const channel = AndroidNotificationChannel(
       bgChannelId,
-      'Massa Wallet background sync',
+      'Pyramids Wallet background sync',
       description: 'Keeps balances fresh in the background',
       importance: Importance.low,
     );
     const alertChannel = AndroidNotificationChannel(
       alertChannelId,
-      'Massa Wallet alerts',
+      'Pyramids Wallet alerts',
       description: 'Balance change and staking alerts',
       importance: Importance.high,
     );

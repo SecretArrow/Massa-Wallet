@@ -380,26 +380,26 @@ class _ImportScreenState extends State<ImportScreen> {
                 ),
               ),
             ] else ...[
-            TextField(
-              controller: _skController,
-              maxLines: _mode == 0 ? 2 : 6,
-              decoration: InputDecoration(
-                labelText: _mode == 0
-                    ? context.t('onboarding.secretKey')
-                    : context.t('onboarding.import.keystore'),
-                hintText: _mode == 0 ? 'S1...' : '{"Address": "AU...", ...}',
-              ),
-            ),
-            if (_mode == 1) ...[
-              const SizedBox(height: 16),
               TextField(
-                controller: _pwController,
-                obscureText: true,
+                controller: _skController,
+                maxLines: _mode == 0 ? 2 : 6,
                 decoration: InputDecoration(
-                  labelText: context.t('onboarding.password'),
+                  labelText: _mode == 0
+                      ? context.t('onboarding.secretKey')
+                      : context.t('onboarding.import.keystore'),
+                  hintText: _mode == 0 ? 'S1...' : '{"Address": "AU...", ...}',
                 ),
               ),
-            ],
+              if (_mode == 1) ...[
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _pwController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: context.t('onboarding.password'),
+                  ),
+                ),
+              ],
             ],
             const SizedBox(height: 16),
             TextField(

@@ -49,7 +49,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Future<void> _refreshStatuses() async {
     final settings = context.read<SettingsProvider>();
     final pending = _items
-        .where((a) => a.status == ActivityStatus.submitted && a.operationId != null)
+        .where(
+          (a) => a.status == ActivityStatus.submitted && a.operationId != null,
+        )
         .toList();
     if (pending.isEmpty) return;
     final client = MassaRpcClient(endpoint: settings.effectiveEndpoint);
@@ -117,42 +119,42 @@ class _HistoryScreenState extends State<HistoryScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.receipt_long_outlined,
-                        size: 56,
-                        color: Color(0xFF30363D),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(context.t('history.empty')),
-                      const SizedBox(height: 6),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
-                        child: Text(
-                          context.t('history.emptyNote'),
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: MassaColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.receipt_long_outlined,
+                    size: 56,
+                    color: Color(0xFF30363D),
                   ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView.separated(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.all(12),
-                    itemCount: _items.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 6),
-                    itemBuilder: (ctx, i) => _ActivityCard(item: _items[i]),
+                  const SizedBox(height: 12),
+                  Text(context.t('history.empty')),
+                  const SizedBox(height: 6),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Text(
+                      context.t('history.emptyNote'),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: MassaColors.textSecondary,
+                      ),
+                    ),
                   ),
-                ),
+                ],
+              ),
+            )
+          : RefreshIndicator(
+              onRefresh: _load,
+              child: ListView.separated(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(12),
+                itemCount: _items.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 6),
+                itemBuilder: (ctx, i) => _ActivityCard(item: _items[i]),
+              ),
+            ),
     );
   }
 }
@@ -179,15 +181,9 @@ class _ActivityCard extends StatelessWidget {
             if (item.counterparty.isNotEmpty)
               Text(
                 _short(item.counterparty),
-                style: const TextStyle(
-                  fontFamily: 'monospace',
-                  fontSize: 11,
-                ),
+                style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
               ),
-            Text(
-              _timeLabel(context),
-              style: const TextStyle(fontSize: 11),
-            ),
+            Text(_timeLabel(context), style: const TextStyle(fontSize: 11)),
           ],
         ),
         trailing: Column(
@@ -200,7 +196,8 @@ class _ActivityCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: item.kind == ActivityKind.rollBuy ||
+                  color:
+                      item.kind == ActivityKind.rollBuy ||
                           item.kind == ActivityKind.send
                       ? color
                       : null,
@@ -216,45 +213,41 @@ class _ActivityCard extends StatelessWidget {
   (IconData, Color, String) _kindInfo(BuildContext context) {
     switch (item.kind) {
       case ActivityKind.send:
-        return (Icons.north_east, MassaColors.orange, context.t('history.sent'));
+        return (
+          Icons.north_east,
+          MassaColors.orange,
+          context.t('history.sent'),
+        );
       case ActivityKind.receive:
         return (
           Icons.south_west,
           MassaColors.green,
-          context.t('history.received')
+          context.t('history.received'),
         );
       case ActivityKind.rollBuy:
         return (
           Icons.stacked_bar_chart,
           MassaColors.teal,
-          context.t('history.rollBuy')
+          context.t('history.rollBuy'),
         );
       case ActivityKind.rollSell:
-        return (
-          Icons.south,
-          MassaColors.teal,
-          context.t('history.rollSell')
-        );
+        return (Icons.south, MassaColors.teal, context.t('history.rollSell'));
       case ActivityKind.callSC:
         return (
           Icons.code,
           MassaColors.deepTeal,
           item.function?.isNotEmpty == true
               ? '${context.t('history.call')}: ${item.function}'
-              : context.t('history.call')
+              : context.t('history.call'),
         );
       case ActivityKind.tokenTransfer:
         return (
           Icons.token,
           MassaColors.deepTeal,
-          '${context.t('history.token')} ${item.tokenSymbol ?? ''}'
+          '${context.t('history.token')} ${item.tokenSymbol ?? ''}',
         );
       case ActivityKind.dapp:
-        return (
-          Icons.public,
-          MassaColors.deepTeal,
-          context.t('history.dapp')
-        );
+        return (Icons.public, MassaColors.deepTeal, context.t('history.dapp'));
     }
   }
 
@@ -275,7 +268,10 @@ class _ActivityCard extends StatelessWidget {
 
   Widget _statusChip(BuildContext context) {
     final (label, color) = switch (item.status) {
-      ActivityStatus.submitted => (context.t('history.pending'), MassaColors.orange),
+      ActivityStatus.submitted => (
+        context.t('history.pending'),
+        MassaColors.orange,
+      ),
       ActivityStatus.final_ => (context.t('history.final'), MassaColors.green),
       ActivityStatus.failed => (context.t('history.failed'), MassaColors.red),
     };
@@ -286,10 +282,7 @@ class _ActivityCard extends StatelessWidget {
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(
-        label,
-        style: TextStyle(fontSize: 10, color: color),
-      ),
+      child: Text(label, style: TextStyle(fontSize: 10, color: color)),
     );
   }
 

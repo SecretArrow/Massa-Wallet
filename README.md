@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🔐 Massa Wallet
+# 🔺 Pyramids Wallet
 
-**Secure self-custodial Flutter wallet for the Massa blockchain**
+**Secure self-custodial Flutter wallet for the Massa blockchain — with a built-in dApp browser**
 
 *Wallet self-custodial aman untuk blockchain Massa (Flutter)*
 
@@ -11,7 +11,7 @@
 [![Auto-fix](https://github.com/SecretArrow/Massa-Wallet/actions/workflows/autofix.yml/badge.svg)](https://github.com/SecretArrow/Massa-Wallet/actions/workflows/autofix.yml)
 [![Release](https://github.com/SecretArrow/Massa-Wallet/actions/workflows/release.yml/badge.svg)](https://github.com/SecretArrow/Massa-Wallet/actions/workflows/release.yml)
 
-Flutter • Android • Bilingual (🇮🇩 Indonesia / 🇬🇧 English)
+Flutter • Android • Material Design 3 (dark/light/system) • Bilingual (🇮🇩 Indonesia / 🇬🇧 English)
 
 </div>
 
@@ -22,6 +22,16 @@ Flutter • Android • Bilingual (🇮🇩 Indonesia / 🇬🇧 English)
 **EN** — A production-grade, self-custodial mobile wallet for the [Massa blockchain](https://massa.net), built with Flutter. It runs as a **light client** talking to Massa's public JSON-RPC v2 API (or your own node), with a fully local crypto stack ported 1:1 from the official `@massalabs/massa-web3` SDK and validated against its official test vectors. Includes a **built-in DApp browser for on-chain `.massa` websites (DeWeb)** with an injected `window.massa` provider, **MRC-20 token management**, activity history, address book, staking, smart-contract calls, background balance sync with income notifications, hardware-backed key storage, biometric unlock, dark/light themes, an experimental "connect to your own node" mode, and — new in v1.3.0 — a **true hybrid**: pick between Public RPC, your own Custom RPC, or an **embedded real massa-node binary running inside the app sandbox** (Buildnet, experimental).
 
 **ID** — Wallet mobile self-custodial kualitas production untuk [blockchain Massa](https://massa.net), dibangun dengan Flutter. Berjalan sebagai **light client** yang terhubung ke API publik Massa JSON-RPC v2 (atau node milik Anda sendiri), dengan tumpukan kripto lokal yang diporting 1:1 dari SDK resmi `@massalabs/massa-web3` dan divalidasi terhadap test vector resminya. Termasuk **browser dApp bawaan untuk situs `.massa` on-chain (DeWeb)** dengan provider `window.massa` terinjeksi, **pengelolaan token MRC-20**, riwayat aktivitas, buku alamat, staking, panggilan smart contract, sinkronisasi saldo latar belakang dengan notifikasi, penyimpanan kunci hardware-backed, buka kunci biometrik, tema gelap/terang, mode eksperimental "hubungkan ke node sendiri", dan — baru di v1.3.0 — **hybrid sejati**: pilih antara RPC Publik, RPC Kustom milik Anda, atau **node massa-node asli yang berjalan di dalam sandbox aplikasi** (Buildnet, eksperimental).
+
+## 🆕 What's new in v1.4.0
+
+| Feature | Description / Keterangan |
+|---|---|
+| 🔺 **Pyramids Wallet rebrand** | New name, new golden-pyramid app icon (regenerated launcher + adaptive icons). Same applicationId, so existing installs update in place. / *Nama baru & ikon piramida emas; applicationId tetap sehingga instalasi lama bisa update.* |
+| 🏠 **Browser start page** | The dApp browser now opens on a rich start page: curated Massa dApps (explorers, docs, faucet info), on-chain DeWeb sites, **bookmarks** and **persistent history** (star any page to bookmark). / *Halaman awal browser berisi dApp Massa pilihan, situs DeWeb, bookmark, dan riwayat permanen.* |
+| ✍️ **Canonical dApp `signOperation`** | dApp signing requests are now decoded (operation type, recipient, amount, fee) and signed with the correct canonical bytes — `u64BE(chainId) ‖ versionedPubkey ‖ serializedOp` — matching massa-web3 exactly. Opaque blobs are flagged. / *Permintaan tanda tangan dApp kini didekode dan ditandatangani dengan byte kanonik yang benar.* |
+| 🚰 **Buildnet faucet helper** | Receive screen (buildnet) tries the legacy HTTP faucet first; when it is offline (it currently is — the official faucet is the Discord `#buildnet-faucet` channel), a fallback sheet offers one-tap Discord + docs links opened in the in-app browser. / *Tombol faucet buildnet dengan fallback ke kanal Discord resmi.* |
+| 🧹 **Memory & CPU hygiene** | WebView state cleanup, capped persisted history (30 entries), per-operation RPC client disposal, theme-aware light/dark polish. / *Kebersihan memori: pembersihan WebView, riwayat terbatas, penutupan klien RPC per operasi.* |
 
 ## 🆕 What's new in v1.3.0
 

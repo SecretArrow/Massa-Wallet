@@ -81,7 +81,9 @@ void main() {
 
     test('no reinvest when surplus cannot buy a whole roll', () {
       final rolls = computeReinvestRolls(
-        finalBalanceNano: BigInt.from(101e9.round()), // 1 MAS reserve → 100 surplus
+        finalBalanceNano: BigInt.from(
+          101e9.round(),
+        ), // 1 MAS reserve → 100 surplus
         reserveNano: BigInt.from(1e9.round()),
         priceNano: BigInt.from(rollPriceNano), // 100 MAS → exactly 1
       );
@@ -220,7 +222,10 @@ void main() {
       // base64 versioned bytes and re-derives the address — verified here.
       final versioned = base64.decode(bundle.accounts.first.secretKeyB64!);
       final restored = MassaPrivateKey.fromBytes(versioned.sublist(1));
-      expect(restored.publicKey.address.encoded, priv.publicKey.address.encoded);
+      expect(
+        restored.publicKey.address.encoded,
+        priv.publicKey.address.encoded,
+      );
       expect(bundle.accounts.first.nickname, 'Restored');
     });
   });
@@ -231,7 +236,10 @@ void main() {
     test('addWatchOnly validates and persists the flag', () async {
       final validAddress = MassaPrivateKey.generate().publicKey.address.encoded;
       final repo = WalletRepository();
-      final account = await repo.addWatchOnly(validAddress, nickname: 'Cold storage');
+      final account = await repo.addWatchOnly(
+        validAddress,
+        nickname: 'Cold storage',
+      );
       expect(account.isWatchOnly, isTrue);
       final loaded = await repo.listAccounts();
       expect(loaded.single.isWatchOnly, isTrue);
@@ -283,8 +291,10 @@ void main() {
       );
       final loaded = await book.load();
       expect(loaded.single.domain, 'alice.massa');
-      expect(loaded.single.address,
-          'AU12hBzWjqJmCmekoV1hm4TZQkvejMDRfP8aMfg1t3TmZgG8Wkj2');
+      expect(
+        loaded.single.address,
+        'AU12hBzWjqJmCmekoV1hm4TZQkvejMDRfP8aMfg1t3TmZgG8Wkj2',
+      );
     });
   });
 }

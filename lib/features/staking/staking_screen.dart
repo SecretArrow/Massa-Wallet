@@ -55,10 +55,10 @@ class _StakingScreenState extends State<StakingScreen> {
       case AutoCompoundAction.nothingToReinvest:
         return context.t('ac.status.nothing');
       case AutoCompoundAction.bought:
-        return context.t('ac.status.bought', args: [
-          '${o.rollsBought}',
-          '${o.cycle ?? '—'}',
-        ]);
+        return context.t(
+          'ac.status.bought',
+          args: ['${o.rollsBought}', '${o.cycle ?? '—'}'],
+        );
       case AutoCompoundAction.failed:
         return context.t('ac.status.failed', args: [o.detail ?? '?']);
     }
@@ -215,17 +215,12 @@ class _StakingScreenState extends State<StakingScreen> {
                   children: [
                     Row(
                       children: [
-                        const Icon(
-                          Icons.autorenew,
-                          color: Color(0xFF3FB950),
-                        ),
+                        const Icon(Icons.autorenew, color: Color(0xFF3FB950)),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             context.t('ac.title'),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                            ),
+                            style: const TextStyle(fontWeight: FontWeight.w700),
                           ),
                         ),
                         Switch(
@@ -244,10 +239,10 @@ class _StakingScreenState extends State<StakingScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      context.t('ac.potential', args: [
-                        '$acPotential',
-                        nanoToMas(_acReserve),
-                      ]),
+                      context.t(
+                        'ac.potential',
+                        args: ['$acPotential', nanoToMas(_acReserve)],
+                      ),
                       style: const TextStyle(fontSize: 12),
                     ),
                     if (_acStatus != null) ...[

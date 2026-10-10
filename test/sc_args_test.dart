@@ -34,8 +34,7 @@ void main() {
     });
 
     test('u256 large value roundtrip', () {
-      const v =
-          '123456789012345678901234567890123456789012345678901234567890';
+      const v = '123456789012345678901234567890123456789012345678901234567890';
       final a = ScArgs()..addU256(BigInt.parse(v));
       final r = ScArgsReader(a.bytes);
       expect(r.nextU256().toString(), v);
@@ -43,12 +42,16 @@ void main() {
     });
 
     test('bool and u8', () {
-      final a = ScArgs()..addBool(true)..addU8(7);
+      final a = ScArgs()
+        ..addBool(true)
+        ..addU8(7);
       expect(a.bytes, [1, 7]);
     });
 
     test('reader string/bytes roundtrip', () {
-      final a = ScArgs()..addString('hello')..addBytes([9, 8, 7]);
+      final a = ScArgs()
+        ..addString('hello')
+        ..addBytes([9, 8, 7]);
       final r = ScArgsReader(a.bytes);
       expect(r.nextString(), 'hello');
       expect(r.nextBytes(), [9, 8, 7]);
@@ -68,15 +71,16 @@ void main() {
     });
 
     test('negative values rejected', () {
-      expect(() => (ScArgs()..addU256(BigInt.from(-1))),
-          throwsArgumentError);
+      expect(() => (ScArgs()..addU256(BigInt.from(-1))), throwsArgumentError);
     });
 
     test('bigIntToLe / leToBigInt roundtrip various widths', () {
       final cases = {
         8: BigInt.from(255),
         16: BigInt.from(65535),
-        32: BigInt.parse('115792089237316195423570985008687907853269984665640564039457584007913129639935'),
+        32: BigInt.parse(
+          '115792089237316195423570985008687907853269984665640564039457584007913129639935',
+        ),
       };
       cases.forEach((width, v) {
         final le = bigIntToLe(v, width);
@@ -84,8 +88,10 @@ void main() {
         expect(leToBigInt(le), v);
       });
       // Values that do not fit throw (2^64 needs 9 bytes).
-      expect(() => bigIntToLe(BigInt.parse('18446744073709551616'), 8),
-          throwsArgumentError);
+      expect(
+        () => bigIntToLe(BigInt.parse('18446744073709551616'), 8),
+        throwsArgumentError,
+      );
     });
   });
 

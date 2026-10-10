@@ -42,11 +42,7 @@ class LocalSiteServer {
   Future<void> start() async {
     if (_server != null) return;
     _server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
-    _server!.listen(
-      _handle,
-      onError: (Object e) {},
-      cancelOnError: false,
-    );
+    _server!.listen(_handle, onError: (Object e) {}, cancelOnError: false);
   }
 
   /// Stops the server.

@@ -117,10 +117,7 @@ class WalletProvider extends ChangeNotifier {
     String address, {
     String nickname = '',
   }) async {
-    final account = await repository.addWatchOnly(
-      address,
-      nickname: nickname,
-    );
+    final account = await repository.addWatchOnly(address, nickname: nickname);
     await loadAccounts();
     return account;
   }
@@ -317,13 +314,18 @@ class WalletProvider extends ChangeNotifier {
     required int rollCount,
     BigInt? feeNano,
   }) async {
-    return _sendOperation(fromAddress, (period, fee) {
-      return MassaOperation.rollBuy(
-        fee: fee,
-        expirePeriod: period,
-        data: RollOperationData(amount: BigInt.from(rollCount)),
-      );
-    }, feeNano: feeNano, activityKind: ActivityKind.rollBuy);
+    return _sendOperation(
+      fromAddress,
+      (period, fee) {
+        return MassaOperation.rollBuy(
+          fee: fee,
+          expirePeriod: period,
+          data: RollOperationData(amount: BigInt.from(rollCount)),
+        );
+      },
+      feeNano: feeNano,
+      activityKind: ActivityKind.rollBuy,
+    );
   }
 
   /// Sells staking rolls.
@@ -332,13 +334,18 @@ class WalletProvider extends ChangeNotifier {
     required int rollCount,
     BigInt? feeNano,
   }) async {
-    return _sendOperation(fromAddress, (period, fee) {
-      return MassaOperation.rollSell(
-        fee: fee,
-        expirePeriod: period,
-        data: RollOperationData(amount: BigInt.from(rollCount)),
-      );
-    }, feeNano: feeNano, activityKind: ActivityKind.rollSell);
+    return _sendOperation(
+      fromAddress,
+      (period, fee) {
+        return MassaOperation.rollSell(
+          fee: fee,
+          expirePeriod: period,
+          data: RollOperationData(amount: BigInt.from(rollCount)),
+        );
+      },
+      feeNano: feeNano,
+      activityKind: ActivityKind.rollSell,
+    );
   }
 
   /// Calls a smart-contract function.
@@ -355,26 +362,29 @@ class WalletProvider extends ChangeNotifier {
     String? tokenAmount,
     String? note,
   }) async {
-    return _sendOperation(fromAddress, (period, fee) {
-      return MassaOperation.callSC(
-        fee: fee,
-        expirePeriod: period,
-        data: CallOperationData(
-          targetAddress: target,
-          functionName: function,
-          parameter: parameter,
-          maxGas: maxGas,
-          coins: coinsNano,
-        ),
-      );
-    },
-    feeNano: feeNano,
-    activityKind: activityKind,
-    activityCounterparty: target,
-    activityAmount: coinsNano ?? BigInt.zero,
-    tokenSymbol: tokenSymbol,
-    tokenAmount: tokenAmount,
-    note: note);
+    return _sendOperation(
+      fromAddress,
+      (period, fee) {
+        return MassaOperation.callSC(
+          fee: fee,
+          expirePeriod: period,
+          data: CallOperationData(
+            targetAddress: target,
+            functionName: function,
+            parameter: parameter,
+            maxGas: maxGas,
+            coins: coinsNano,
+          ),
+        );
+      },
+      feeNano: feeNano,
+      activityKind: activityKind,
+      activityCounterparty: target,
+      activityAmount: coinsNano ?? BigInt.zero,
+      tokenSymbol: tokenSymbol,
+      tokenAmount: tokenAmount,
+      note: note,
+    );
   }
 
   /// Executes a read-only call against a contract (no fee).
@@ -419,6 +429,33 @@ class WalletProvider extends ChangeNotifier {
     return sig.encoded;
   }
 
+  /// Canonicalizes [serializedOp] with the active network chain id and
+  /// signs it with [address]'s key — the correct semantics for dApp
+  /// `signOperation` requests.
+  ///
+  /// canonical = u64BE(chainId) | versionedPublicKey | serializedOp
+  Future<({String publicKey, String signature})> signSerializedOperationForDapp(
+    String address,
+    List<int> serializedOp,
+  ) async {
+    final chainId = BigInt.from(settings.network.chainId);
+    final versioned = await repository.readVersionedSecretKey(address);
+    final priv = MassaPrivateKey.fromBytes(versioned.sublist(1));
+    final chainIdBytes = Uint8List(8);
+    var v = chainId;
+    for (var i = 7; i >= 0; i--) {
+      chainIdBytes[i] = (v & BigInt.from(0xff)).toInt();
+      v >>= 8;
+    }
+    final canonical = <int>[
+      ...chainIdBytes,
+      ...priv.publicKey.versionedBytes,
+      ...serializedOp,
+    ];
+    final sig = priv.signOperation(canonical);
+    return (publicKey: priv.publicKey.encoded, signature: sig.encoded);
+  }
+
   Future<SendResult> _sendOperation(
     String fromAddress,
     MassaOperation Function(int period, BigInt fee) build, {
@@ -431,7 +468,9 @@ class WalletProvider extends ChangeNotifier {
     String? tokenAmount,
     String? note,
   }) async {
-    final account = _accounts.where((a) => a.address == fromAddress).firstOrNull;
+    final account = _accounts
+        .where((a) => a.address == fromAddress)
+        .firstOrNull;
     if (account != null && account.isWatchOnly) {
       throw StateError('watch-only account cannot sign operations');
     }

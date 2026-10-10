@@ -269,9 +269,10 @@ class AddressInfo {
     finalDatastoreKeys: ((json['final_datastore_keys'] as List?) ?? const [])
         .map((e) => (e as List).cast<int>())
         .toList(),
-    candidateDatastoreKeys: ((json['candidate_datastore_keys'] as List?) ?? const [])
-        .map((e) => (e as List).cast<int>())
-        .toList(),
+    candidateDatastoreKeys:
+        ((json['candidate_datastore_keys'] as List?) ?? const [])
+            .map((e) => (e as List).cast<int>())
+            .toList(),
   );
 
   /// Active rolls across cycles (sum of active_roll_count).
@@ -416,10 +417,10 @@ class ReadOnlyCallResult {
       ret = switch (okValue) {
         final String s => base64Decode(s),
         final Map m => switch (m['return_value']) {
-            final String s => base64Decode(s),
-            final List l => l.cast<int>(),
-            _ => const <int>[],
-          },
+          final String s => base64Decode(s),
+          final List l => l.cast<int>(),
+          _ => const <int>[],
+        },
         final List l => l.cast<int>(),
         _ => const <int>[],
       };
@@ -496,10 +497,10 @@ class DatastoreEntry {
   });
 
   static List<int> _bytes(Object? v) => switch (v) {
-        final String s => List<int>.from(base64Decode(s)),
-        final List l => l.cast<int>(),
-        _ => const <int>[],
-      };
+    final String s => List<int>.from(base64Decode(s)),
+    final List l => l.cast<int>(),
+    _ => const <int>[],
+  };
 
   /// Parses from JSON.
   ///

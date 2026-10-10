@@ -19,14 +19,17 @@ class Contact {
   /// Creates a contact.
   const Contact({required this.name, required this.address, this.domain = ''});
 
-  Map<String, String> _toJson() =>
-      {'name': name, 'address': address, 'domain': domain};
+  Map<String, String> _toJson() => {
+    'name': name,
+    'address': address,
+    'domain': domain,
+  };
 
   static Contact _fromJson(Map<String, dynamic> j) => Contact(
-        name: (j['name'] ?? '') as String,
-        address: (j['address'] ?? '') as String,
-        domain: (j['domain'] ?? '') as String,
-      );
+    name: (j['name'] ?? '') as String,
+    address: (j['address'] ?? '') as String,
+    domain: (j['domain'] ?? '') as String,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -47,17 +50,22 @@ class AddressBookService {
   Future<List<Contact>> load() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getStringList(_kKey) ?? const [];
-    final list = raw
-        .map((s) {
-          try {
-            return Contact._fromJson(json.decode(s) as Map<String, dynamic>);
-          } on FormatException {
-            return null;
-          }
-        })
-        .whereType<Contact>()
-        .toList()
-      ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    final list =
+        raw
+            .map((s) {
+              try {
+                return Contact._fromJson(
+                  json.decode(s) as Map<String, dynamic>,
+                );
+              } on FormatException {
+                return null;
+              }
+            })
+            .whereType<Contact>()
+            .toList()
+          ..sort(
+            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+          );
     return list;
   }
 

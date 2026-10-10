@@ -94,8 +94,7 @@ abstract final class Mrc20Keys {
   static List<int> get totalSupply => utf8.encode('TOTAL_SUPPLY');
 
   /// `BALANCE<addr>` key.
-  static List<int> balance(String address) =>
-      utf8.encode('BALANCE$address');
+  static List<int> balance(String address) => utf8.encode('BALANCE$address');
 }
 
 /// Reads MRC-20 state from the chain.
@@ -117,7 +116,6 @@ class Mrc20Service {
       client.dispose();
     }
   }
-
 
   /// Loads token metadata; throws if the address is not an MRC-20 contract.
   Future<Mrc20Token> loadToken(String address) async {
@@ -143,7 +141,9 @@ class Mrc20Service {
         name: utf8.decode(name, allowMalformed: true),
         symbol: utf8.decode(symbol, allowMalformed: true),
         decimals: dec.first,
-        totalSupply: supply.length >= 32 ? leToBigInt(supply.sublist(0, 32)) : null,
+        totalSupply: supply.length >= 32
+            ? leToBigInt(supply.sublist(0, 32))
+            : null,
       );
     } finally {
       client.dispose();
@@ -189,13 +189,15 @@ class Mrc20Service {
   /// Storage cost (nanoMAS) charged as `coins` when creating the recipient's
   /// balance entry: 400_000 + 100_000*(7+len(addr)) + 3_200_000.
   static BigInt balanceCreationCost(String recipient) {
-    return BigInt.from(
-      400000 + 100000 * (7 + recipient.length) + 3200000,
-    );
+    return BigInt.from(400000 + 100000 * (7 + recipient.length) + 3200000);
   }
 
   /// Builds the `transfer(to, amount)` argument payload.
   static List<int> transferArgs(String to, BigInt rawAmount) {
-    return (ScArgs()..addString(to)..addU256(rawAmount)).bytes.toList();
+    return (ScArgs()
+          ..addString(to)
+          ..addU256(rawAmount))
+        .bytes
+        .toList();
   }
 }

@@ -51,8 +51,7 @@ class PriceService {
   /// the network is unavailable (best-effort, never throws).
   Future<MasPrice?> fetch({http.Client? httpClient}) async {
     if (_loading) return _last;
-    if (_last != null &&
-        DateTime.now().difference(_lastFetch) < ttl) {
+    if (_last != null && DateTime.now().difference(_lastFetch) < ttl) {
       return _last;
     }
     _loading = true;
@@ -68,8 +67,7 @@ class PriceService {
           _last = MasPrice(
             usd: (massa['usd'] as num?)?.toDouble() ?? 0,
             idr: (massa['idr'] as num?)?.toDouble() ?? 0,
-            change24h:
-                (massa['usd_24h_change'] as num?)?.toDouble() ?? 0,
+            change24h: (massa['usd_24h_change'] as num?)?.toDouble() ?? 0,
             fetchedAt: DateTime.now(),
           );
           _lastFetch = DateTime.now();

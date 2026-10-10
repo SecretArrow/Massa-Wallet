@@ -118,9 +118,8 @@ class _SendScreenState extends State<SendScreen> {
         final parsed = MnsService.parseInput(recipient);
         final settings = context.read<SettingsProvider>();
         final service = MnsService(
-          clientFactory: () => MassaRpcClient(
-            endpoint: settings.effectiveEndpoint,
-          ),
+          clientFactory: () =>
+              MassaRpcClient(endpoint: settings.effectiveEndpoint),
         );
         final res = await service.resolve(
           parsed.domain!,
@@ -194,9 +193,14 @@ class _SendScreenState extends State<SendScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(ctx.t('book.saveTitle')),
-        content: Text(ctx.t('book.saveBody', args: [
-          '${address.substring(0, 10)}…${address.substring(address.length - 6)}',
-        ])),
+        content: Text(
+          ctx.t(
+            'book.saveBody',
+            args: [
+              '${address.substring(0, 10)}…${address.substring(address.length - 6)}',
+            ],
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),

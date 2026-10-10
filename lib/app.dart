@@ -29,15 +29,15 @@ import 'features/wallet/dashboard_screen.dart';
 import 'ui/theme.dart';
 
 /// Massa Wallet application widget.
-class MassaWalletApp extends StatefulWidget {
+class PyramidsWalletApp extends StatefulWidget {
   /// Creates the app.
-  const MassaWalletApp({super.key});
+  const PyramidsWalletApp({super.key});
 
   @override
-  State<MassaWalletApp> createState() => _MassaWalletAppState();
+  State<PyramidsWalletApp> createState() => _PyramidsWalletAppState();
 }
 
-class _MassaWalletAppState extends State<MassaWalletApp>
+class _PyramidsWalletAppState extends State<PyramidsWalletApp>
     with WidgetsBindingObserver {
   final ValueNotifier<AppLanguage> _language = ValueNotifier(
     AppLanguage.indonesian,
@@ -64,7 +64,7 @@ class _MassaWalletAppState extends State<MassaWalletApp>
       final service = BackgroundSyncService();
       await service.configure(
         autoStart: true,
-        title: 'Massa Wallet',
+        title: 'Pyramids Wallet',
         content: 'Sinkronisasi saldo aktif',
       );
       await service.start();
@@ -104,7 +104,7 @@ class _MassaWalletAppState extends State<MassaWalletApp>
             _language.value = settings.language;
           }
           return MaterialApp(
-            title: 'Massa Wallet',
+            title: 'Pyramids Wallet',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
@@ -116,8 +116,7 @@ class _MassaWalletAppState extends State<MassaWalletApp>
             // screens that have no AppBar (covers the whole navigator).
             builder: (context, child) {
               final platformDark =
-                  MediaQuery.platformBrightnessOf(context) ==
-                  Brightness.dark;
+                  MediaQuery.platformBrightnessOf(context) == Brightness.dark;
               final dark = switch (settings.themeMode) {
                 ThemeMode.light => false,
                 ThemeMode.dark => true,

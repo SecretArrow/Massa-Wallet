@@ -78,7 +78,10 @@ enum EmbeddedNodeState {
 /// `0.0.0.0`/`[::]` is forced onto loopback so the node exposes nothing
 /// to the LAN. The API v2 port is configurable and defaults to
 /// [SettingsProvider.embeddedApiPort].
-String patchNodeConfig(String src, {int apiPort = SettingsProvider.embeddedApiPort}) {
+String patchNodeConfig(
+  String src, {
+  int apiPort = SettingsProvider.embeddedApiPort,
+}) {
   return src
       .replaceAll(
         'bind_public = "0.0.0.0:33035"',
@@ -132,7 +135,8 @@ class EmbeddedNodeService extends ChangeNotifier {
   Future<bool> detectBinary() async {
     _libDir = await _resolveLibDir();
     final bin = _binaryPath();
-    _binaryAvailable = _libDir != null &&
+    _binaryAvailable =
+        _libDir != null &&
         bin != null &&
         File(bin).existsSync() &&
         _hasBundledAssets();
@@ -288,7 +292,9 @@ class EmbeddedNodeService extends ChangeNotifier {
     final client = MassaRpcClient(endpoint: endpoint);
     final sw = Stopwatch()..start();
     try {
-      final status = await client.getStatus().timeout(const Duration(seconds: 4));
+      final status = await client.getStatus().timeout(
+        const Duration(seconds: 4),
+      );
       sw.stop();
       return NodeHealth(
         reachable: true,
@@ -319,8 +325,8 @@ class EmbeddedNodeService extends ChangeNotifier {
     Directory('${root.path}/config').createSync(recursive: true);
 
     final marker = File('${root.path}/$_kVersionMarker');
-    final needsCopy = !marker.existsSync() ||
-        marker.readAsStringSync() != bundledNodeVersion;
+    final needsCopy =
+        !marker.existsSync() || marker.readAsStringSync() != bundledNodeVersion;
     if (needsCopy) {
       baseConfig.createSync(recursive: true);
       final gasDir = Directory('${baseConfig.path}/gas_costs');
@@ -346,10 +352,12 @@ class EmbeddedNodeService extends ChangeNotifier {
         );
       }
       // Optional files referenced by the config — write empty JSON lists.
-      File('${baseConfig.path}/bootstrap_whitelist.json')
-          .writeAsStringSync('[]');
-      File('${baseConfig.path}/bootstrap_blacklist.json')
-          .writeAsStringSync('[]');
+      File(
+        '${baseConfig.path}/bootstrap_whitelist.json',
+      ).writeAsStringSync('[]');
+      File(
+        '${baseConfig.path}/bootstrap_blacklist.json',
+      ).writeAsStringSync('[]');
 
       final raw = File('${baseConfig.path}/config.toml').readAsStringSync();
       File('${baseConfig.path}/config.toml').writeAsStringSync(
@@ -390,9 +398,7 @@ class EmbeddedNodeService extends ChangeNotifier {
   }
 
   void _log(String line) {
-    _logs.add(
-      '${DateTime.now().toIso8601String().substring(11, 19)} $line',
-    );
+    _logs.add('${DateTime.now().toIso8601String().substring(11, 19)} $line');
     if (_logs.length > 400) {
       _logs.removeRange(0, _logs.length - 400);
     }
@@ -404,10 +410,7 @@ class EmbeddedNodeService extends ChangeNotifier {
     const chars =
         'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final rng = Random.secure();
-    return List.generate(
-      24,
-      (_) => chars[rng.nextInt(chars.length)],
-    ).join();
+    return List.generate(24, (_) => chars[rng.nextInt(chars.length)]).join();
   }
 
   /// Background-isolate keepalive: reads persisted prefs, checks the

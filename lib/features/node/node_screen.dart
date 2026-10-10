@@ -68,9 +68,9 @@ class _NodeScreenState extends State<NodeScreen> {
   Future<void> _saveCustomUrl() async {
     await context.read<SettingsProvider>().setCustomNodeUrl(_url.text.trim());
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.t('node.custom.saved'))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.t('node.custom.saved'))));
     }
   }
 
@@ -125,12 +125,8 @@ class _NodeScreenState extends State<NodeScreen> {
             ...switch (settings.connectionMode) {
               NodeConnectionMode.publicRpc => [_PublicPanel(probe: _probe)],
               NodeConnectionMode.customRpc => [
-                  _CustomPanel(
-                    url: _url,
-                    onSave: _saveCustomUrl,
-                    probe: _probe,
-                  ),
-                ],
+                _CustomPanel(url: _url, onSave: _saveCustomUrl, probe: _probe),
+              ],
               NodeConnectionMode.embedded => [_EmbeddedPanel()],
             },
             if (_probeResult != null) ...[
@@ -203,8 +199,7 @@ class _ModeCard extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () =>
-            context.read<SettingsProvider>().setConnectionMode(mode),
+        onTap: () => context.read<SettingsProvider>().setConnectionMode(mode),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           child: Row(
@@ -236,10 +231,7 @@ class _ModeCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 2),
-                      Text(
-                        subtitle,
-                        style: const TextStyle(fontSize: 12),
-                      ),
+                      Text(subtitle, style: const TextStyle(fontSize: 12)),
                       if (detail != null && detail!.isNotEmpty) ...[
                         const SizedBox(height: 4),
                         Text(
@@ -449,18 +441,18 @@ class _EmbeddedControl extends StatelessWidget {
   const _EmbeddedControl({required this.embedded});
 
   Color _stateColor(EmbeddedNodeState state) => switch (state) {
-        EmbeddedNodeState.running => Colors.green,
-        EmbeddedNodeState.starting => Colors.orange,
-        EmbeddedNodeState.failed => Colors.red,
-        _ => Colors.grey,
-      };
+    EmbeddedNodeState.running => Colors.green,
+    EmbeddedNodeState.starting => Colors.orange,
+    EmbeddedNodeState.failed => Colors.red,
+    _ => Colors.grey,
+  };
 
   IconData _stateIcon(EmbeddedNodeState state) => switch (state) {
-        EmbeddedNodeState.running => Icons.check_circle,
-        EmbeddedNodeState.starting => Icons.hourglass_top,
-        EmbeddedNodeState.failed => Icons.error,
-        _ => Icons.stop_circle_outlined,
-      };
+    EmbeddedNodeState.running => Icons.check_circle,
+    EmbeddedNodeState.starting => Icons.hourglass_top,
+    EmbeddedNodeState.failed => Icons.error,
+    _ => Icons.stop_circle_outlined,
+  };
 
   Future<void> _confirmReset(BuildContext context) async {
     final ok = await showDialog<bool>(
@@ -524,11 +516,8 @@ class _EmbeddedControl extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               '${context.t('node.embedded.port')}: '
-                  '127.0.0.1:${SettingsProvider.embeddedApiPort}',
-              style: const TextStyle(
-                fontSize: 11,
-                fontFamily: 'monospace',
-              ),
+              '127.0.0.1:${SettingsProvider.embeddedApiPort}',
+              style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
             ),
             if (uptime != null) ...[
               const SizedBox(height: 4),
@@ -592,9 +581,7 @@ class _EmbeddedControl extends StatelessWidget {
                   child: SingleChildScrollView(
                     reverse: true,
                     child: SelectableText(
-                      embedded.logs.isEmpty
-                          ? '…'
-                          : embedded.logs.join('\n'),
+                      embedded.logs.isEmpty ? '…' : embedded.logs.join('\n'),
                       style: const TextStyle(
                         fontSize: 10,
                         fontFamily: 'monospace',
@@ -657,7 +644,11 @@ class _OfficialBinaryCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.verified_user, color: Color(0xFF3FB950), size: 20),
+                const Icon(
+                  Icons.verified_user,
+                  color: Color(0xFF3FB950),
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(

@@ -57,7 +57,13 @@ class DeferredCallsService {
     }
     final t = status.currentTimeMs;
     if (t != null) {
-      return t - slotMs(MassaSlot(period: status.currentPeriod, thread: status.currentThread));
+      return t -
+          slotMs(
+            MassaSlot(
+              period: status.currentPeriod,
+              thread: status.currentThread,
+            ),
+          );
     }
     throw const RpcException('get_status lacks timing fields');
   }
@@ -100,12 +106,17 @@ class DeferredCallsService {
   /// The slot that is executing "now" (per [nowMs], default wall clock).
   static MassaSlot slotNow({int? nowMs, required int genesisMs}) =>
       dateTimeToSlot(
-        DateTime.fromMillisecondsSinceEpoch(nowMs ?? DateTime.now().millisecondsSinceEpoch, isUtc: true),
+        DateTime.fromMillisecondsSinceEpoch(
+          nowMs ?? DateTime.now().millisecondsSinceEpoch,
+          isUtc: true,
+        ),
         genesisMs,
       );
 
   /// Fetches booking quotes for [requests].
-  Future<List<DeferredCallQuote>> quote(List<DeferredCallQuoteInput> requests) async {
+  Future<List<DeferredCallQuote>> quote(
+    List<DeferredCallQuoteInput> requests,
+  ) async {
     final client = MassaRpcClient(endpoint: endpoint);
     try {
       return await client.getDeferredCallQuote(requests);
@@ -121,7 +132,9 @@ class DeferredCallsService {
     int maxGas = 20000000,
   }) => quote(
     slots
-        .map((s) => DeferredCallQuoteInput(targetSlot: s, maxGasRequest: maxGas))
+        .map(
+          (s) => DeferredCallQuoteInput(targetSlot: s, maxGasRequest: maxGas),
+        )
         .toList(),
   );
 
@@ -136,7 +149,9 @@ class DeferredCallsService {
   }
 
   /// Fetches deferred-call ids scheduled at [slots].
-  Future<List<DeferredCallsSlotResponse>> idsBySlot(List<MassaSlot> slots) async {
+  Future<List<DeferredCallsSlotResponse>> idsBySlot(
+    List<MassaSlot> slots,
+  ) async {
     final client = MassaRpcClient(endpoint: endpoint);
     try {
       return await client.getDeferredCallIdsBySlot(slots);
@@ -161,15 +176,16 @@ class DeferredCallsService {
     required BigInt maxGas,
     List<int> params = const [],
     BigInt? coinsNano,
-  }) => (ScArgs()
-        ..addString(targetAddress)
-        ..addString(targetFunction)
-        ..addU64(BigInt.from(slot.period))
-        ..addU8(slot.thread)
-        ..addU64(maxGas)
-        ..addBytes(params)
-        ..addU64(coinsNano ?? BigInt.zero))
-      .bytes;
+  }) =>
+      (ScArgs()
+            ..addString(targetAddress)
+            ..addString(targetFunction)
+            ..addU64(BigInt.from(slot.period))
+            ..addU8(slot.thread)
+            ..addU64(maxGas)
+            ..addBytes(params)
+            ..addU64(coinsNano ?? BigInt.zero))
+          .bytes;
 
   /// Formats a quote price for display (e.g. `0.2441 MAS`).
   static String formatPrice(BigInt priceNano) => '${formatNano(priceNano)} MAS';

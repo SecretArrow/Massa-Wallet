@@ -74,10 +74,7 @@ void main() {
           httpClient: _mockNode({}),
         ),
       );
-      expect(
-        () => svc.loadToken('AS1notatoken'),
-        throwsA(isA<RpcException>()),
-      );
+      expect(() => svc.loadToken('AS1notatoken'), throwsA(isA<RpcException>()));
     });
   });
 
@@ -86,8 +83,7 @@ void main() {
       const owner = 'AU126tkwrhXn9gEG5JPtrNy8NNLbVMwywokgLKshSYyzP8qusqXZL';
       final datastore = <String, Map<String, List<int>>>{
         wmas: {
-          'BALANCE$owner'.codeUnits.join(','):
-              _leBytes(32, BigInt.from(12345)),
+          'BALANCE$owner'.codeUnits.join(','): _leBytes(32, BigInt.from(12345)),
         },
       };
       final svc = Mrc20Service(
@@ -97,10 +93,7 @@ void main() {
         ),
       );
       expect(await svc.balanceOf(wmas, owner), BigInt.from(12345));
-      expect(
-        await svc.hasBalanceEntry(wmas, owner),
-        isTrue,
-      );
+      expect(await svc.hasBalanceEntry(wmas, owner), isTrue);
     });
 
     test('falls back to read-only balanceOf call', () async {
@@ -115,9 +108,7 @@ void main() {
         if (body['method'] == 'execute_read_only_call') {
           return _rpc([
             {
-              'result': {
-                'Ok': _leBytes(32, BigInt.from(777)),
-              },
+              'result': {'Ok': _leBytes(32, BigInt.from(777))},
               'gas_cost': 1000,
             },
           ]);

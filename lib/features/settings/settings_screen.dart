@@ -213,8 +213,7 @@ class SettingsScreen extends StatelessWidget {
           SwitchListTile(
             secondary: const Icon(Icons.attach_money),
             value: settings.showFiat,
-            onChanged: (v) =>
-                context.read<SettingsProvider>().setShowFiat(v),
+            onChanged: (v) => context.read<SettingsProvider>().setShowFiat(v),
             title: Text(context.t('settings.showFiat')),
             activeThumbColor: const Color(0xFF18C8C8),
           ),
@@ -245,15 +244,18 @@ class SettingsScreen extends StatelessWidget {
                     ),
                     ButtonSegment(
                       value: ThemeMode.system,
-                      icon: const Icon(Icons.brightness_auto_outlined, size: 18),
+                      icon: const Icon(
+                        Icons.brightness_auto_outlined,
+                        size: 18,
+                      ),
                       label: Text(context.t('settings.theme.system')),
                     ),
                   ],
                   selected: {settings.themeMode},
                   onSelectionChanged: (selection) {
                     context.read<SettingsProvider>().setThemeMode(
-                          selection.first,
-                        );
+                      selection.first,
+                    );
                   },
                 ),
               ],
@@ -272,21 +274,23 @@ class SettingsScreen extends StatelessWidget {
 
           // Backup / restore (all accounts, encrypted)
           ListTile(
-            leading: const Icon(Icons.backup_outlined, color: Color(0xFF3FB950)),
-            title: Text(context.t('settings.backup')),
-            subtitle: Text(context.t('settings.backup.sub'), style: const TextStyle(fontSize: 11)),
-            onTap: () => _confirmPinDialog(
-              context,
-              (sheetCtx) => const _BackupSheet(),
+            leading: const Icon(
+              Icons.backup_outlined,
+              color: Color(0xFF3FB950),
             ),
+            title: Text(context.t('settings.backup')),
+            subtitle: Text(
+              context.t('settings.backup.sub'),
+              style: const TextStyle(fontSize: 11),
+            ),
+            onTap: () =>
+                _confirmPinDialog(context, (sheetCtx) => const _BackupSheet()),
           ),
           ListTile(
             leading: const Icon(Icons.restore),
             title: Text(context.t('settings.restore')),
-            onTap: () => _confirmPinDialog(
-              context,
-              (sheetCtx) => const _RestoreSheet(),
-            ),
+            onTap: () =>
+                _confirmPinDialog(context, (sheetCtx) => const _RestoreSheet()),
           ),
           const Divider(),
 
@@ -303,7 +307,7 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: Text(context.t('settings.version')),
-            trailing: const Text('1.3.0'),
+            trailing: const Text('1.4.0'),
           ),
         ],
       ),
@@ -468,7 +472,9 @@ class _RestoreSheetState extends State<_RestoreSheet> {
     try {
       final wallet = context.read<WalletProvider>();
       final n = await wallet.importBackup(_contents.text, _pw.text);
-      setState(() => _result = context.t('settings.restore.done', args: ['$n']));
+      setState(
+        () => _result = context.t('settings.restore.done', args: ['$n']),
+      );
     } on FormatException catch (e) {
       setState(() => _result = e.message);
     } catch (e) {

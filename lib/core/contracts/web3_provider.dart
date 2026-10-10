@@ -111,6 +111,19 @@ String massaProviderScript({
   window.massa = makeProvider();
   window.massaWallet = window.massa;
 
+  // MassaStation / @massalabs/wallet-provider compatibility: dApps written
+  // against the provider-list standard expect window.massa to be iterable
+  // with provider objects (window.massa[0], getProviders()). Augment the
+  // classic provider object with array-like accessors.
+  try {
+    window.massa.providerName = 'MASSAMOBILE';
+    window.massa.getAccounts = window.massa.accounts;
+    Object.defineProperty(window.massa, '0', { value: window.massa });
+    Object.defineProperty(window.massa, 'length', { value: 1 });
+    window.massa.getProviders = function () { return [window.massa]; };
+    window.massa.registerProvider = function () {};
+  } catch (e) { /* non-fatal */ }
+
   window.dispatchEvent(new Event('massa#initialized'));
   window.dispatchEvent(new CustomEvent('massa#accountChanged', { detail: $account }));
 

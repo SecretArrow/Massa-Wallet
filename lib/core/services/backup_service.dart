@@ -123,9 +123,7 @@ abstract final class MassaBackup {
     DateTime? createdAt,
   }) {
     final rng = Random.secure();
-    final salt = Uint8List.fromList(
-      List.generate(16, (_) => rng.nextInt(256)),
-    );
+    final salt = Uint8List.fromList(List.generate(16, (_) => rng.nextInt(256)));
     final nonce = Uint8List.fromList(
       List.generate(12, (_) => rng.nextInt(256)),
     );
@@ -153,8 +151,12 @@ abstract final class MassaBackup {
 
   /// Decrypts a backup envelope; throws [FormatException] on a wrong
   /// password or a corrupted/unknown file.
-  static ({List<BackupAccount> accounts, List<Contact> contacts, DateTime createdAt})
-      import(String contents, String password) {
+  static ({
+    List<BackupAccount> accounts,
+    List<Contact> contacts,
+    DateTime createdAt,
+  })
+  import(String contents, String password) {
     Map<String, dynamic> envelope;
     try {
       envelope = json.decode(contents) as Map<String, dynamic>;

@@ -113,7 +113,8 @@ class AutoCompoundService {
   Future<void> setEnabled(bool v) => prefs.setBool(_kEnabled, v);
 
   /// Fee reserve in nanoMAS (default 1 MAS).
-  BigInt get reserveNano => BigInt.from(prefs.getInt(_kReserveNano) ?? 1000000000);
+  BigInt get reserveNano =>
+      BigInt.from(prefs.getInt(_kReserveNano) ?? 1000000000);
 
   /// Sets the fee reserve (nanoMAS).
   Future<void> setReserveNano(BigInt nano) =>
@@ -136,10 +137,7 @@ class AutoCompoundService {
     }
   }
 
-  Future<void> _record(
-    AutoCompoundOutcome o, {
-    String? address,
-  }) async {
+  Future<void> _record(AutoCompoundOutcome o, {String? address}) async {
     await prefs.setString(
       _kLastAction,
       json.encode({
@@ -266,9 +264,7 @@ class AutoCompoundService {
     required MassaRpcClient client,
   }) async {
     try {
-      final chainId = BigInt.from(
-        status.chainId == 0 ? 0 : status.chainId,
-      );
+      final chainId = BigInt.from(status.chainId == 0 ? 0 : status.chainId);
       final fee = status.minimalFee == BigInt.zero
           ? BigInt.from(1000000)
           : status.minimalFee;

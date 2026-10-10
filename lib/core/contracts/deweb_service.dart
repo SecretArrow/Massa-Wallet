@@ -21,28 +21,40 @@ import '../api/massa_rpc.dart';
 /// Datastore tags used by DeWeb sites.
 abstract final class DeWebKeys {
   /// `\x01FILE` tag.
-  static final Uint8List fileTag =
-      Uint8List.fromList([1, ...utf8.encode('FILE')]);
+  static final Uint8List fileTag = Uint8List.fromList([
+    1,
+    ...utf8.encode('FILE'),
+  ]);
 
   /// `\x02LOCATION` tag.
-  static final Uint8List locationTag =
-      Uint8List.fromList([2, ...utf8.encode('LOCATION')]);
+  static final Uint8List locationTag = Uint8List.fromList([
+    2,
+    ...utf8.encode('LOCATION'),
+  ]);
 
   /// `\x03CHUNK` tag.
-  static final Uint8List chunkTag =
-      Uint8List.fromList([3, ...utf8.encode('CHUNK')]);
+  static final Uint8List chunkTag = Uint8List.fromList([
+    3,
+    ...utf8.encode('CHUNK'),
+  ]);
 
   /// `\x04CHUNK_NB` tag.
-  static final Uint8List chunkNbTag =
-      Uint8List.fromList([4, ...utf8.encode('CHUNK_NB')]);
+  static final Uint8List chunkNbTag = Uint8List.fromList([
+    4,
+    ...utf8.encode('CHUNK_NB'),
+  ]);
 
   /// `\x05FM` file metadata tag.
-  static final Uint8List fileMetaTag =
-      Uint8List.fromList([5, ...utf8.encode('FM')]);
+  static final Uint8List fileMetaTag = Uint8List.fromList([
+    5,
+    ...utf8.encode('FM'),
+  ]);
 
   /// `\x06GM` global metadata tag.
-  static final Uint8List globalMetaTag =
-      Uint8List.fromList([6, ...utf8.encode('GM')]);
+  static final Uint8List globalMetaTag = Uint8List.fromList([
+    6,
+    ...utf8.encode('GM'),
+  ]);
 
   /// Builds the chunk-count key for a path hash.
   static Uint8List chunkCountKey(Uint8List hash) =>
@@ -212,8 +224,9 @@ class DeWebService {
       if (countValue == null || countValue.length < 4) {
         throw DeWebException('file "$path" not found (no chunk count)');
       }
-      final count = ByteData.sublistView(Uint8List.fromList(countValue))
-          .getUint32(0, Endian.little);
+      final count = ByteData.sublistView(
+        Uint8List.fromList(countValue),
+      ).getUint32(0, Endian.little);
       if (count == 0 || count > 4096) {
         throw DeWebException('file "$path" has an invalid chunk count');
       }

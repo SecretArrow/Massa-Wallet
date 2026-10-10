@@ -21,7 +21,9 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Platform channel id (must match MainActivity.kt).
-const MethodChannel _widgetChannel = MethodChannel('site.massawallet.app/widget');
+const MethodChannel _widgetChannel = MethodChannel(
+  'site.massawallet.app/widget',
+);
 
 /// Writes widget data + asks Android to redraw all wallet widgets.
 ///

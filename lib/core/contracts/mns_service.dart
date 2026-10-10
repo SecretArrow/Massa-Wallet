@@ -16,7 +16,8 @@ abstract final class MnsContracts {
   static const mainnet = 'AS1q5hUfxLXNXLKsYQVXZLK7MPUZcWaNZZsK7e9QzqhGdAgLpUGT';
 
   /// MNS contract on buildnet (massa-web3 `MNS_CONTRACTS.buildnet`).
-  static const buildnet = 'AS12qKAVjU1nr66JSkQ6N4Lqu4iwuVc6rAbRTrxFoynPrPdP1sj3G';
+  static const buildnet =
+      'AS12qKAVjU1nr66JSkQ6N4Lqu4iwuVc6rAbRTrxFoynPrPdP1sj3G';
 
   /// Legacy DNS contract fallback (massa-web3 `DNSAddress`).
   static const legacyMainnet =
@@ -117,8 +118,9 @@ class MnsService {
     }
 
     final primary = mainnet ? MnsContracts.mainnet : MnsContracts.buildnet;
-    final legacy =
-        mainnet ? MnsContracts.legacyMainnet : MnsContracts.legacyBuildnet;
+    final legacy = mainnet
+        ? MnsContracts.legacyMainnet
+        : MnsContracts.legacyBuildnet;
     for (final contract in [primary, legacy]) {
       final target = await _dnsResolve(contract, domain);
       if (target != null && target.isNotEmpty) {

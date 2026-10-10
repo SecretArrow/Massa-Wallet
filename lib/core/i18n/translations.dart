@@ -4,7 +4,7 @@ library;
 /// Map: language code → key → localized string.
 const Map<String, Map<String, String>> translations = {
   'en': {
-    'app.title': 'Massa Wallet',
+    'app.title': 'Pyramids Wallet',
     'app.tagline': 'Self-custodial wallet for the Massa blockchain',
     // Onboarding
     'welcome.title': 'Your keys, your coins',
@@ -80,6 +80,15 @@ const Map<String, Map<String, String>> translations = {
     // Receive
     'receive.title': 'Receive MAS',
     'receive.hint': 'Share this address to receive MAS',
+    'receive.faucet': 'Get test MAS (faucet)',
+    'receive.faucet.hint':
+        'Tries the legacy HTTP faucet first; the official faucet is the #buildnet-faucet channel on the Massa Discord. Buildnet only.',
+    'faucet.success': 'Faucet request accepted — funds arrive within a minute',
+    'faucet.unavailable.title': 'HTTP faucet unavailable',
+    'faucet.unavailable.body':
+        'The official buildnet faucet is the #buildnet-faucet channel on the Massa Discord (one request per day). Open Discord, paste your address, and the funds will arrive shortly.',
+    'faucet.open.discord': 'Open Massa Discord',
+    'faucet.open.docs': 'Open faucet documentation',
     // Staking
     'staking.title': 'Staking',
     'staking.rolls': 'Rolls',
@@ -134,7 +143,8 @@ const Map<String, Map<String, String>> translations = {
     'deferred.bookFunction': 'Scheduler function',
     'deferred.bookPreset': 'Argument preset',
     'deferred.presetManager': 'deferred-call-manager: registerCall(periods)',
-    'deferred.presetGeneric': 'Generic: register(target, function, slot, gas, params, coins)',
+    'deferred.presetGeneric':
+        'Generic: register(target, function, slot, gas, params, coins)',
     'deferred.presetRaw': 'Raw args (hex)',
     'deferred.periodsFromNow': 'Periods from now',
     'deferred.targetAddress': 'Target contract (AS…)',
@@ -152,7 +162,8 @@ const Map<String, Map<String, String>> translations = {
         'Ready to reinvest now: {0} roll(s) · reserve kept: {1} MAS',
     'ac.status.disabled': 'Auto-compound is off',
     'ac.status.waiting': 'Cycle {0}: waiting for the next cycle rollover',
-    'ac.status.nothing': 'No whole roll to buy yet (below reserve + roll price)',
+    'ac.status.nothing':
+        'No whole roll to buy yet (below reserve + roll price)',
     'ac.status.bought': 'Reinvested {0} roll(s) at cycle {1}',
     'ac.status.failed': 'Last attempt failed: {0}',
     // Node mode
@@ -190,7 +201,8 @@ const Map<String, Map<String, String>> translations = {
     'node.mode.embedded.body':
         'The official massa-node binary (DEVN.30.2, buildnet) is bundled in this APK and executed inside the app sandbox on loopback — no root, no Termux. RPC is loopback-only.',
     'node.embedded.state.stopped': 'Stopped',
-    'node.embedded.state.starting': 'Starting… first bootstrap can take a while',
+    'node.embedded.state.starting':
+        'Starting… first bootstrap can take a while',
     'node.embedded.state.running': 'Running',
     'node.embedded.state.failed': 'Failed',
     'node.embedded.state.unsupported': 'Not available in this build',
@@ -257,7 +269,7 @@ const Map<String, Map<String, String>> translations = {
     'common.retry': 'Retry',
     'common.confirm': 'Confirm',
     'common.unlock': 'Unlock',
-    'common.unlockReason': 'Unlock your Massa Wallet',
+    'common.unlockReason': 'Unlock your Pyramids Wallet',
     'common.locked': 'Wallet locked',
     'common.back': 'Back',
     'common.next': 'Next',
@@ -312,15 +324,17 @@ const Map<String, Map<String, String>> translations = {
     'book.add': 'Add contact',
     'book.save': 'Save',
     'book.saveTitle': 'Save this contact?',
-    'book.saveBody': 'Save {0} to your address book for easier access next time?',
+    'book.saveBody':
+        'Save {0} to your address book for easier access next time?',
     'book.invalid': 'Enter a name and a valid Massa address (AU1…)',
     'book.empty': 'No saved contacts yet',
     // Browser
     'browser.homeTitle': 'Massa DeWeb Browser',
-    'browser.homeSub': 'Browse websites stored directly on the Massa blockchain',
-    'browser.homeHint':
-        'dApps can connect through the injected provider:',
-    'browser.notSite': 'Resolved to {0} — not a smart contract (on-chain website)',
+    'browser.homeSub':
+        'Browse websites stored directly on the Massa blockchain',
+    'browser.homeHint': 'dApps can connect through the injected provider:',
+    'browser.notSite':
+        'Resolved to {0} — not a smart contract (on-chain website)',
     'browser.siteInfo': 'Site info',
     'browser.domain': 'Domain',
     'browser.contract': 'Smart contract',
@@ -331,6 +345,18 @@ const Map<String, Map<String, String>> translations = {
     'browser.reload': 'Reload',
     'browser.history': 'Visited pages',
     'browser.historyEmpty': 'Nothing here yet',
+    'browser.dappsHttp': 'Massa dApps',
+    'browser.dappsDeweb': 'On-chain DeWeb sites',
+    'browser.bookmarks': 'Bookmarks',
+    'browser.noBookmarks': 'No bookmarks yet — open a dApp and tap the star',
+    'browser.noHistory': 'No browsing history yet',
+    'browser.securityHint':
+        'The Massa provider (window.massa) is injected on every page. Signing requires your explicit approval and never exposes your secret key.',
+    'browser.addBookmark': 'Add bookmark',
+    'browser.clearHistory': 'Clear history',
+    'browser.removeBookmark': 'Remove bookmark',
+    'browser.opDetails': 'Operation',
+    'browser.opUnknown': 'Custom operation (raw bytes)',
     // Web3 provider
     'web3.connectTitle': 'Connect wallet',
     'web3.connectBody': 'Allow {0} to see your address and request approvals?',
@@ -339,6 +365,7 @@ const Map<String, Map<String, String>> translations = {
     'web3.noAccount': 'No active account',
     'web3.signTitle': 'Sign message',
     'web3.signOpTitle': 'Sign operation',
+    'web3.raw': 'Raw payload',
     'web3.sign': 'Sign',
     'web3.sendTitle': 'Confirm transfer',
     'web3.buyRollsTitle': 'Buy rolls',
@@ -372,7 +399,7 @@ const Map<String, Map<String, String>> translations = {
     'settings.restore.done': 'Restore finished — {0} account(s) added',
   },
   'id': {
-    'app.title': 'Massa Wallet',
+    'app.title': 'Pyramids Wallet',
     'app.tagline': 'Wallet self-custodial untuk blockchain Massa',
     'welcome.title': 'Kunci Anda, koin Anda',
     'welcome.body':
@@ -414,7 +441,8 @@ const Map<String, Map<String, String>> translations = {
     'wallet.empty.body': 'Buat atau impor wallet untuk mulai.',
     'wallet.noAccounts': 'Tidak ada akun',
     'wallet.active': 'Aktif',
-    'wallet.watchOnly': 'Akun watch-only tidak bisa menandatangani atau mengirim operasi',
+    'wallet.watchOnly':
+        'Akun watch-only tidak bisa menandatangani atau mengirim operasi',
     'wallet.watchOnly.short': 'Pantau',
     'wallet.rename': 'Ganti nama',
     'wallet.delete': 'Hapus',
@@ -444,6 +472,15 @@ const Map<String, Map<String, String>> translations = {
     'send.resolveMns': 'Resolusi domain .massa',
     'receive.title': 'Terima MAS',
     'receive.hint': 'Bagikan alamat ini untuk menerima MAS',
+    'receive.faucet': 'Ambil MAS uji (faucet)',
+    'receive.faucet.hint':
+        'Mencoba faucet HTTP lama terlebih dahulu; faucet resmi ada di kanal #buildnet-faucet pada Discord Massa. Khusus buildnet.',
+    'faucet.success': 'Permintaan faucet diterima — dana masuk dalam ±1 menit',
+    'faucet.unavailable.title': 'Faucet HTTP tidak tersedia',
+    'faucet.unavailable.body':
+        'Faucet buildnet resmi adalah kanal #buildnet-faucet di Discord Massa (satu permintaan per hari). Buka Discord, tempel alamat Anda, dan dana akan segera masuk.',
+    'faucet.open.discord': 'Buka Discord Massa',
+    'faucet.open.docs': 'Buka dokumentasi faucet',
     'staking.title': 'Staking',
     'staking.rolls': 'Roll',
     'staking.activeRolls': 'Roll aktif',
@@ -495,7 +532,8 @@ const Map<String, Map<String, String>> translations = {
     'deferred.bookFunction': 'Fungsi scheduler',
     'deferred.bookPreset': 'Preset argumen',
     'deferred.presetManager': 'deferred-call-manager: registerCall(periods)',
-    'deferred.presetGeneric': 'Generik: register(target, fungsi, slot, gas, params, coins)',
+    'deferred.presetGeneric':
+        'Generik: register(target, fungsi, slot, gas, params, coins)',
     'deferred.presetRaw': 'Args mentah (hex)',
     'deferred.periodsFromNow': 'Periode dari sekarang',
     'deferred.targetAddress': 'Kontrak target (AS…)',
@@ -509,11 +547,11 @@ const Map<String, Map<String, String>> translations = {
     'ac.title': 'Auto-compound roll',
     'ac.body':
         'Saat siklus staking baru dimulai dan reward sudah masuk (deferred credits), surplus di atas cadangan fee otomatis direinvestasikan menjadi roll utuh.',
-    'ac.potential':
-        'Siap direinvestasi sekarang: {0} roll · cadangan: {1} MAS',
+    'ac.potential': 'Siap direinvestasi sekarang: {0} roll · cadangan: {1} MAS',
     'ac.status.disabled': 'Auto-compound mati',
     'ac.status.waiting': 'Siklus {0}: menunggu rollover siklus berikutnya',
-    'ac.status.nothing': 'Belum ada roll utuh untuk dibeli (di bawah cadangan + harga roll)',
+    'ac.status.nothing':
+        'Belum ada roll utuh untuk dibeli (di bawah cadangan + harga roll)',
     'ac.status.bought': 'Reinvestasi {0} roll pada siklus {1}',
     'ac.status.failed': 'Percobaan terakhir gagal: {0}',
     'node.title': 'Mode node (eksperimental)',
@@ -615,7 +653,7 @@ const Map<String, Map<String, String>> translations = {
     'common.retry': 'Coba lagi',
     'common.confirm': 'Konfirmasi',
     'common.unlock': 'Buka',
-    'common.unlockReason': 'Buka Massa Wallet Anda',
+    'common.unlockReason': 'Buka Pyramids Wallet Anda',
     'common.locked': 'Wallet terkunci',
     'common.back': 'Kembali',
     'common.next': 'Lanjut',
@@ -675,10 +713,11 @@ const Map<String, Map<String, String>> translations = {
     'book.empty': 'Belum ada kontak tersimpan',
     // Browser
     'browser.homeTitle': 'Browser DeWeb Massa',
-    'browser.homeSub': 'Jelajahi situs web yang tersimpan langsung di blockchain Massa',
-    'browser.homeHint':
-        'dApp dapat terhubung lewat provider yang diinjeksi:',
-    'browser.notSite': 'Teresolusi ke {0} — bukan smart contract (situs on-chain)',
+    'browser.homeSub':
+        'Jelajahi situs web yang tersimpan langsung di blockchain Massa',
+    'browser.homeHint': 'dApp dapat terhubung lewat provider yang diinjeksi:',
+    'browser.notSite':
+        'Teresolusi ke {0} — bukan smart contract (situs on-chain)',
     'browser.siteInfo': 'Info situs',
     'browser.domain': 'Domain',
     'browser.contract': 'Smart contract',
@@ -689,14 +728,29 @@ const Map<String, Map<String, String>> translations = {
     'browser.reload': 'Muat ulang',
     'browser.history': 'Halaman terkunjungi',
     'browser.historyEmpty': 'Belum ada apa pun di sini',
+    'browser.dappsHttp': 'dApp Massa',
+    'browser.dappsDeweb': 'Situs DeWeb on-chain',
+    'browser.bookmarks': 'Bookmark',
+    'browser.noBookmarks':
+        'Belum ada bookmark — buka sebuah dApp lalu ketuk bintang',
+    'browser.noHistory': 'Belum ada riwayat',
+    'browser.securityHint':
+        'Provider Massa (window.massa) disuntikkan di setiap halaman. Menandatangani selalu butuh persetujuan Anda dan tidak pernah membuka secret key.',
+    'browser.addBookmark': 'Tambah bookmark',
+    'browser.clearHistory': 'Hapus riwayat',
+    'browser.removeBookmark': 'Hapus bookmark',
+    'browser.opDetails': 'Operasi',
+    'browser.opUnknown': 'Operasi kustom (byte mentah)',
     // Web3 provider
     'web3.connectTitle': 'Hubungkan wallet',
-    'web3.connectBody': 'Izinkan {0} melihat alamat Anda dan meminta persetujuan?',
+    'web3.connectBody':
+        'Izinkan {0} melihat alamat Anda dan meminta persetujuan?',
     'web3.connect': 'Hubungkan',
     'web3.rejected': 'Permintaan ditolak pengguna',
     'web3.noAccount': 'Tidak ada akun aktif',
     'web3.signTitle': 'Tanda tangani pesan',
     'web3.signOpTitle': 'Tanda tangani operasi',
+    'web3.raw': 'Payload mentah',
     'web3.sign': 'Tanda tangani',
     'web3.sendTitle': 'Konfirmasi transfer',
     'web3.buyRollsTitle': 'Beli roll',

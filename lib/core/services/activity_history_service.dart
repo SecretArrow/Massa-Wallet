@@ -11,7 +11,15 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Kind of recorded activity.
-enum ActivityKind { send, receive, rollBuy, rollSell, callSC, tokenTransfer, dapp }
+enum ActivityKind {
+  send,
+  receive,
+  rollBuy,
+  rollSell,
+  callSC,
+  tokenTransfer,
+  dapp,
+}
 
 /// Lifecycle status of a recorded activity.
 enum ActivityStatus { submitted, final_, failed }
@@ -99,7 +107,8 @@ class Activity {
     accountAddress: (j['account'] ?? '') as String,
     amountNano: BigInt.tryParse((j['amount'] ?? '0').toString()) ?? BigInt.zero,
     counterparty: (j['counterparty'] ?? '') as String,
-    createdAt: DateTime.tryParse((j['createdAt'] ?? '') as String) ??
+    createdAt:
+        DateTime.tryParse((j['createdAt'] ?? '') as String) ??
         DateTime.now().toUtc(),
     status: ActivityStatus.values.firstWhere(
       (s) => s.name == (j['status'] ?? ''),
@@ -125,19 +134,20 @@ class ActivityHistoryService {
   Future<List<Activity>> load({String? accountAddress}) async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getStringList(_kKey) ?? const [];
-    final all = raw
-        .map((s) {
-          try {
-            return Activity._fromJson(
-              json.decode(s) as Map<String, dynamic>,
-            );
-          } on FormatException {
-            return null;
-          }
-        })
-        .whereType<Activity>()
-        .toList()
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final all =
+        raw
+            .map((s) {
+              try {
+                return Activity._fromJson(
+                  json.decode(s) as Map<String, dynamic>,
+                );
+              } on FormatException {
+                return null;
+              }
+            })
+            .whereType<Activity>()
+            .toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     if (accountAddress == null) return all;
     return all.where((a) => a.accountAddress == accountAddress).toList();
   }

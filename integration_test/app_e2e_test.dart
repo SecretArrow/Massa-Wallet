@@ -64,7 +64,7 @@ void main() {
             ),
           ),
         ],
-        child: const MassaWalletApp(),
+        child: const PyramidsWalletApp(),
       ),
     );
     await tester.pumpAndSettle(const Duration(seconds: 2));

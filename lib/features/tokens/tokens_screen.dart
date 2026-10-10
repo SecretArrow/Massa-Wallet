@@ -83,8 +83,9 @@ class _TokensScreenState extends State<TokensScreen> {
       _error = null;
     });
     try {
-      final networkKey =
-          settings.network == MassaNetwork.mainnet ? 'mainnet' : 'buildnet';
+      final networkKey = settings.network == MassaNetwork.mainnet
+          ? 'mainnet'
+          : 'buildnet';
       final custom = await _store.load(networkKey);
       final registry = KnownTokens.mainnet.entries
           .where((e) => networkKey == 'mainnet')
@@ -154,8 +155,9 @@ class _TokensScreenState extends State<TokensScreen> {
       return;
     }
     final settings = context.read<SettingsProvider>();
-    final networkKey =
-        settings.network == MassaNetwork.mainnet ? 'mainnet' : 'buildnet';
+    final networkKey = settings.network == MassaNetwork.mainnet
+        ? 'mainnet'
+        : 'buildnet';
     try {
       // Validate by loading metadata.
       await _mrc20.loadToken(address);
@@ -196,8 +198,9 @@ class _TokensScreenState extends State<TokensScreen> {
             const SizedBox(height: 12),
             TextField(
               controller: amountCtrl,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: InputDecoration(
                 labelText: ctx.t('send.amount'),
                 suffixText: row.token.symbol,
@@ -225,15 +228,15 @@ class _TokensScreenState extends State<TokensScreen> {
     final amountStr = amountCtrl.text.trim().replaceAll(',', '.');
     final amountRaw = _parseTokenAmount(amountStr, row.token.decimals);
     if (!to.startsWith('AU1') && !to.startsWith('AS1')) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.t('send.invalidAddress'))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.t('send.invalidAddress'))));
       return;
     }
     if (amountRaw == null || amountRaw <= BigInt.zero) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.t('send.invalidAmount'))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.t('send.invalidAmount'))));
       return;
     }
 
@@ -335,7 +338,11 @@ class _TokensScreenState extends State<TokensScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.token_outlined, size: 56, color: Color(0xFF30363D)),
+            const Icon(
+              Icons.token_outlined,
+              size: 56,
+              color: Color(0xFF30363D),
+            ),
             const SizedBox(height: 12),
             Text(context.t('tokens.empty')),
             const SizedBox(height: 12),
@@ -361,7 +368,10 @@ class _TokensScreenState extends State<TokensScreen> {
                 padding: const EdgeInsets.all(12),
                 child: Text(
                   _error!,
-                  style: const TextStyle(color: Color(0xFFF85149), fontSize: 12),
+                  style: const TextStyle(
+                    color: Color(0xFFF85149),
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ),

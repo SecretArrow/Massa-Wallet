@@ -111,8 +111,7 @@ class SettingsProvider extends ChangeNotifier {
   NodeConnectionMode get connectionMode => _connectionMode;
 
   /// Loopback endpoint served by the embedded node (API v2).
-  String get embeddedEndpoint =>
-      'http://127.0.0.1:$embeddedApiPort/api/v2';
+  String get embeddedEndpoint => 'http://127.0.0.1:$embeddedApiPort/api/v2';
 
   /// Whether the embedded node can serve the currently selected network
   /// (the bundled binary targets buildnet only).
@@ -130,12 +129,12 @@ class SettingsProvider extends ChangeNotifier {
 
   /// Effective RPC endpoint in use.
   String get effectiveEndpoint => resolveEndpoint(
-        mode: _connectionMode.name,
-        customUrl: _customNodeUrl,
-        defaultUrl: _network.apiUrl,
-        embeddedUrl: embeddedEndpoint,
-        embeddedUsable: embeddedUsable,
-      );
+    mode: _connectionMode.name,
+    customUrl: _customNodeUrl,
+    defaultUrl: _network.apiUrl,
+    embeddedUrl: embeddedEndpoint,
+    embeddedUsable: embeddedUsable,
+  );
 
   /// Loads persisted settings.
   Future<void> load() async {

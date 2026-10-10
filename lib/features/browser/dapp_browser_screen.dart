@@ -16,10 +16,14 @@ import '../../core/contracts/deweb_service.dart';
 import '../../core/contracts/local_site_server.dart';
 import '../../core/contracts/mns_service.dart';
 import '../../core/contracts/web3_provider.dart';
+import '../../core/crypto/operation_describer.dart';
+import '../../core/crypto/operation_serializer.dart' show OperationType;
 import '../../core/i18n/app_i18n.dart';
 import '../../core/services/settings_provider.dart';
 import '../../core/services/wallet_provider.dart';
 import '../../ui/theme.dart';
+import 'browser_store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Curated starter sites (on-chain, buildnet-friendly).
 const List<(String, String)> kFeaturedSites = [
@@ -59,15 +63,23 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
   double _progress = 0;
   final List<String> _history = [];
 
+  // Start page + persisted browser data.
+  BrowserStore? _store;
+  List<DappEntry> _bookmarks = const [];
+  List<DappEntry> _storeHistory = const [];
+  bool _showStartPage = true;
+
   @override
   void initState() {
     super.initState();
     _settings = context.read<SettingsProvider>();
     _mns = MnsService(
-      clientFactory: () => MassaRpcClient(endpoint: _settings!.effectiveEndpoint),
+      clientFactory: () =>
+          MassaRpcClient(endpoint: _settings!.effectiveEndpoint),
     );
     _deweb = DeWebService(
-      clientFactory: () => MassaRpcClient(endpoint: _settings!.effectiveEndpoint),
+      clientFactory: () =>
+          MassaRpcClient(endpoint: _settings!.effectiveEndpoint),
     );
     _server = LocalSiteServer(deweb: _deweb);
     _controller = WebViewController()
@@ -88,6 +100,15 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
         onMessageReceived: (msg) => _onWeb3Message(msg.message),
       );
     _start(widget.initialUrl ?? 'home');
+    // Load persisted bookmarks/history (start page data).
+    SharedPreferences.getInstance().then((prefs) {
+      if (!mounted) return;
+      setState(() {
+        _store = BrowserStore(prefs);
+        _bookmarks = _store!.bookmarks();
+        _storeHistory = _store!.history();
+      });
+    });
   }
 
   @override
@@ -109,6 +130,10 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
       }
       if (!isMassa) {
         final url = input.startsWith('http') ? input : 'https://$input';
+        if (mounted) {
+          setState(() => _showStartPage = false);
+        }
+        _recordVisit(_hostOf(url), url);
         await _controller.loadRequest(Uri.parse(url));
         return;
       }
@@ -127,9 +152,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                context.t('browser.notSite', args: [res.target]),
-              ),
+              content: Text(context.t('browser.notSite', args: [res.target])),
             ),
           );
           setState(() => _loading = false);
@@ -145,10 +168,19 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
       final path = parsed.path.isEmpty ? '' : '/${parsed.path}';
       final localUrl = '${_server.baseUrl}/$path';
       _pushHistory(_resolvedDomain != null ? '${_resolvedDomain!}.massa' : sc);
+      if (mounted) {
+        setState(() {
+          _showStartPage = false;
+          _currentUrl = _resolvedDomain != null
+              ? '${_resolvedDomain!}.massa'
+              : sc;
+        });
+      }
+      _recordVisit(
+        _resolvedDomain != null ? '${_resolvedDomain!}.massa' : sc,
+        _resolvedDomain != null ? 'https://${_resolvedDomain!}.massa' : sc,
+      );
       await _controller.loadRequest(Uri.parse(localUrl));
-      setState(() => _currentUrl = _resolvedDomain != null
-          ? '$_resolvedDomain.massa'
-          : sc);
     } on MnsException catch (e) {
       _showError(e.message);
     } on DeWebException catch (e) {
@@ -158,6 +190,8 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
     }
   }
 
+  /// Shows the Flutter start page (curated dApps, DeWeb sites,
+  /// bookmarks, history) instead of a WebView HTML page.
   Future<void> _loadHome() async {
     setState(() {
       _loading = false;
@@ -165,10 +199,20 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
       _currentTitle = '';
       _resolvedSite = null;
       _resolvedDomain = null;
+      _showStartPage = true;
     });
-    setState(() => _loading = false);
-    await _controller.loadHtmlString(_homeHtml());
   }
+
+  void _recordVisit(String name, String url) {
+    final store = _store;
+    if (store == null || !url.startsWith('http')) return;
+    store.recordVisit(name, url);
+    if (mounted) {
+      setState(() => _storeHistory = store.history());
+    }
+  }
+
+  String _hostOf(String url) => Uri.tryParse(url)?.host ?? url;
 
   void _pushHistory(String url) {
     if (url.isEmpty) return;
@@ -186,8 +230,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
     }
     // Internal .massa links handled by our resolver.
     final parsed = MnsService.parseInput(url);
-    if (parsed.domain != null &&
-        !url.startsWith('http') ||
+    if (parsed.domain != null && !url.startsWith('http') ||
         url.endsWith('.massa') ||
         url.contains('.massa/')) {
       unawaited(_start(url));
@@ -234,7 +277,12 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
     final settings = _settings!;
     final account = wallet.activeAccount;
     try {
-      final result = await _handleWeb3(req, wallet, settings, account?.address ?? '');
+      final result = await _handleWeb3(
+        req,
+        wallet,
+        settings,
+        account?.address ?? '',
+      );
       if (!mounted) return;
       await _controller.runJavaScript(req.resolveJs(result));
     } on Exception catch (e) {
@@ -260,13 +308,19 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
         final a = wallet.activeAccount;
         if (a == null) throw Exception(context.t('web3.noAccount'));
         return [
-          {'address': a.address, 'name': a.nickname.isEmpty ? 'Massa Wallet' : a.nickname},
+          {
+            'address': a.address,
+            'name': a.nickname.isEmpty ? 'Massa Wallet' : a.nickname,
+          },
         ];
       case 'accounts':
         final a = wallet.activeAccount;
         if (a == null) return [];
         return [
-          {'address': a.address, 'name': a.nickname.isEmpty ? 'Massa Wallet' : a.nickname},
+          {
+            'address': a.address,
+            'name': a.nickname.isEmpty ? 'Massa Wallet' : a.nickname,
+          },
         ];
       case 'network':
         return {
@@ -293,12 +347,36 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
         return sig;
       case 'signOperation':
         final data = (req.params['data'] ?? '') as String;
-        final ok = await _confirmSign(
+        // Defensive decode: base58 / base64 / comma-separated ints.
+        final opBytes = _decodeArgs(data);
+        final desc = describeSerializedOperation(opBytes);
+        final rows = <String, String>{
+          context.t('browser.opDetails'): desc.type == null || !desc.parsedOk
+              ? context.t('browser.opUnknown')
+              : (desc.functionName == null
+                    ? desc.type!.name
+                    : '${desc.type!.name} → ${desc.functionName}'),
+          if (desc.parsedOk && desc.targetAddress != null)
+            '→': desc.targetAddress!,
+          if (desc.parsedOk &&
+              desc.amount != null &&
+              desc.type == OperationType.transaction)
+            context.t('send.amount'): '${formatNano(desc.amount!)} MAS',
+          if (desc.parsedOk && desc.fee != null)
+            context.t('send.fee'): '${formatNano(desc.fee!)} MAS',
+          context.t('web3.raw'): data,
+        };
+        final okOp = await _confirmTx(
           title: context.t('web3.signOpTitle'),
-          body: data,
+          rows: rows,
         );
-        if (!ok) throw Exception(context.t('web3.rejected'));
-        return _signMessage(data);
+        if (!okOp) throw Exception(context.t('web3.rejected'));
+        // Canonical signing: u64BE(chainId) | versionedPub | serializedOp.
+        final signed = await wallet.signSerializedOperationForDapp(
+          account,
+          opBytes,
+        );
+        return signed.signature;
       case 'sendTransaction':
         final to = (req.params['to'] ?? '') as String;
         final amountStr = (req.params['amount'] ?? '0').toString();
@@ -324,7 +402,9 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
         final amount = int.tryParse('${req.params['amount']}') ?? 0;
         final ok = await _confirmTx(
           title: context.t(
-            req.method == 'buyRolls' ? 'web3.buyRollsTitle' : 'web3.sellRollsTitle',
+            req.method == 'buyRolls'
+                ? 'web3.buyRollsTitle'
+                : 'web3.sellRollsTitle',
           ),
           rows: {
             context.t('staking.rolls'): '$amount',
@@ -393,7 +473,8 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
       }
     }
     // base58 (uses Massa base58 alphabet, no checksum for raw args)
-    const alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+    const alphabet =
+        '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
     var num = BigInt.zero;
     for (final ch in trimmed.runes) {
       final idx = alphabet.indexOf(String.fromCharCode(ch));
@@ -416,8 +497,9 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
     return wallet.signMessageForDapp(account.address, data);
   }
 
-  String _originLabel() =>
-      _resolvedDomain != null ? '${_resolvedDomain!}.massa' : (_currentTitle.isEmpty ? _currentUrl : _currentTitle);
+  String _originLabel() => _resolvedDomain != null
+      ? '${_resolvedDomain!}.massa'
+      : (_currentTitle.isEmpty ? _currentUrl : _currentTitle);
 
   Future<bool> _confirm({
     required String title,
@@ -497,39 +579,26 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
   void _showError(String message) {
     if (!mounted) return;
     setState(() => _loading = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  String _homeHtml() {
-    final featured = kFeaturedSites
-        .map(
-          (s) => '<button onclick="location.href=\'massa://${s.$1}\'">'
-              '<b>${s.$1}</b><span>${s.$2}</span></button>',
-        )
-        .join();
-    final t = (String k, [List<String> a = const []]) => context.t(k, args: a);
-    return '''<!DOCTYPE html>
-<html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>${t('browser.homeTitle')}</title>
-<style>
-  body{background:#0d1117;color:#e6edf3;font-family:-apple-system,sans-serif;padding:24px;margin:0}
-  h1{font-size:22px;margin:0 0 4px}
-  p.sub{color:#8b949e;margin:0 0 20px;font-size:13px}
-  button{display:block;width:100%;text-align:left;background:#161b22;color:#e6edf3;
-    border:1px solid #21262d;border-radius:14px;padding:14px 16px;margin-bottom:10px;cursor:pointer}
-  button b{display:block;color:#18c8c8;font-size:15px;margin-bottom:2px}
-  button span{color:#8b949e;font-size:12px}
-  .hint{background:#161b22;border:1px solid #21262d;border-radius:14px;padding:14px;
-    font-size:12px;color:#8b949e;margin-top:16px;line-height:1.5}
-  code{color:#18c8c8}
-</style></head><body>
-<h1>${t('browser.homeTitle')}</h1>
-<p class="sub">${t('browser.homeSub')}</p>
-$featured
-<div class="hint">${t('browser.homeHint')}<br/><code>window.massa.enable()</code></div>
-</body></html>''';
+  void _toggleBookmark() {
+    final store = _store;
+    final url = _currentUrl;
+    if (store == null || !url.startsWith('http')) return;
+    if (store.isBookmarked(url)) {
+      store.removeBookmark(url);
+    } else {
+      store.addBookmark(_hostOf(url), url);
+    }
+    setState(() => _bookmarks = store.bookmarks());
+  }
+
+  void _clearStoreHistory() {
+    _store?.clearHistory();
+    setState(() => _storeHistory = const []);
   }
 
   @override
@@ -546,8 +615,10 @@ $featured
             decoration: InputDecoration(
               hintText: 'name.massa · AS1… · https://…',
               isDense: true,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 10,
+              ),
               prefixIcon: const Icon(Icons.public, size: 18),
               suffixIcon: _loading
                   ? const Padding(
@@ -567,6 +638,19 @@ $featured
           ),
         ),
         actions: [
+          if (_currentUrl.startsWith('http'))
+            IconButton(
+              tooltip: (_store?.isBookmarked(_currentUrl) ?? false)
+                  ? context.t('browser.removeBookmark')
+                  : context.t('browser.addBookmark'),
+              icon: Icon(
+                (_store?.isBookmarked(_currentUrl) ?? false)
+                    ? Icons.star
+                    : Icons.star_border,
+                size: 20,
+              ),
+              onPressed: _toggleBookmark,
+            ),
           if (inputIsMassa)
             IconButton(
               tooltip: context.t('browser.siteInfo'),
@@ -588,7 +672,23 @@ $featured
       ),
       body: Column(
         children: [
-          Expanded(child: WebViewWidget(controller: _controller)),
+          Expanded(
+            child: Stack(
+              children: [
+                Offstage(
+                  offstage: _showStartPage,
+                  child: WebViewWidget(controller: _controller),
+                ),
+                if (_showStartPage)
+                  _StartPage(
+                    bookmarks: _bookmarks,
+                    history: _storeHistory,
+                    onOpen: _start,
+                    onClearHistory: _clearStoreHistory,
+                  ),
+              ],
+            ),
+          ),
           _buildBottomBar(),
         ],
       ),
@@ -682,12 +782,13 @@ $featured
             children: [
               Text(
                 ctx.t('browser.siteInfo'),
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                ),
               ),
               const SizedBox(height: 12),
-              Text(
-                '${ctx.t('browser.domain')}: ${_resolvedDomain ?? '-'}',
-              ),
+              Text('${ctx.t('browser.domain')}: ${_resolvedDomain ?? '-'}'),
               const SizedBox(height: 4),
               Text(
                 '${ctx.t('browser.contract')}: ',
@@ -704,10 +805,239 @@ $featured
               const SizedBox(height: 12),
               Text(
                 '${ctx.t('browser.servedLocally')}',
-                style: const TextStyle(fontSize: 12, color: MassaColors.textSecondary),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: MassaColors.textSecondary,
+                ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Flutter start page: curated https dApps, on-chain DeWeb sites,
+/// bookmarks and persistent history.
+class _StartPage extends StatelessWidget {
+  final List<DappEntry> bookmarks;
+  final List<DappEntry> history;
+  final ValueChanged<String> onOpen;
+  final VoidCallback onClearHistory;
+
+  const _StartPage({
+    required this.bookmarks,
+    required this.history,
+    required this.onOpen,
+    required this.onClearHistory,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          const SizedBox(height: 8),
+          Center(
+            child: Text(
+              '▲',
+              style: TextStyle(
+                fontSize: 34,
+                color: Theme.of(context).colorScheme.primary,
+                height: 1,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Center(
+            child: Text(
+              context.t('app.title'),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Center(
+            child: Text(
+              context.t('browser.homeSub'),
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          _section(context, context.t('browser.dappsHttp')),
+          GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            childAspectRatio: 0.95,
+            children: kCuratedDapps
+                .map((d) => _DappTile(entry: d, onTap: () => onOpen(d.url)))
+                .toList(),
+          ),
+          _section(context, context.t('browser.dappsDeweb')),
+          ...kFeaturedSites.map(
+            (s) => Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: ListTile(
+                dense: true,
+                leading: const Icon(Icons.dns),
+                title: Text(s.$1),
+                subtitle: Text(
+                  s.$2,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onTap: () => onOpen(s.$1),
+              ),
+            ),
+          ),
+          _section(context, context.t('browser.bookmarks')),
+          if (bookmarks.isEmpty)
+            Text(
+              context.t('browser.noBookmarks'),
+              style: const TextStyle(fontSize: 12),
+            )
+          else
+            ...bookmarks.map(
+              (b) => Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.star),
+                  title: Text(b.name),
+                  subtitle: Text(
+                    b.url,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontFamily: 'monospace',
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onTap: () => onOpen(b.url),
+                ),
+              ),
+            ),
+          Row(
+            children: [
+              Expanded(child: _section(context, context.t('browser.history'))),
+              if (history.isNotEmpty)
+                TextButton.icon(
+                  onPressed: onClearHistory,
+                  icon: const Icon(Icons.delete_outline, size: 16),
+                  label: Text(
+                    context.t('browser.clearHistory'),
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ),
+            ],
+          ),
+          if (history.isEmpty)
+            Text(
+              context.t('browser.noHistory'),
+              style: const TextStyle(fontSize: 12),
+            )
+          else
+            ...history.map(
+              (h) => ListTile(
+                dense: true,
+                leading: const Icon(Icons.history),
+                title: Text(
+                  h.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Text(
+                  h.url,
+                  style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onTap: () => onOpen(h.url),
+              ),
+            ),
+          const SizedBox(height: 12),
+          Text(
+            context.t('browser.securityHint'),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(fontSize: 11),
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _section(BuildContext context, String title) => Padding(
+    padding: const EdgeInsets.only(top: 16, bottom: 8),
+    child: Text(
+      title,
+      style: TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        letterSpacing: 0.5,
+      ),
+    ),
+  );
+}
+
+/// Grid tile for a curated dApp.
+class _DappTile extends StatelessWidget {
+  final DappEntry entry;
+  final VoidCallback onTap;
+
+  const _DappTile({required this.entry, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: scheme.surfaceContainerHighest.withValues(alpha: 0.4),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: scheme.outlineVariant.withValues(alpha: 0.4),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: scheme.primary.withValues(alpha: 0.14),
+                shape: BoxShape.circle,
+              ),
+              child: Text(
+                entry.name.isEmpty ? '?' : entry.name[0].toUpperCase(),
+                style: TextStyle(
+                  color: scheme.primary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              entry.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 11),
+            ),
+          ],
         ),
       ),
     );

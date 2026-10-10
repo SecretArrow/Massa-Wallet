@@ -96,17 +96,19 @@ void main() {
   group('PriceService', () {
     test('parses CoinGecko payload', () async {
       SharedPreferences.setMockInitialValues({});
-      final client = MockClient((_) async => http.Response(
-        json.encode({
-          'massa': {
-            'usd': 0.0026,
-            'usd_24h_change': -0.7,
-            'idr': 46.5,
-            'idr_24h_change': -0.7,
-          },
-        }),
-        200,
-      ));
+      final client = MockClient(
+        (_) async => http.Response(
+          json.encode({
+            'massa': {
+              'usd': 0.0026,
+              'usd_24h_change': -0.7,
+              'idr': 46.5,
+              'idr_24h_change': -0.7,
+            },
+          }),
+          200,
+        ),
+      );
       final svc = PriceService();
       final price = await svc.fetch(httpClient: client);
       expect(price, isNotNull);

@@ -184,7 +184,10 @@ class WalletRepository {
         final upgraded = accounts
             .map(
               (a) => a.address == address
-                  ? a.copyWith(isWatchOnly: false, publicKey: priv.publicKey.encoded)
+                  ? a.copyWith(
+                      isWatchOnly: false,
+                      publicKey: priv.publicKey.encoded,
+                    )
                   : a,
             )
             .toList();

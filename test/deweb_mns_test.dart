@@ -37,12 +37,13 @@ http.Client _mockNode({
     }
     if (method == 'execute_read_only_call') {
       final call = (params as List).first as Map<String, dynamic>;
-      final res = dnsResolve?.call(
-        (call['parameter'] as List).cast<int>(),
-      );
+      final res = dnsResolve?.call((call['parameter'] as List).cast<int>());
       if (res == null) {
         return _rpc([
-          {'result': {'Error': 'not found'}, 'gas_cost': 100},
+          {
+            'result': {'Error': 'not found'},
+            'gas_cost': 100,
+          },
         ]);
       }
       return _rpc([
@@ -100,7 +101,10 @@ void main() {
       final r = MnsService.parseInput(
         'AS12qKAVjU1nr66JSkQ6N4Lqu4iwuVc6rAbRTrxFoynPrPdP1sj3G/file.js',
       );
-      expect(r.address, 'AS12qKAVjU1nr66JSkQ6N4Lqu4iwuVc6rAbRTrxFoynPrPdP1sj3G');
+      expect(
+        r.address,
+        'AS12qKAVjU1nr66JSkQ6N4Lqu4iwuVc6rAbRTrxFoynPrPdP1sj3G',
+      );
       expect(r.path, 'file.js');
     });
   });
@@ -110,7 +114,8 @@ void main() {
       final client = _mockNode(
         dnsResolve: (param) {
           // u32le len + bytes
-          final len = param[0] | (param[1] << 8) | (param[2] << 16) | (param[3] << 24);
+          final len =
+              param[0] | (param[1] << 8) | (param[2] << 16) | (param[3] << 24);
           return 'AS1target${utf8.decode(param.sublist(4, 4 + len))}';
         },
       );
@@ -129,10 +134,7 @@ void main() {
     });
 
     test('throws for unknown domain', () async {
-      final client = _mockNode(
-        datastore: const {},
-        dnsResolve: (_) => null,
-      );
+      final client = _mockNode(datastore: const {}, dnsResolve: (_) => null);
       final svc = MnsService(
         clientFactory: () => MassaRpcClient(
           endpoint: 'https://example.org/api/v2',
@@ -158,8 +160,11 @@ void main() {
         0xbf, 0x61, 0x75, 0x84, 0xda, 0x01, 0x70, 0x51,
       ];
       expect(h, expected);
-      expect(h, deWebPathHash('/index.html'),
-          reason: 'leading slash is normalized away');
+      expect(
+        h,
+        deWebPathHash('/index.html'),
+        reason: 'leading slash is normalized away',
+      );
     });
 
     test('candidate paths include .html and index fallbacks', () {
@@ -260,9 +265,7 @@ void main() {
       expect(server.baseUrl, startsWith('http://127.0.0.1:'));
 
       final client = http.Client();
-      final res = await client.get(
-        Uri.parse('${server.baseUrl}/style.css'),
-      );
+      final res = await client.get(Uri.parse('${server.baseUrl}/style.css'));
       expect(res.statusCode, 200);
       expect(res.headers['content-type'], contains('text/css'));
       expect(res.body, 'body{}');

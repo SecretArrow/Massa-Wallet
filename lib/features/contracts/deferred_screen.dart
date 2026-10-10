@@ -77,8 +77,9 @@ class _DeferredCallsScreenState extends State<DeferredCallsScreen> {
   Future<void> _loadGenesis() async {
     final settings = context.read<WalletProvider>().settings;
     try {
-      final g = await DeferredCallsService(endpoint: settings.effectiveEndpoint)
-          .fetchGenesisMs();
+      final g = await DeferredCallsService(
+        endpoint: settings.effectiveEndpoint,
+      ).fetchGenesisMs();
       if (mounted) setState(() => _genesisMs = g);
     } on Exception {
       // The planner stays usable offline: user can still type raw slots.
@@ -105,7 +106,13 @@ class _DeferredCallsScreenState extends State<DeferredCallsScreen> {
     );
     if (time == null) return;
     setState(() {
-      _when = DateTime.utc(date.year, date.month, date.day, time.hour, time.minute);
+      _when = DateTime.utc(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
       _quote = null;
       _quoteError = null;
     });
@@ -125,9 +132,9 @@ class _DeferredCallsScreenState extends State<DeferredCallsScreen> {
       final paramsSize = paramsHex.isEmpty
           ? 0
           : (paramsHex.startsWith('0x')
-                ? (paramsHex.length - 2)
-                : paramsHex.length) ~/
-          2;
+                    ? (paramsHex.length - 2)
+                    : paramsHex.length) ~/
+                2;
       final quotes = await svc.quote([
         DeferredCallQuoteInput(
           targetSlot: _targetSlot,
@@ -135,7 +142,8 @@ class _DeferredCallsScreenState extends State<DeferredCallsScreen> {
           paramsSize: paramsSize,
         ),
       ]);
-      if (mounted) setState(() => _quote = quotes.isEmpty ? null : quotes.first);
+      if (mounted)
+        setState(() => _quote = quotes.isEmpty ? null : quotes.first);
     } catch (e) {
       if (mounted) setState(() => _quoteError = e.toString());
     } finally {
@@ -211,7 +219,8 @@ class _DeferredCallsScreenState extends State<DeferredCallsScreen> {
         target: _schedulerCtrl.text.trim(),
         function: _schedulerFnCtrl.text.trim(),
         parameter: args,
-        maxGas: BigInt.tryParse(_maxGasCtrl.text.trim()) ?? BigInt.from(1000000),
+        maxGas:
+            BigInt.tryParse(_maxGasCtrl.text.trim()) ?? BigInt.from(1000000),
         note: 'deferred-call-booking',
       );
       if (mounted) setState(() => _sentOpId = res.operationId);
@@ -268,7 +277,9 @@ class _DeferredCallsScreenState extends State<DeferredCallsScreen> {
                     const SizedBox(height: 12),
                     _KV(
                       label: context.t('deferred.quotePrice'),
-                      value: DeferredCallsService.formatPrice(_quote!.priceNano),
+                      value: DeferredCallsService.formatPrice(
+                        _quote!.priceNano,
+                      ),
                     ),
                     _KV(
                       label: context.t('deferred.quoteGas'),
@@ -324,16 +335,34 @@ class _DeferredCallsScreenState extends State<DeferredCallsScreen> {
                   ),
                 if (_info != null) ...[
                   const SizedBox(height: 12),
-                  _KV(label: context.t('deferred.infoSender'), value: _info!.senderAddress),
-                  _KV(label: context.t('deferred.infoTarget'), value: _info!.targetAddress),
-                  _KV(label: context.t('deferred.infoFunction'), value: _info!.targetFunction),
+                  _KV(
+                    label: context.t('deferred.infoSender'),
+                    value: _info!.senderAddress,
+                  ),
+                  _KV(
+                    label: context.t('deferred.infoTarget'),
+                    value: _info!.targetAddress,
+                  ),
+                  _KV(
+                    label: context.t('deferred.infoFunction'),
+                    value: _info!.targetFunction,
+                  ),
                   _KV(
                     label: context.t('deferred.slot'),
                     value: _info!.targetSlot.toString(),
                   ),
-                  _KV(label: context.t('deferred.infoParams'), value: '${_info!.parameters.length} B'),
-                  _KV(label: context.t('deferred.infoCoins'), value: formatNano(_info!.coinsNano)),
-                  _KV(label: context.t('deferred.infoFee'), value: formatNano(_info!.feeNano)),
+                  _KV(
+                    label: context.t('deferred.infoParams'),
+                    value: '${_info!.parameters.length} B',
+                  ),
+                  _KV(
+                    label: context.t('deferred.infoCoins'),
+                    value: formatNano(_info!.coinsNano),
+                  ),
+                  _KV(
+                    label: context.t('deferred.infoFee'),
+                    value: formatNano(_info!.feeNano),
+                  ),
                   _KV(
                     label: context.t('deferred.infoCancelled'),
                     value: _info!.cancelled
@@ -395,7 +424,8 @@ class _DeferredCallsScreenState extends State<DeferredCallsScreen> {
                       ),
                     ),
                   ],
-                  onChanged: (v) => setState(() => _preset = v ?? _Preset.manager),
+                  onChanged: (v) =>
+                      setState(() => _preset = v ?? _Preset.manager),
                 ),
                 const SizedBox(height: 12),
                 if (_preset == _Preset.manager)
@@ -449,7 +479,9 @@ class _DeferredCallsScreenState extends State<DeferredCallsScreen> {
                 TextField(
                   controller: _maxGasCtrl,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: context.t('deferred.maxGas')),
+                  decoration: InputDecoration(
+                    labelText: context.t('deferred.maxGas'),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 FilledButton(
