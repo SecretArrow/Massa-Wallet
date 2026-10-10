@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/api/massa_rpc.dart' show MassaNetwork;
 import '../../core/i18n/app_i18n.dart';
+import '../../core/services/price_service.dart';
 import '../../core/services/settings_provider.dart';
 import '../../core/services/wallet_provider.dart';
 import '../../ui/widgets.dart';
@@ -20,12 +21,20 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  final PriceService _price = PriceService();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<WalletProvider>().refreshBalances();
+      _loadPrice();
     });
+  }
+
+  Future<void> _loadPrice() async {
+    await _price.fetch();
+    if (mounted) setState(() {});
   }
 
   @override
@@ -142,7 +151,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            _PriceTicker(price: _price.cached, onRetry: _loadPrice),
+            const SizedBox(height: 12),
             GridView.count(
               crossAxisCount: 4,
               shrinkWrap: true,
@@ -173,6 +183,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   label: context.t('wallet.contracts'),
                   onTap: () => Navigator.of(context).pushNamed('/contracts'),
                   color: const Color(0xFFA371F7),
+                ),
+                ActionTile(
+                  icon: Icons.public,
+                  label: context.t('wallet.browser'),
+                  onTap: () => Navigator.of(context).pushNamed('/browser'),
+                  color: const Color(0xFF58A6FF),
+                ),
+                ActionTile(
+                  icon: Icons.token,
+                  label: context.t('wallet.tokens'),
+                  onTap: () => Navigator.of(context).pushNamed('/tokens'),
+                  color: const Color(0xFF18C8C8),
+                ),
+                ActionTile(
+                  icon: Icons.receipt_long,
+                  label: context.t('wallet.history'),
+                  onTap: () => Navigator.of(context).pushNamed('/history'),
+                  color: const Color(0xFFD2A8FF),
+                ),
+                ActionTile(
+                  icon: Icons.import_contacts,
+                  label: context.t('wallet.addressBook'),
+                  onTap: () => Navigator.of(context).pushNamed('/addressBook'),
+                  color: const Color(0xFF7EE787),
                 ),
               ],
             ),
@@ -325,5 +359,70 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
     );
+  }
+}
+
+/// Compact MAS price ticker (CoinGecko, offline-tolerant).
+class _PriceTicker extends StatelessWidget {
+  final MasPrice? price;
+  final VoidCallback onRetry;
+
+  const _PriceTicker({required this.price, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>();
+    if (!settings.showFiat || price == null) {
+      return const SizedBox.shrink();
+    }
+    final isId = settings.language.code == 'id';
+    final value = isId ? price!.idr : price!.usd;
+    final symbol = isId ? 'Rp' : '\$';
+    final change = price!.change24h;
+    final changeColor =
+        change >= 0 ? const Color(0xFF3FB950) : const Color(0xFFF85149);
+    final changeSign = change >= 0 ? '+' : '';
+    final currencyLabel = isId ? 'IDR' : 'USD';
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Card(
+        child: ListTile(
+          dense: true,
+          leading: const Icon(
+            Icons.attach_money,
+            color: Color(0xFF18C8C8),
+          ),
+          title: Text(
+            '$symbol${_formatNumber(value)} $currencyLabel',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          subtitle: Text(
+            '${context.t('price.masPrice')} · '
+            '${changeSign}${change.toStringAsFixed(2)}% 24h',
+            style: const TextStyle(fontSize: 11),
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                change >= 0 ? Icons.trending_up : Icons.trending_down,
+                color: changeColor,
+                size: 16,
+              ),
+              IconButton(
+                icon: const Icon(Icons.refresh, size: 16),
+                onPressed: onRetry,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatNumber(double v) {
+    if (v >= 1000) return v.toStringAsFixed(0);
+    if (v >= 1) return v.toStringAsFixed(2);
+    return v.toStringAsFixed(v < 0.01 ? 6 : 4);
   }
 }

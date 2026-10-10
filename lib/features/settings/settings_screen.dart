@@ -208,6 +208,41 @@ class SettingsScreen extends StatelessWidget {
             title: Text(context.t('settings.privacy')),
             activeThumbColor: const Color(0xFF18C8C8),
           ),
+          SwitchListTile(
+            secondary: const Icon(Icons.attach_money),
+            value: settings.showFiat,
+            onChanged: (v) =>
+                context.read<SettingsProvider>().setShowFiat(v),
+            title: Text(context.t('settings.showFiat')),
+            activeThumbColor: const Color(0xFF18C8C8),
+          ),
+          ListTile(
+            leading: const Icon(Icons.palette_outlined),
+            title: Text(context.t('settings.theme')),
+            trailing: DropdownButton<ThemeMode>(
+              value: settings.themeMode,
+              dropdownColor: const Color(0xFF1C2330),
+              items: [
+                DropdownMenuItem(
+                  value: ThemeMode.dark,
+                  child: Text(context.t('settings.theme.dark')),
+                ),
+                DropdownMenuItem(
+                  value: ThemeMode.light,
+                  child: Text(context.t('settings.theme.light')),
+                ),
+                DropdownMenuItem(
+                  value: ThemeMode.system,
+                  child: Text(context.t('settings.theme.system')),
+                ),
+              ],
+              onChanged: (v) {
+                if (v != null) {
+                  context.read<SettingsProvider>().setThemeMode(v);
+                }
+              },
+            ),
+          ),
           const Divider(),
 
           // Node mode
@@ -232,7 +267,7 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: Text(context.t('settings.version')),
-            trailing: const Text('1.0.0'),
+            trailing: const Text('1.1.0'),
           ),
         ],
       ),

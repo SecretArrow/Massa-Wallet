@@ -137,4 +137,106 @@ class AppTheme {
       ),
     );
   }
+
+  /// Builds the light Material 3 theme.
+  static ThemeData get light {
+    const bg = Color(0xFFF6F8FA);
+    const surface = Color(0xFFFFFFFF);
+    const card = Color(0xFFFFFFFF);
+    const border = Color(0xFFD0D7DE);
+    const textPrimary = Color(0xFF1F2328);
+    const textSecondary = Color(0xFF656D76);
+
+    final scheme = ColorScheme.fromSeed(
+      seedColor: MassaColors.teal,
+      brightness: Brightness.light,
+    ).copyWith(
+      primary: MassaColors.deepTeal,
+      secondary: MassaColors.orange,
+      surface: surface,
+      error: MassaColors.red,
+    );
+
+    final base = ThemeData(
+      useMaterial3: true,
+      colorScheme: scheme,
+      scaffoldBackgroundColor: bg,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: bg,
+        foregroundColor: textPrimary,
+        elevation: 0,
+        centerTitle: true,
+      ),
+      cardTheme: const CardThemeData(
+        color: card,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+          side: BorderSide(color: border),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: surface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: MassaColors.deepTeal, width: 2),
+        ),
+        labelStyle: const TextStyle(color: textSecondary),
+        hintStyle: const TextStyle(color: textSecondary),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: MassaColors.deepTeal,
+          foregroundColor: Colors.white,
+          minimumSize: const Size.fromHeight(52),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: MassaColors.deepTeal,
+          minimumSize: const Size.fromHeight(52),
+          side: const BorderSide(color: MassaColors.deepTeal),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: surface,
+        indicatorColor: MassaColors.deepTeal.withValues(alpha: 0.12),
+        labelTextStyle: WidgetStateProperty.all(
+          const TextStyle(fontSize: 12, color: textSecondary),
+        ),
+      ),
+      dividerTheme: const DividerThemeData(color: border, thickness: 1),
+      listTileTheme: const ListTileThemeData(
+        iconColor: textSecondary,
+        textColor: textPrimary,
+      ),
+      snackBarTheme: const SnackBarThemeData(
+        backgroundColor: Color(0xFF24292F),
+        contentTextStyle: TextStyle(color: Colors.white),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+    return base.copyWith(
+      textTheme: base.textTheme.apply(
+        bodyColor: textPrimary,
+        displayColor: textPrimary,
+      ),
+    );
+  }
 }

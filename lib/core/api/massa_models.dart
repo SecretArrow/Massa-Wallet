@@ -66,6 +66,12 @@ class AddressInfo {
   /// Cycle information (roll drawing / production counts).
   final List<CycleInfo> cycleInfos;
 
+  /// Final datastore keys (raw bytes), capped by the node (typically 500).
+  final List<List<int>> finalDatastoreKeys;
+
+  /// Candidate datastore keys (raw bytes), capped by the node.
+  final List<List<int>> candidateDatastoreKeys;
+
   /// Creates address info.
   AddressInfo({
     required this.address,
@@ -74,6 +80,8 @@ class AddressInfo {
     required this.finalRollCount,
     required this.candidateRollCount,
     this.cycleInfos = const [],
+    this.finalDatastoreKeys = const [],
+    this.candidateDatastoreKeys = const [],
   });
 
   /// Parses from the JSON-RPC result.
@@ -89,6 +97,12 @@ class AddressInfo {
     ),
     cycleInfos: ((json['cycle_infos'] as List?) ?? const [])
         .map((e) => CycleInfo.fromJson(e as Map<String, dynamic>))
+        .toList(),
+    finalDatastoreKeys: ((json['final_datastore_keys'] as List?) ?? const [])
+        .map((e) => (e as List).cast<int>())
+        .toList(),
+    candidateDatastoreKeys: ((json['candidate_datastore_keys'] as List?) ?? const [])
+        .map((e) => (e as List).cast<int>())
         .toList(),
   );
 
@@ -209,32 +223,41 @@ class ReadOnlyCallResult {
   }) : gasCost = gasCost ?? BigInt.zero;
 
   /// Parses from the JSON-RPC result.
+  ///
+  /// Handles both the live node format `{result: {Ok: [bytes]}}` and the
+  /// legacy massa-web3 format `{result: {Ok: {return_value: ...}}}`.
   factory ReadOnlyCallResult.fromJson(Map<String, dynamic> json) {
     final res = json['result'];
-    final ok = res is Map ? res['Ok'] != null : json['Ok'] != null;
     dynamic okValue;
-    if (res is Map && res['Ok'] != null) {
+    String? err;
+    if (res is Map) {
       okValue = res['Ok'];
+      if (okValue == null) {
+        final e = res['Error'] ?? res['Err'];
+        err = e is Map
+            ? (e['Execute_error']?['error']?.toString() ?? '$e')
+            : e?.toString();
+      }
     } else if (json['Ok'] != null) {
       okValue = json['Ok'];
-    }
-    String? err;
-    if (!ok) {
-      final e = (res is Map ? res['Err'] ?? json['Err'] : json['Err']);
-      err = e is Map
-          ? (e['Execute_error']?['error']?.toString() ?? '$e')
-          : '$e';
+    } else if (json['Err'] != null) {
+      err = json['Err'].toString();
     }
     List<int> ret = const [];
-    if (ok && okValue is Map && okValue['return_value'] != null) {
-      ret = switch (okValue['return_value']) {
+    if (okValue != null) {
+      ret = switch (okValue) {
         final String s => base64Decode(s),
+        final Map m => switch (m['return_value']) {
+            final String s => base64Decode(s),
+            final List l => l.cast<int>(),
+            _ => const <int>[],
+          },
         final List l => l.cast<int>(),
-        _ => const [],
+        _ => const <int>[],
       };
     }
     return ReadOnlyCallResult(
-      ok: ok,
+      ok: okValue != null,
       returnValue: ret,
       error: err,
       gasCost: BigInt.from((json['gas_cost'] as num?)?.toInt() ?? 0),
@@ -287,21 +310,44 @@ class DatastoreEntry {
   /// Address owning the entry.
   final String? address;
 
-  /// Raw value bytes.
+  /// Raw value bytes (final state preferred, falls back to candidate).
   final List<int> value;
 
+  /// Raw value from the final state (may be empty).
+  final List<int> finalValue;
+
+  /// Raw value from the candidate state (may be empty).
+  final List<int> candidateValue;
+
   /// Creates the entry.
-  DatastoreEntry({this.address, this.value = const []});
+  DatastoreEntry({
+    this.address,
+    this.value = const [],
+    this.finalValue = const [],
+    this.candidateValue = const [],
+  });
+
+  static List<int> _bytes(Object? v) => switch (v) {
+        final String s => List<int>.from(base64Decode(s)),
+        final List l => l.cast<int>(),
+        _ => const <int>[],
+      };
 
   /// Parses from JSON.
-  factory DatastoreEntry.fromJson(Map<String, dynamic> json) => DatastoreEntry(
-    address: json['address'] as String?,
-    value: switch (json['value']) {
-      final String s => List<int>.from(base64Decode(s)),
-      final List l => l.cast<int>(),
-      _ => const <int>[],
-    },
-  );
+  ///
+  /// Live nodes return `{final_value: [...], candidate_value: [...]}` while
+  /// some proxies return a single `value` field — handle both.
+  factory DatastoreEntry.fromJson(Map<String, dynamic> json) {
+    final fin = _bytes(json['final_value']);
+    final cand = _bytes(json['candidate_value']);
+    final single = _bytes(json['value']);
+    return DatastoreEntry(
+      address: json['address'] as String?,
+      finalValue: fin,
+      candidateValue: cand,
+      value: fin.isNotEmpty ? fin : (single.isNotEmpty ? single : cand),
+    );
+  }
 }
 
 /// Datastore entry request.

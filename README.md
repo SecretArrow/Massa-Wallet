@@ -19,9 +19,21 @@ Flutter • Android • Bilingual (🇮🇩 Indonesia / 🇬🇧 English)
 
 ## ⚡ What is this? / Apa ini?
 
-**EN** — A production-grade, self-custodial mobile wallet for the [Massa blockchain](https://massa.net), built with Flutter. It runs as a **light client** talking to Massa's public JSON-RPC v2 API (or your own node), with a fully local crypto stack ported 1:1 from the official `@massalabs/massa-web3` SDK and validated against its official test vectors. Includes staking, smart-contract read-only calls, background balance sync with income notifications, hardware-backed key storage, biometric unlock, and an experimental "connect to your own node" mode.
+**EN** — A production-grade, self-custodial mobile wallet for the [Massa blockchain](https://massa.net), built with Flutter. It runs as a **light client** talking to Massa's public JSON-RPC v2 API (or your own node), with a fully local crypto stack ported 1:1 from the official `@massalabs/massa-web3` SDK and validated against its official test vectors. Includes a **built-in DApp browser for on-chain `.massa` websites (DeWeb)** with an injected `window.massa` provider, **MRC-20 token management**, activity history, address book, staking, smart-contract calls, background balance sync with income notifications, hardware-backed key storage, biometric unlock, dark/light themes, and an experimental "connect to your own node" mode.
 
-**ID** — Wallet mobile self-custodial kualitas production untuk [blockchain Massa](https://massa.net), dibangun dengan Flutter. Berjalan sebagai **light client** yang terhubung ke API publik Massa JSON-RPC v2 (atau node milik Anda sendiri), dengan tumpukan kripto lokal yang diporting 1:1 dari SDK resmi `@massalabs/massa-web3` dan divalidasi terhadap test vector resminya. Termasuk staking, panggilan read-only smart contract, sinkronisasi saldo latar belakang dengan notifikasi, penyimpanan kunci hardware-backed, buka kunci biometrik, dan mode eksperimental "hubungkan ke node sendiri".
+**ID** — Wallet mobile self-custodial kualitas production untuk [blockchain Massa](https://massa.net), dibangun dengan Flutter. Berjalan sebagai **light client** yang terhubung ke API publik Massa JSON-RPC v2 (atau node milik Anda sendiri), dengan tumpukan kripto lokal yang diporting 1:1 dari SDK resmi `@massalabs/massa-web3` dan divalidasi terhadap test vector resminya. Termasuk **browser dApp bawaan untuk situs `.massa` on-chain (DeWeb)** dengan provider `window.massa` terinjeksi, **pengelolaan token MRC-20**, riwayat aktivitas, buku alamat, staking, panggilan smart contract, sinkronisasi saldo latar belakang dengan notifikasi, penyimpanan kunci hardware-backed, buka kunci biometrik, tema gelap/terang, dan mode eksperimental "hubungkan ke node sendiri".
+
+## 🆕 What's new in v1.1.0
+
+| Feature | Description / Keterangan |
+|---|---|
+| 🌐 **DApp Browser (DeWeb)** | Browse websites stored **directly on the blockchain** (`name.massa`). Files are fetched from the smart-contract datastore (sha256 path hash + 64 KB chunks — the official DeWeb standard) and served to the WebView via a loopback-only local server. / *Jelajahi situs yang tersimpan langsung di blockchain; file diambil dari datastore SC dan disajikan via server lokal 127.0.0.1.* |
+| 🪝 **`window.massa` provider** | dApps running inside the browser can connect through an injected provider with **user-confirmed** dialogs for connect / sign / send / buy-rolls / sell-rolls / callSC. Every action requires explicit approval. / *dApp terhubung lewat provider terinjeksi; setiap aksi wajib konfirmasi pengguna.* |
+| 🪙 **MRC-20 tokens** | Official token registry (WMAS, USDC, DAI, WETH, WBTC…) + add custom tokens by address. Balances read from `BALANCE<addr>` datastore entries, transfers compute the storage-cost coins automatically. / *Registry token resmi + token kustom; transfer otomatis menghitung biaya storage.* |
+| 🧾 **Activity history** | Local operation log with on-chain finality status (the public RPC has no history indexer — this is the honest approach). / *Log operasi lokal dengan status finalitas on-chain.* |
+| 📒 **Address book** | Save contacts, pick from the send screen. / *Simpan kontak, pilih langsung di layar kirim.* |
+| 💱 **Price ticker** | MAS price in USD/IDR (CoinGecko, offline-tolerant). / *Harga MAS USD/IDR, tahan offline.* |
+| 🎨 **Themes** | Dark / light / follow-system. / *Gelap / terang / ikuti sistem.* |
 
 ---
 
@@ -63,6 +75,45 @@ All wire formats are byte-identical to `@massalabs/massa-web3` v5 — proven by 
 
 Chain IDs: **Mainnet** `77658377` · **Buildnet** `77658366`
 RPC: `https://mainnet.massa.net/api/v2` · `https://buildnet.massa.net/api/v2`
+
+---
+
+## 🌐 How the DeWeb browser works / Cara kerja browser DeWeb
+
+Websites on Massa are ordinary smart contracts whose **datastore** holds the files. The in-app browser implements the official standard (verified against `massalabs/DeWeb` server code **and live buildnet data**):
+
+*Situs di Massa adalah smart contract biasa yang menyimpan file di **datastore**-nya. Browser bawaan mengimplementasikan standar resmi (diverifikasi terhadap kode server `massalabs/DeWeb` dan data live buildnet):*
+
+```text
+1. name.massa ──dnsResolve──▶ MNS contract ──▶ SC address (AS1…)
+   (mainnet: AS1q5hUf… · buildnet: AS12qKAVj…)
+2. path "x" (no leading slash; "" → "index.html") → hash = sha256(path)
+3. chunk count  = datastore[\x01FILE + hash + \x04CHUNK_NB]        (u32 LE)
+4. content      = concat(datastore[\x01FILE + hash + \x03CHUNK + i]) for i < n
+                  (64 KB chunks)
+5. served over http://127.0.0.1:<random port> (cleartext allowed ONLY for
+   loopback via network_security_config) with proper MIME types
+```
+
+### `window.massa` API (injected provider)
+
+dApps inside the browser can use the injected provider — methods are confirmed by native dialogs before anything is signed:
+
+```js
+await window.massa.enable();              // → [accountAddress]
+await window.massa.accounts();            // → [{address, name}]
+await window.massa.network();             // → {chainId, name}
+await window.massa.balance(address?);     // → "12.5" (MAS)
+await window.massa.sign(data);            // → ed25519 signature (base58check)
+await window.massa.sendTransaction(to, amountMAS);
+await window.massa.buyRolls(countMAS);    // 1 roll = 100 MAS
+await window.massa.sellRolls(countMAS);
+await window.massa.callSC(target, func, argsBase58, coinsMAS);
+// or the generic surface:
+await window.massa.request({ method: 'enable', params: {} });
+```
+
+> The provider listens for the `massa#initialized` event, so dApps can detect it immediately. No signing ever happens without an explicit user approval dialog. / *Provider memancarkan event `massa#initialized`; tidak ada tanda tangan tanpa dialog persetujuan eksplisit.*
 
 ---
 
@@ -143,18 +194,25 @@ Build time optimizations / *Optimasi waktu build*: pub cache via `flutter-action
 lib/
 ├── core/
 │   ├── crypto/          # base58check, varint, massa_keys (Ed25519+BLAKE3),
-│   │                    # operation_serializer, keystore_file (PBKDF2+AES-GCM)
+│   │                    # operation_serializer, keystore_file, sc_args
 │   ├── api/             # massa_rpc (JSON-RPC v2), massa_models, massa_amount
+│   ├── contracts/       # mns_service (name resolution), deweb_service +
+│   │                    # local_site_server (on-chain websites),
+│   │                    # mrc20_service (tokens), web3_provider (window.massa)
 │   ├── services/        # wallet_repository (secure store), wallet_provider,
 │   │                    # settings, security_service, background_sync,
+│   │                    # activity_history, address_book, price_service,
 │   │                    # node_mode_service (experimental)
 │   └── i18n/            # bilingual ID/EN (no codegen)
 ├── features/            # onboarding, wallet, send, receive, staking,
-│                        # contracts, node, settings
-└── ui/                  # theme + shared widgets
-test/                    # 29 tests: official vectors, RPC mocks, widgets
+│                        # contracts, node, settings, browser (DeWeb),
+│                        # tokens, history, address book
+└── ui/                  # dark+light themes + shared widgets
+test/                    # 65 tests: official vectors, live-format RPC mocks,
+                         # MNS/DeWeb/MRC-20/services, widgets
 integration_test/        # e2e on emulator
-android/                 # Gradle, manifest, MainActivity (FLAG_SECURE)
+android/                 # Gradle, manifest, MainActivity (FLAG_SECURE),
+                         # network_security_config (cleartext loopback only)
 .github/workflows/       # ci · autofix · e2e · release
 ```
 

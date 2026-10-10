@@ -46,8 +46,14 @@ class AppI18n extends InheritedNotifier<ValueNotifier<AppLanguage>> {
 
 /// Convenience extension for `context.t('key')`.
 extension AppI18nX on BuildContext {
-  /// Translate a key.
-  String t(String key) => AppI18n.t(this, key);
+  /// Translate a key, substituting `{0}`, `{1}`… with [args].
+  String t(String key, {List<String> args = const []}) {
+    var s = AppI18n.t(this, key);
+    for (var i = 0; i < args.length; i++) {
+      s = s.replaceAll('{$i}', args[i]);
+    }
+    return s;
+  }
 }
 
 /// Compile-time known keys (documentation only — lookup is by string).

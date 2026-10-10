@@ -12,13 +12,17 @@ import 'core/services/background_sync_service.dart';
 import 'core/services/security_service.dart';
 import 'core/services/settings_provider.dart';
 import 'core/services/wallet_provider.dart';
+import 'features/browser/dapp_browser_screen.dart';
 import 'features/contracts/contracts_screen.dart';
+import 'features/history/address_book_screen.dart';
+import 'features/history/history_screen.dart';
 import 'features/node/node_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/receive/receive_screen.dart';
 import 'features/send/send_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/staking/staking_screen.dart';
+import 'features/tokens/tokens_screen.dart';
 import 'features/wallet/dashboard_screen.dart';
 import 'ui/theme.dart';
 
@@ -100,7 +104,9 @@ class _MassaWalletAppState extends State<MassaWalletApp>
           return MaterialApp(
             title: 'Massa Wallet',
             debugShowCheckedModeBanner: false,
-            theme: AppTheme.dark,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: settings.themeMode,
             locale: Locale(settings.language.code),
             supportedLocales: const [Locale('id'), Locale('en')],
             initialRoute: '/',
@@ -115,6 +121,10 @@ class _MassaWalletAppState extends State<MassaWalletApp>
               '/contracts': (_) => const ContractsScreen(),
               '/node': (_) => const NodeScreen(),
               '/settings': (_) => const SettingsScreen(),
+              '/browser': (_) => const DappBrowserScreen(),
+              '/tokens': (_) => const TokensScreen(),
+              '/history': (_) => const HistoryScreen(),
+              '/addressBook': (_) => const AddressBookScreen(),
             },
           );
         },

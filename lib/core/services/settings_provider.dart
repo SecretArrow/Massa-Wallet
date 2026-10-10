@@ -1,7 +1,7 @@
 /// App settings state (network, language, security, background sync).
 library;
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/massa_rpc.dart';
@@ -18,6 +18,8 @@ class SettingsProvider extends ChangeNotifier {
   static const _kHideBalances = 'settings.hideBalances';
   static const _kCustomNodeUrl = 'settings.customNodeUrl';
   static const _kUseCustomNode = 'settings.useCustomNode';
+  static const _kThemeMode = 'settings.themeMode';
+  static const _kShowFiat = 'settings.showFiat';
 
   SharedPreferences? _prefs;
 
@@ -30,6 +32,8 @@ class SettingsProvider extends ChangeNotifier {
   bool _hideBalances = false;
   String _customNodeUrl = '';
   bool _useCustomNode = false;
+  ThemeMode _themeMode = ThemeMode.dark;
+  bool _showFiat = true;
 
   /// Active network.
   MassaNetwork get network => _network;
@@ -58,6 +62,12 @@ class SettingsProvider extends ChangeNotifier {
   /// Whether the wallet talks to the custom node instead of public RPC.
   bool get useCustomNode => _useCustomNode;
 
+  /// Active theme mode (dark / light / system).
+  ThemeMode get themeMode => _themeMode;
+
+  /// Whether the fiat equivalent is shown on the dashboard.
+  bool get showFiat => _showFiat;
+
   /// Effective RPC endpoint in use.
   String get effectiveEndpoint => _useCustomNode && _customNodeUrl.isNotEmpty
       ? _customNodeUrl
@@ -80,6 +90,12 @@ class SettingsProvider extends ChangeNotifier {
     _hideBalances = p.getBool(_kHideBalances) ?? false;
     _customNodeUrl = p.getString(_kCustomNodeUrl) ?? '';
     _useCustomNode = p.getBool(_kUseCustomNode) ?? false;
+    _themeMode = switch (p.getString(_kThemeMode)) {
+      'light' => ThemeMode.light,
+      'system' => ThemeMode.system,
+      _ => ThemeMode.dark,
+    };
+    _showFiat = p.getBool(_kShowFiat) ?? true;
     notifyListeners();
   }
 
@@ -143,5 +159,21 @@ class SettingsProvider extends ChangeNotifier {
     _useCustomNode = enable;
     await _set(_kCustomNodeUrl, url);
     await _set(_kUseCustomNode, enable);
+  }
+
+  /// Switches theme mode.
+  Future<void> setThemeMode(ThemeMode mode) async {
+    _themeMode = mode;
+    await _set(_kThemeMode, switch (mode) {
+      ThemeMode.light => 'light',
+      ThemeMode.system => 'system',
+      _ => 'dark',
+    });
+  }
+
+  /// Toggles fiat value display.
+  Future<void> setShowFiat(bool v) async {
+    _showFiat = v;
+    await _set(_kShowFiat, v);
   }
 }

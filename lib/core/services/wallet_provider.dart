@@ -1,6 +1,8 @@
 /// Central wallet state: accounts, balances, transactions and sending.
 library;
 
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 import '../api/massa_amount.dart';
@@ -8,6 +10,7 @@ import '../api/massa_models.dart';
 import '../api/massa_rpc.dart';
 import '../crypto/massa_keys.dart';
 import '../crypto/operation_serializer.dart';
+import 'activity_history_service.dart';
 import 'settings_provider.dart';
 import 'wallet_repository.dart';
 
@@ -47,6 +50,9 @@ class SendResult {
 class WalletProvider extends ChangeNotifier {
   final WalletRepository repository;
   final SettingsProvider settings;
+
+  /// Local activity log (outgoing operations).
+  final ActivityHistoryService history = ActivityHistoryService();
 
   List<StoredAccount> _accounts = [];
   final Map<String, AccountBalance> _balances = {};
@@ -183,6 +189,7 @@ class WalletProvider extends ChangeNotifier {
     required BigInt amountNano,
     BigInt? feeNano,
     int periodToLive = 9,
+    String? note,
   }) async {
     return _sendOperation(
       fromAddress,
@@ -198,6 +205,10 @@ class WalletProvider extends ChangeNotifier {
       },
       feeNano: feeNano,
       periodToLive: periodToLive,
+      activityKind: ActivityKind.send,
+      activityCounterparty: recipient,
+      activityAmount: amountNano,
+      note: note,
     );
   }
 
@@ -213,7 +224,7 @@ class WalletProvider extends ChangeNotifier {
         expirePeriod: period,
         data: RollOperationData(amount: BigInt.from(rollCount)),
       );
-    }, feeNano: feeNano);
+    }, feeNano: feeNano, activityKind: ActivityKind.rollBuy);
   }
 
   /// Sells staking rolls.
@@ -228,7 +239,7 @@ class WalletProvider extends ChangeNotifier {
         expirePeriod: period,
         data: RollOperationData(amount: BigInt.from(rollCount)),
       );
-    }, feeNano: feeNano);
+    }, feeNano: feeNano, activityKind: ActivityKind.rollSell);
   }
 
   /// Calls a smart-contract function.
@@ -240,6 +251,10 @@ class WalletProvider extends ChangeNotifier {
     required BigInt maxGas,
     BigInt? coinsNano,
     BigInt? feeNano,
+    ActivityKind activityKind = ActivityKind.callSC,
+    String? tokenSymbol,
+    String? tokenAmount,
+    String? note,
   }) async {
     return _sendOperation(fromAddress, (period, fee) {
       return MassaOperation.callSC(
@@ -253,7 +268,14 @@ class WalletProvider extends ChangeNotifier {
           coins: coinsNano,
         ),
       );
-    }, feeNano: feeNano);
+    },
+    feeNano: feeNano,
+    activityKind: activityKind,
+    activityCounterparty: target,
+    activityAmount: coinsNano ?? BigInt.zero,
+    tokenSymbol: tokenSymbol,
+    tokenAmount: tokenAmount,
+    note: note);
   }
 
   /// Executes a read-only call against a contract (no fee).
@@ -289,11 +311,26 @@ class WalletProvider extends ChangeNotifier {
     }
   }
 
+  /// Signs an arbitrary message for a dApp (BLAKE3-hashed, ed25519).
+  /// Returns the prefix-less Massa signature string.
+  Future<String> signMessageForDapp(String address, String data) async {
+    final versioned = await repository.readVersionedSecretKey(address);
+    final priv = MassaPrivateKey.fromBytes(versioned.sublist(1));
+    final sig = priv.signMessage(utf8.encode(data));
+    return sig.encoded;
+  }
+
   Future<SendResult> _sendOperation(
     String fromAddress,
     MassaOperation Function(int period, BigInt fee) build, {
     BigInt? feeNano,
     int periodToLive = 9,
+    ActivityKind activityKind = ActivityKind.callSC,
+    String? activityCounterparty,
+    BigInt? activityAmount,
+    String? tokenSymbol,
+    String? tokenAmount,
+    String? note,
   }) async {
     final client = MassaRpcClient(endpoint: settings.effectiveEndpoint);
     try {
@@ -324,12 +361,34 @@ class WalletProvider extends ChangeNotifier {
       if (ids.isEmpty) {
         throw const RpcException('node returned no operation id');
       }
+      final opId = ids.first;
+      // Record in the local activity log (best-effort).
+      try {
+        await history.add(
+          Activity(
+            id: '${DateTime.now().microsecondsSinceEpoch}-$opId',
+            kind: activityKind,
+            accountAddress: fromAddress,
+            amountNano: activityAmount ?? BigInt.zero,
+            counterparty: activityCounterparty ?? '',
+            createdAt: DateTime.now().toUtc(),
+            status: ActivityStatus.submitted,
+            tokenSymbol: tokenSymbol,
+            tokenAmount: tokenAmount,
+            function: op.call?.functionName,
+            operationId: opId,
+            note: note,
+          ),
+        );
+      } on Exception {
+        // History is best-effort.
+      }
       // Optimistic balance refresh shortly after send.
       Future.delayed(
         const Duration(seconds: 3),
         () => refreshBalances().ignore(),
       );
-      return SendResult(ids.first);
+      return SendResult(opId);
     } finally {
       client.dispose();
     }
