@@ -53,6 +53,15 @@ jobs:
             "https://codeload.github.com/massalabs/massa/tar.gz/refs/tags/DEVN.30.2"
           mkdir massa && tar xzf massa.tar.gz -C massa --strip-components=1
 
+      - name: Install Android target on the massa-pinned toolchain
+        # massa pins its toolchain via rust-toolchain.toml (e.g. 1.91.1);
+        # the android std must be added to THAT toolchain, not just stable.
+        working-directory: massa
+        run: |
+          rustup toolchain install
+          rustup target add aarch64-linux-android
+          rustup show
+
       - name: Rust cache
         uses: Swatinem/rust-cache@v2
         with:
