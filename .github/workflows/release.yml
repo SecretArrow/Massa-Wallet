@@ -76,7 +76,11 @@ jobs:
           # bionic build links the system allocator instead.
           sed -i "s/\[target\.'cfg(unix)'\.dependencies\]/[target.'cfg(all(unix, not(target_os = \"android\")))'.dependencies]/" massa-node/Cargo.toml
           sed -i "s/#\[cfg(unix)\]/#[cfg(all(unix, not(target_os = \"android\")))]/" massa-node/src/main.rs
-          grep -n "not(target_os" massa-node/Cargo.toml massa-node/src/main.rs
+          # On android cfg(not(unix)) is FALSE too, so the worker crates
+          # would go unlinked — add an android section without the
+          # jemalloc features.
+          printf '\n[target.%s.dependencies]\nmassa_db_worker = { workspace = true }\nmassa_event_cache = { workspace = true }\nmassa_execution_worker = { workspace = true }\n' "'cfg(target_os = \"android\")'" >> massa-node/Cargo.toml
+          grep -n "not(target_os\|target_os = \"android\"" massa-node/Cargo.toml massa-node/src/main.rs
 
       - name: Build massa-node (aarch64-linux-android)
         working-directory: massa
