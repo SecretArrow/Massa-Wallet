@@ -136,6 +136,7 @@ Future<void> _pumpFreshApp(WidgetTester tester) async {
   await _resetPersistentState();
   final settings = SettingsProvider();
   await settings.load();
+  await settings.setBiometricRequired(false); // no credentials on CI emulator
   final security = SecurityService(settings: settings);
   final wallet = WalletProvider(
     repository: WalletRepository(),
@@ -156,6 +157,7 @@ Future<SeededApp> _pumpSeededApp(WidgetTester tester) async {
   await _resetPersistentState();
   final settings = SettingsProvider();
   await settings.load();
+  await settings.setBiometricRequired(false); // no credentials on CI emulator
   final security = SecurityService(settings: settings);
   final repo = WalletRepository();
   await repo.createWallet(nickname: 'E2E');

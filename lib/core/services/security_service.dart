@@ -69,6 +69,12 @@ class SecurityService extends ChangeNotifier {
     } on PlatformException {
       notifyListeners();
       return false;
+    } catch (_) {
+      // local_auth throws LocalAuthException (e.g. noCredentialsSet) on
+      // devices without enrolled credentials — never let it escape and
+      // brick the gate; treat it as a failed unlock instead.
+      notifyListeners();
+      return false;
     }
   }
 

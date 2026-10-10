@@ -169,7 +169,7 @@ class ActionTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
         decoration: BoxDecoration(
           color: scheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(16),
@@ -178,12 +178,18 @@ class ActionTile extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
-              textAlign: TextAlign.center,
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 6),
+            // FittedBox keeps long labels inside tight grid cells on
+            // narrow screens instead of overflowing the column.
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                maxLines: 1,
+                style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ),

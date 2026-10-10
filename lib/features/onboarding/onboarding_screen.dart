@@ -55,72 +55,82 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       builder: (sheetCtx) => StatefulBuilder(
         builder: (sheetCtx, setSheet) => Padding(
           padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                sheetCtx.t('onboarding.security.title'),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                sheetCtx.t('onboarding.security.body'),
-                style: TextStyle(
-                  color: Theme.of(sheetCtx).colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 16),
-              InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () => setSheet(() => revealed = true),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(
-                      sheetCtx,
-                    ).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: PyramidsColors.orange, width: 1),
+          // Scroll-safe on short screens.
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  sheetCtx.t('onboarding.security.title'),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
                   ),
-                  child: Text(
-                    revealed
-                        ? secretKey
-                        : sheetCtx.t('onboarding.security.reveal'),
-                    style: TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 13,
-                      color: revealed
-                          ? PyramidsColors.orange
-                          : Theme.of(sheetCtx).colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  sheetCtx.t('onboarding.security.body'),
+                  style: TextStyle(
+                    color: Theme.of(sheetCtx).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => setSheet(() => revealed = true),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        sheetCtx,
+                      ).colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: PyramidsColors.orange,
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      revealed
+                          ? secretKey
+                          : sheetCtx.t('onboarding.security.reveal'),
+                      style: TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 13,
+                        color: revealed
+                            ? PyramidsColors.orange
+                            : Theme.of(sheetCtx).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              if (revealed) ...[
-                const SizedBox(height: 8),
-                OutlinedButton(
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: secretKey));
-                    ScaffoldMessenger.of(sheetCtx).showSnackBar(
-                      SnackBar(
-                        content: Text(sheetCtx.t('onboarding.security.copied')),
-                      ),
-                    );
-                  },
-                  child: Text(sheetCtx.t('common.copy')),
+                if (revealed) ...[
+                  const SizedBox(height: 8),
+                  OutlinedButton(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: secretKey));
+                      ScaffoldMessenger.of(sheetCtx).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            sheetCtx.t('onboarding.security.copied'),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text(sheetCtx.t('common.copy')),
+                  ),
+                ],
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: revealed
+                      ? () => Navigator.of(sheetCtx).pop()
+                      : null,
+                  child: Text(sheetCtx.t('onboarding.iSavedIt')),
                 ),
               ],
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: revealed ? () => Navigator.of(sheetCtx).pop() : null,
-                child: Text(sheetCtx.t('onboarding.iSavedIt')),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -140,57 +150,105 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(),
-              Center(
-                child: Image.asset(
-                  'assets/icon/pyramids_logo.png',
-                  width: 128,
-                  height: 128,
-                  filterQuality: FilterQuality.high,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                context.t('app.title'),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                context.t('app.tagline'),
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 32),
-              Card(
+        // Scroll-safe: on short screens (e.g. 320x568 emulators) the hero
+        // content used to overflow the Column by a few pixels.
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Icon(
-                        Icons.shield,
-                        color: PyramidsColors.brand,
-                        size: 28,
+                      const Spacer(),
+                      Center(
+                        child: Image.asset(
+                          'assets/icon/pyramids_logo.png',
+                          width: 128,
+                          height: 128,
+                          filterQuality: FilterQuality.high,
+                        ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
+                      const SizedBox(height: 24),
+                      Text(
+                        context.t('app.title'),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        context.t('app.tagline'),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.shield,
+                                color: PyramidsColors.brand,
+                                size: 28,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  context.t('welcome.body'),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      FilledButton(
+                        onPressed: _busy ? null : _create,
+                        child: _busy
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(context.t('onboarding.create')),
+                      ),
+                      const SizedBox(height: 12),
+                      OutlinedButton(
+                        onPressed: _busy
+                            ? null
+                            : () => Navigator.of(context).pushNamed('/import'),
+                        child: Text(context.t('onboarding.import')),
+                      ),
+                      const SizedBox(height: 8),
+                      // Register an interaction for the auto-lock engine.
+                      TextButton(
+                        onPressed: () {
+                          context.read<SecurityService>().registerInteraction();
+                        },
                         child: Text(
-                          context.t('welcome.body'),
+                          context.t('welcome.title'),
                           style: TextStyle(
-                            fontSize: 12,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
+                            fontSize: 11,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant
+                                .withValues(alpha: 0.35),
                           ),
                         ),
                       ),
@@ -198,41 +256,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
               ),
-              const Spacer(),
-              FilledButton(
-                onPressed: _busy ? null : _create,
-                child: _busy
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(context.t('onboarding.create')),
-              ),
-              const SizedBox(height: 12),
-              OutlinedButton(
-                onPressed: _busy
-                    ? null
-                    : () => Navigator.of(context).pushNamed('/import'),
-                child: Text(context.t('onboarding.import')),
-              ),
-              const SizedBox(height: 8),
-              // Register an interaction for the auto-lock engine.
-              TextButton(
-                onPressed: () {
-                  context.read<SecurityService>().registerInteraction();
-                },
-                child: Text(
-                  context.t('welcome.title'),
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurfaceVariant.withValues(alpha: 0.35),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

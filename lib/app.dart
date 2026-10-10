@@ -178,7 +178,21 @@ class _RootGateState extends State<_RootGate> {
     final has = wallet.accounts.isNotEmpty;
     var unlocked = true;
     if (has && settings.biometricRequired) {
-      unlocked = await security.unlock();
+      try {
+        final canAuth = await security.canCheckBiometrics;
+        if (canAuth) {
+          unlocked = await security.unlock();
+        } else {
+          // Device has no usable biometrics — requiring them here would
+          // leave the wallet stuck on the splash forever (LocalAuthException
+          // noCredentialsSet). Fail open and stop demanding biometrics so
+          // the user can re-enable the toggle after enrolling.
+          unawaited(settings.setBiometricRequired(false));
+        }
+      } catch (_) {
+        // Never brick the gate on an auth subsystem error.
+        unlocked = true;
+      }
     }
     if (!mounted) return;
     setState(() {

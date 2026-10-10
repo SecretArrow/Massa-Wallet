@@ -89,10 +89,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                account.nickname.isEmpty
-                    ? _shortAddr(account.address)
-                    : account.nickname,
+              Flexible(
+                child: Text(
+                  account.nickname.isEmpty
+                      ? _shortAddr(account.address)
+                      : account.nickname,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               const Icon(Icons.keyboard_arrow_down),
             ],
