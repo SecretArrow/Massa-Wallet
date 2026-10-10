@@ -27,6 +27,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:massa_wallet/app.dart';
 import 'package:massa_wallet/core/i18n/app_i18n.dart' show AppLanguage;
+import 'package:massa_wallet/core/services/embedded_node_service.dart';
 import 'package:massa_wallet/core/services/security_service.dart';
 import 'package:massa_wallet/core/services/settings_provider.dart';
 import 'package:massa_wallet/core/services/wallet_provider.dart';
@@ -121,10 +122,12 @@ Widget _appTree(
   SecurityService security,
   WalletProvider wallet,
 ) {
+  final embedded = EmbeddedNodeService(settings: settings);
   return MultiProvider(
     providers: [
       ChangeNotifierProvider<SettingsProvider>.value(value: settings),
       ChangeNotifierProvider<SecurityService>.value(value: security),
+      ChangeNotifierProvider<EmbeddedNodeService>.value(value: embedded),
       ChangeNotifierProvider<WalletProvider>.value(value: wallet),
     ],
     child: const PyramidsWalletApp(),
@@ -238,8 +241,14 @@ void main() {
 
     expect(find.text('Settings'), findsOneWidget);
 
-    // The theme section sits below the fold on small screens — reveal it.
-    await tester.ensureVisible(find.byIcon(Icons.light_mode_outlined));
+    // The theme section sits below the fold on small screens — the
+    // settings ListView builds children lazily, so scroll until the
+    // segment row exists in the tree.
+    await tester.scrollUntilVisible(
+      find.byIcon(Icons.light_mode_outlined),
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
     await _pumpFor(tester, const Duration(milliseconds: 400));
     await tester.tap(find.byIcon(Icons.light_mode_outlined));
     await _pumpFor(tester, const Duration(milliseconds: 500));
@@ -309,7 +318,10 @@ void main() {
       'not-a-valid-address',
     );
     await tester.enterText(find.widgetWithText(TextField, 'Amount (MAS)'), '1');
-    await _pumpFor(tester, const Duration(milliseconds: 300));
+    // Close the IME: on a real device it covers the confirm button and
+    // would swallow the tap.
+    FocusManager.instance.primaryFocus?.unfocus();
+    await _pumpFor(tester, const Duration(milliseconds: 500));
 
     // The confirm button can sit below the fold on small screens.
     final confirm = find.text('Confirm & sign');
@@ -394,7 +406,9 @@ void main() {
     expect(fields, findsAtLeastNWidgets(2));
     await tester.enterText(fields.first, 'E2E Contact');
     await tester.enterText(fields.last, address);
-    await _pumpFor(tester, const Duration(milliseconds: 300));
+    // Close the IME so the dialog buttons are reachable.
+    FocusManager.instance.primaryFocus?.unfocus();
+    await _pumpFor(tester, const Duration(milliseconds: 500));
 
     // Confirm (dialog FilledButton — last 'Add contact' in the tree).
     await tester.tap(find.text('Add contact').last);

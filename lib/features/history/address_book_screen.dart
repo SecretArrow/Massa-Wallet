@@ -51,24 +51,28 @@ class _AddressBookScreenState extends State<AddressBookScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(ctx.t('book.addTitle')),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameCtrl,
-              autofocus: true,
-              decoration: InputDecoration(labelText: ctx.t('book.name')),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: addrCtrl,
-              decoration: InputDecoration(
-                labelText: ctx.t('book.address'),
-                hintText: 'AU1… atau name.massa',
-                helperText: ctx.t('book.mnsHint'),
+        // Scroll-safe: with the IME open the dialog shrinks to ~113px on
+        // small screens and the two fields used to overflow by ~31px.
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameCtrl,
+                autofocus: true,
+                decoration: InputDecoration(labelText: ctx.t('book.name')),
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              TextField(
+                controller: addrCtrl,
+                decoration: InputDecoration(
+                  labelText: ctx.t('book.address'),
+                  hintText: 'AU1… atau name.massa',
+                  helperText: ctx.t('book.mnsHint'),
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
