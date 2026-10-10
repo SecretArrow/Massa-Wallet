@@ -138,6 +138,7 @@ class SettingsScreen extends StatelessWidget {
             title: Text(context.t('settings.autoLock')),
             trailing: DropdownButton<int>(
               value: settings.autoLockSeconds,
+              isDense: true,
               dropdownColor: Theme.of(context).colorScheme.surfaceContainerHigh,
               items: [
                 DropdownMenuItem(
@@ -177,6 +178,7 @@ class SettingsScreen extends StatelessWidget {
             title: Text(context.t('settings.background.interval')),
             trailing: DropdownButton<int>(
               value: settings.syncIntervalSeconds,
+              isDense: true,
               dropdownColor: Theme.of(context).colorScheme.surfaceContainerHigh,
               items: [
                 DropdownMenuItem(

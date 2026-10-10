@@ -5,6 +5,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'core/i18n/app_i18n.dart';
@@ -106,6 +107,15 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
           return MaterialApp(
             title: 'Pyramids Wallet',
             debugShowCheckedModeBanner: false,
+            // MaterialLocalizations must exist for EVERY supported locale —
+            // DefaultMaterialLocalizations is English-only, so switching to
+            // Indonesian used to break the whole app on real devices
+            // (RefreshIndicator/DropdownButton/tooltips threw on build).
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
             themeMode: settings.themeMode,

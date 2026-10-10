@@ -238,19 +238,25 @@ void main() {
 
     expect(find.text('Settings'), findsOneWidget);
 
+    // The theme section sits below the fold on small screens — reveal it.
+    await tester.ensureVisible(find.byIcon(Icons.light_mode_outlined));
+    await _pumpFor(tester, const Duration(milliseconds: 400));
     await tester.tap(find.byIcon(Icons.light_mode_outlined));
     await _pumpFor(tester, const Duration(milliseconds: 500));
     expect(settings.themeMode, ThemeMode.light);
 
+    await tester.ensureVisible(find.byIcon(Icons.brightness_auto_outlined));
     await tester.tap(find.byIcon(Icons.brightness_auto_outlined));
     await _pumpFor(tester, const Duration(milliseconds: 500));
     expect(settings.themeMode, ThemeMode.system);
 
+    await tester.ensureVisible(find.byIcon(Icons.dark_mode_outlined));
     await tester.tap(find.byIcon(Icons.dark_mode_outlined));
     await _pumpFor(tester, const Duration(milliseconds: 500));
     expect(settings.themeMode, ThemeMode.dark);
 
     // Leave system default for the remaining tests.
+    await tester.ensureVisible(find.byIcon(Icons.brightness_auto_outlined));
     await tester.tap(find.byIcon(Icons.brightness_auto_outlined));
     await _pumpFor(tester, const Duration(milliseconds: 300));
     expect(settings.themeMode, ThemeMode.system);

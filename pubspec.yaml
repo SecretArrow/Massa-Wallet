@@ -1,13 +1,15 @@
 name: massa_wallet
 description: "Pyramids Wallet - Secure self-custodial Flutter wallet for the Massa blockchain with dApp browser, embedded node, staking and background sync."
 publish_to: "none"
-version: 1.5.0+6
+version: 1.5.1+7
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
 
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
   # State management
   provider: ">=6.1.0 <7.0.0"
