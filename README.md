@@ -34,6 +34,7 @@ Flutter • Android • Bilingual (🇮🇩 Indonesia / 🇬🇧 English)
 | 📒 **Address book** | Save contacts, pick from the send screen. / *Simpan kontak, pilih langsung di layar kirim.* |
 | 💱 **Price ticker** | MAS price in USD/IDR (CoinGecko, offline-tolerant). / *Harga MAS USD/IDR, tahan offline.* |
 | 🎨 **Themes** | Dark / light / follow-system. / *Gelap / terang / ikuti sistem.* |
+| ⏱️ **Deferred calls (ASC)** | Slot planner (time ↔ period/thread using the live node clock), booking quotes via `get_deferred_call_quote`, lookup by deferred-call ID, and guided booking through a scheduler contract (CallSC, e.g. the official `deferred-call-manager` example). / *Perencana slot, harga booking on-chain, pencarian ID, dan pemesanan terpandu via kontrak scheduler.* |
 
 ---
 

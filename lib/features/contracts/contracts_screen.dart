@@ -75,7 +75,16 @@ class _ContractsScreenState extends State<ContractsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.t('contracts.title'))),
+      appBar: AppBar(
+        title: Text(context.t('contracts.title')),
+        actions: [
+          IconButton(
+            tooltip: context.t('contracts.deferred'),
+            icon: const Icon(Icons.schedule),
+            onPressed: () => Navigator.pushNamed(context, '/deferred'),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(24),

@@ -174,6 +174,53 @@ class MassaRpcClient {
     return (r as List).map((e) => StakerEntry.fromList(e as List)).toList();
   }
 
+  /// Booking quotes for deferred calls at the given slots.
+  ///
+  /// Node API: `get_deferred_call_quote` takes a single argument: an array
+  /// of `{target_slot, max_gas_request, params_size}` requests.
+  Future<List<DeferredCallQuote>> getDeferredCallQuote(
+    List<DeferredCallQuoteInput> requests,
+  ) async {
+    final r = await call(
+      'get_deferred_call_quote',
+      requests
+          .map(
+            (e) => {
+              'target_slot': e.targetSlot.toJson(),
+              'max_gas_request': e.maxGasRequest,
+              'params_size': e.paramsSize,
+            },
+          )
+          .toList(),
+    );
+    return (r as List)
+        .map((e) => DeferredCallQuote.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Registered deferred calls by ids (`D…`).
+  Future<List<DeferredCallInfo>> getDeferredCallInfo(List<String> ids) async {
+    final r = await call('get_deferred_call_info', ids);
+    return (r as List)
+        .map((e) => DeferredCallInfo.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Deferred call ids scheduled at the given slots.
+  Future<List<DeferredCallsSlotResponse>> getDeferredCallIdsBySlot(
+    List<MassaSlot> slots,
+  ) async {
+    final r = await call(
+      'get_deferred_call_ids_by_slot',
+      slots.map((s) => s.toJson()).toList(),
+    );
+    return (r as List)
+        .map(
+          (e) => DeferredCallsSlotResponse.fromJson(e as Map<String, dynamic>),
+        )
+        .toList();
+  }
+
   void dispose() => httpClient.close();
 }
 
@@ -187,4 +234,42 @@ class RpcException implements Exception {
 
   @override
   String toString() => 'RpcException: $message';
+}
+
+/// Input for `get_deferred_call_quote`.
+class DeferredCallQuoteInput {
+  /// Slot to book.
+  final MassaSlot targetSlot;
+
+  /// Maximum gas the deferred execution may consume.
+  final int maxGasRequest;
+
+  /// Size of the serialized parameters, in bytes.
+  final int paramsSize;
+
+  /// Creates a quote request.
+  const DeferredCallQuoteInput({
+    required this.targetSlot,
+    required this.maxGasRequest,
+    this.paramsSize = 0,
+  });
+}
+
+/// `get_deferred_call_ids_by_slot` response item.
+class DeferredCallsSlotResponse {
+  /// Queried slot.
+  final MassaSlot slot;
+
+  /// Deferred call ids scheduled at [slot].
+  final List<String> callIds;
+
+  /// Creates a slot response.
+  const DeferredCallsSlotResponse({required this.slot, required this.callIds});
+
+  /// Parses from the JSON-RPC result item.
+  factory DeferredCallsSlotResponse.fromJson(Map<String, dynamic> json) =>
+      DeferredCallsSlotResponse(
+        slot: MassaSlot.fromJson(json['slot'] as Map<String, dynamic>),
+        callIds: ((json['call_ids'] as List?) ?? const []).cast<String>(),
+      );
 }

@@ -14,6 +14,7 @@ import 'core/services/settings_provider.dart';
 import 'core/services/wallet_provider.dart';
 import 'features/browser/dapp_browser_screen.dart';
 import 'features/contracts/contracts_screen.dart';
+import 'features/contracts/deferred_screen.dart';
 import 'features/history/address_book_screen.dart';
 import 'features/history/history_screen.dart';
 import 'features/node/node_screen.dart';
@@ -119,6 +120,7 @@ class _MassaWalletAppState extends State<MassaWalletApp>
               '/receive': (_) => const ReceiveScreen(),
               '/staking': (_) => const StakingScreen(),
               '/contracts': (_) => const ContractsScreen(),
+              '/deferred': (_) => const DeferredCallsScreen(),
               '/node': (_) => const NodeScreen(),
               '/settings': (_) => const SettingsScreen(),
               '/browser': (_) => const DappBrowserScreen(),

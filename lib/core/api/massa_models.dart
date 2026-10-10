@@ -19,8 +19,17 @@ class NodeStatus {
   /// Current slot period.
   final int currentPeriod;
 
+  /// Current thread of [currentPeriod].
+  final int currentThread;
+
   /// Current cycle (nullable on some nodes).
   final int? currentCycle;
+
+  /// Unix-ms timestamp of the next cycle start (nullable).
+  final int? nextCycleTimeMs;
+
+  /// Node-reported unix-ms time (nullable).
+  final int? currentTimeMs;
 
   /// Creates a node status.
   NodeStatus({
@@ -28,7 +37,10 @@ class NodeStatus {
     required this.chainId,
     required this.minimalFee,
     required this.currentPeriod,
+    this.currentThread = 0,
     this.currentCycle,
+    this.nextCycleTimeMs,
+    this.currentTimeMs,
   });
 
   /// Parses from the JSON-RPC result.
@@ -42,8 +54,164 @@ class NodeStatus {
         ((json['last_slot'] as Map<String, dynamic>?)?['period'] as num?)
             ?.toInt() ??
         0,
+    currentThread:
+        ((json['last_slot'] as Map<String, dynamic>?)?['thread'] as num?)
+            ?.toInt() ??
+        0,
     currentCycle: (json['current_cycle'] as num?)?.toInt(),
+    nextCycleTimeMs: (json['next_cycle_time'] as num?)?.toInt(),
+    currentTimeMs: (json['current_time'] as num?)?.toInt(),
   );
+}
+
+/// A Massa execution slot: [period] × [thread] (32 threads of 500 ms,
+/// i.e. 16 s per period — fixed by the node, `massa-models` constants).
+class MassaSlot {
+  /// Slot period.
+  final int period;
+
+  /// Slot thread (0..31).
+  final int thread;
+
+  /// Creates a slot.
+  const MassaSlot({required this.period, required this.thread});
+
+  /// Parses `{period, thread}` JSON.
+  factory MassaSlot.fromJson(Map<String, dynamic> json) => MassaSlot(
+    period: (json['period'] as num).toInt(),
+    thread: (json['thread'] as num).toInt(),
+  );
+
+  /// JSON representation for RPC requests.
+  Map<String, dynamic> toJson() => {'period': period, 'thread': thread};
+
+  @override
+  bool operator ==(Object other) =>
+      other is MassaSlot && other.period == period && other.thread == thread;
+
+  @override
+  int get hashCode => Object.hash(period, thread);
+
+  @override
+  String toString() => '($period, $thread)';
+}
+
+/// Booking quote for a deferred call (from `get_deferred_call_quote`).
+class DeferredCallQuote {
+  /// Target slot of the quote.
+  final MassaSlot targetSlot;
+
+  /// Gas the node will actually reserve (may be bumped over the request).
+  final BigInt maxGas;
+
+  /// Whether the slot can still be booked.
+  final bool available;
+
+  /// Booking price in nanoMAS (network fee paid at registration time).
+  final BigInt priceNano;
+
+  /// Creates a quote.
+  const DeferredCallQuote({
+    required this.targetSlot,
+    required this.maxGas,
+    required this.available,
+    required this.priceNano,
+  });
+
+  /// Parses from the JSON-RPC result item.
+  factory DeferredCallQuote.fromJson(Map<String, dynamic> json) {
+    final price = json['price'];
+    final priceNano = price == null
+        ? BigInt.zero
+        : price is num
+        ? BigInt.from(price.toInt())
+        : masToNano(price.toString());
+    final maxGas = json['max_gas_request'] ?? json['max_gas'];
+    return DeferredCallQuote(
+      targetSlot: MassaSlot.fromJson(
+        json['target_slot'] as Map<String, dynamic>,
+      ),
+      maxGas: maxGas == null
+          ? BigInt.zero
+          : BigInt.from((maxGas as num).toInt()),
+      available: (json['available'] as bool?) ?? false,
+      priceNano: priceNano,
+    );
+  }
+}
+
+/// A registered deferred call (from `get_deferred_call_info`).
+class DeferredCallInfo {
+  /// Deferred call id (`D…` base58check).
+  final String callId;
+
+  /// Address that registered the call.
+  final String senderAddress;
+
+  /// Slot at which the call executes.
+  final MassaSlot targetSlot;
+
+  /// Target smart-contract address.
+  final String targetAddress;
+
+  /// Target function name.
+  final String targetFunction;
+
+  /// Serialized parameters (raw bytes).
+  final List<int> parameters;
+
+  /// Coins sent along, in nanoMAS.
+  final BigInt coinsNano;
+
+  /// Maximum gas of the execution.
+  final BigInt maxGas;
+
+  /// Booking fee paid, in nanoMAS.
+  final BigInt feeNano;
+
+  /// Whether the call was cancelled by its creator.
+  final bool cancelled;
+
+  /// Creates deferred call info.
+  const DeferredCallInfo({
+    required this.callId,
+    required this.senderAddress,
+    required this.targetSlot,
+    required this.targetAddress,
+    required this.targetFunction,
+    required this.parameters,
+    required this.coinsNano,
+    required this.maxGas,
+    required this.feeNano,
+    required this.cancelled,
+  });
+
+  static BigInt _amount(dynamic v) {
+    if (v == null) return BigInt.zero;
+    if (v is num) return BigInt.from(v.toInt());
+    return masToNano(v.toString());
+  }
+
+  /// Parses from the JSON-RPC result item.
+  factory DeferredCallInfo.fromJson(Map<String, dynamic> json) {
+    final call = (json['call'] as Map<String, dynamic>?) ?? json;
+    return DeferredCallInfo(
+      callId: (json['call_id'] ?? call['call_id'] ?? '') as String,
+      senderAddress: (call['sender_address'] ?? '') as String,
+      targetSlot: MassaSlot.fromJson(
+        call['target_slot'] as Map<String, dynamic>,
+      ),
+      targetAddress: (call['target_address'] ?? '') as String,
+      targetFunction: (call['target_function'] ?? '') as String,
+      parameters: ((call['parameters'] as List?) ?? const [])
+          .map((e) => (e as num).toInt())
+          .toList(),
+      coinsNano: _amount(call['coins']),
+      maxGas: BigInt.from(((call['max_gas'] as num?) ?? 0).toInt()),
+      feeNano: _amount(call['fee']),
+      cancelled: (call['cancelled'] as bool?) ?? false,
+    );
+  }
 }
 
 /// Address info (from `get_addresses`).
