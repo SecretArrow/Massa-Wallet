@@ -478,37 +478,63 @@ void main() {
     final (settings, _) = await _pumpSeededApp(tester);
     await _goto(tester, '/settings');
 
-    // Scroll to the background section (below the fold on small screens).
+    // The settings ListView is lazy: widgets far off-screen are
+    // unmounted, so every item must be scrolled to individually before
+    // it can be found (learned from e2e run #10).
+    final scrollable = find.byType(Scrollable).last;
+
+    // 1. Periodic sync switch — toggle off; the coordinator must
+    //    re-apply (cancel the WorkManager job) without crashing.
     await tester.scrollUntilVisible(
-      find.byIcon(Icons.schedule),
+      find.text('Background sync').first,
       200,
-      scrollable: find.byType(Scrollable).last,
+      scrollable: scrollable,
     );
     await _pumpFor(tester, const Duration(milliseconds: 400));
-
-    // Periodic sync switch (default ON) + interval entry + effective
-    // period line (WorkManager has no 6h/day cap).
     expect(find.text('Background sync'), findsWidgets);
-    expect(find.text('Sync interval'), findsOneWidget);
-    expect(
-      find.textContaining('Effective period: every 15 min'),
-      findsOneWidget,
-      reason: '60s user interval is clamped to Android 15-min floor',
-    );
-
-    // Battery-reliability card + last-sync line always render.
-    expect(find.textContaining('Battery:'), findsOneWidget);
-    expect(find.textContaining('Last background sync:'), findsOneWidget);
-
-    // Toggle periodic sync off and back on — the coordinator must
-    // re-apply (cancel + re-register WorkManager) without crashing.
-    await tester.ensureVisible(find.byIcon(Icons.sync));
-    await _pumpFor(tester, const Duration(milliseconds: 300));
     await tester.tap(find.byIcon(Icons.sync));
     await _pumpFor(tester, const Duration(milliseconds: 600));
     expect(settings.backgroundSync, isFalse);
 
-    await tester.ensureVisible(find.byIcon(Icons.sync));
+    // 2. Interval entry.
+    await tester.scrollUntilVisible(
+      find.text('Sync interval'),
+      200,
+      scrollable: scrollable,
+    );
+    await _pumpFor(tester, const Duration(milliseconds: 300));
+    expect(find.text('Sync interval'), findsOneWidget);
+
+    // 3. Effective period line — the 60 s preference is clamped to
+    //    Android's 15-minute WorkManager floor (no 6 h/day cap there).
+    await tester.scrollUntilVisible(
+      find.textContaining('Effective period:'),
+      200,
+      scrollable: scrollable,
+    );
+    await _pumpFor(tester, const Duration(milliseconds: 300));
+    expect(
+      find.textContaining('Effective period: every 15 min'),
+      findsOneWidget,
+    );
+
+    // 4. Battery-reliability card + last-sync indicator.
+    await tester.scrollUntilVisible(
+      find.textContaining('Last background sync:'),
+      200,
+      scrollable: scrollable,
+    );
+    await _pumpFor(tester, const Duration(milliseconds: 300));
+    expect(find.textContaining('Battery:'), findsOneWidget);
+    expect(find.textContaining('Last background sync:'), findsOneWidget);
+
+    // 5. Scroll back up and re-enable periodic sync.
+    await tester.scrollUntilVisible(
+      find.byIcon(Icons.sync),
+      -200,
+      scrollable: scrollable,
+    );
+    await _pumpFor(tester, const Duration(milliseconds: 400));
     await tester.tap(find.byIcon(Icons.sync));
     await _pumpFor(tester, const Duration(milliseconds: 600));
     expect(settings.backgroundSync, isTrue);
