@@ -126,8 +126,10 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
           await _scheduler!.disablePeriodic();
         }
       }
-    } on Exception {
-      // Background sync is best-effort.
+    } catch (e) {
+      // Background sync is best-effort — even platform Errors (missing
+      // plugin on tests, iOS UnsupportedError) must never break startup.
+      debugPrint('background sync apply failed: $e');
     }
   }
 
@@ -147,7 +149,7 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
       // without accounts.
       try {
         unawaited(context.read<WalletProvider>().refreshBalances());
-      } on Exception {
+      } catch (_) {
         // Never let a refresh error break the lock flow.
       }
     }

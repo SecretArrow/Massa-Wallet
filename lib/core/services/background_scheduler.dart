@@ -83,6 +83,8 @@ class BackgroundScheduler {
       await Workmanager().initialize(backgroundSyncCallbackDispatcher);
       _initialized = true;
     } catch (e) {
+      // Catch-all: platform plugins may throw Errors (UnsupportedError),
+      // never let scheduling break app startup.
       debugPrint('Workmanager.initialize failed: $e');
     }
   }
