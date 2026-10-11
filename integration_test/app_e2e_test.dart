@@ -469,4 +469,48 @@ void main() {
     );
     expect(find.text('On-chain DeWeb sites'), findsOneWidget);
   });
+
+  testWidgets('15. settings: background sync section (6h-limit redesign)', (
+    tester,
+  ) async {
+    IntegrationTestWidgetsFlutterBinding.instance.framePolicy =
+        LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
+    final (settings, _) = await _pumpSeededApp(tester);
+    await _goto(tester, '/settings');
+
+    // Scroll to the background section (below the fold on small screens).
+    await tester.scrollUntilVisible(
+      find.byIcon(Icons.schedule),
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await _pumpFor(tester, const Duration(milliseconds: 400));
+
+    // Periodic sync switch (default ON) + interval entry + effective
+    // period line (WorkManager has no 6h/day cap).
+    expect(find.text('Background sync'), findsWidgets);
+    expect(find.text('Sync interval'), findsOneWidget);
+    expect(
+      find.textContaining('Effective period: every 15 min'),
+      findsOneWidget,
+      reason: '60s user interval is clamped to Android 15-min floor',
+    );
+
+    // Battery-reliability card + last-sync line always render.
+    expect(find.textContaining('Battery:'), findsOneWidget);
+    expect(find.textContaining('Last background sync:'), findsOneWidget);
+
+    // Toggle periodic sync off and back on — the coordinator must
+    // re-apply (cancel + re-register WorkManager) without crashing.
+    await tester.ensureVisible(find.byIcon(Icons.sync));
+    await _pumpFor(tester, const Duration(milliseconds: 300));
+    await tester.tap(find.byIcon(Icons.sync));
+    await _pumpFor(tester, const Duration(milliseconds: 600));
+    expect(settings.backgroundSync, isFalse);
+
+    await tester.ensureVisible(find.byIcon(Icons.sync));
+    await tester.tap(find.byIcon(Icons.sync));
+    await _pumpFor(tester, const Duration(milliseconds: 600));
+    expect(settings.backgroundSync, isTrue);
+  });
 }

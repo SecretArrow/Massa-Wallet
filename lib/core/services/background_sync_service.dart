@@ -1,10 +1,18 @@
-/// Background balance sync via Android foreground service.
+/// Legacy always-on background sync via Android foreground service.
 ///
-/// Uses `flutter_background_service` (foreground service with dataSync
-/// type) + `flutter_local_notifications` for income alerts. The service
-/// isolate polls the configured RPC endpoint every
-/// `SettingsProvider.syncIntervalSeconds` and posts a notification when a
-/// balance change is detected.
+/// ⚠️ Android 15 (API 35) caps `dataSync` foreground services at **6 hours
+/// per 24-hour window** — after that the system calls `Service.onTimeout()`
+/// and the app MUST stop, or Android throws
+/// `ForegroundServiceDidNotStopInTimeException` and the process crashes.
+///
+/// Therefore this service is ONLY offered on Android ≤ 14 (SDK < 35),
+/// and even there it self-caps at 5.5 h per 24 h window (see
+/// [FgsRuntimeBudget]) so it always stops before the system kills it.
+/// The DEFAULT background path is WorkManager (see BackgroundScheduler),
+/// which is not an FGS and has no such cap.
+///
+/// The actual work lives in `background_tick.dart` — shared with the
+/// WorkManager path so both modes behave identically.
 library;
 
 import 'dart:async';
@@ -16,11 +24,7 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../api/massa_rpc.dart';
-import 'auto_compound_service.dart';
-import 'embedded_node_service.dart';
-import 'settings_provider.dart' show SettingsProvider, resolveEndpoint;
-import 'wallet_repository.dart';
+import 'background_tick.dart';
 
 /// Notification channel id (must match AndroidConfiguration).
 const String bgChannelId = 'massa_wallet_bg';
@@ -37,173 +41,80 @@ Future<void> _onStart(ServiceInstance service) async {
 
   final prefs = await SharedPreferences.getInstance();
   final lastBalances = <String, String>{};
-
-  Future<void> tick() async {
-    try {
-      final accountsRaw = prefs.getString('mw.accounts');
-      if (accountsRaw == null || accountsRaw.isEmpty) return;
-      final accounts = (json.decode(accountsRaw) as List)
-          .map((e) => (e as Map<String, dynamic>)['address'] as String)
-          .toList();
-      if (accounts.isEmpty) return;
-
-      final mode =
-          prefs.getString('settings.connectionMode') ??
-          ((prefs.getBool('settings.useCustomNode') ?? false)
-              ? 'customRpc'
-              : 'publicRpc');
-      final customUrl = prefs.getString('settings.customNodeUrl') ?? '';
-      final isMainnet = prefs.getString('settings.network') == 'mainnet';
-      final defaultUrl = isMainnet
-          ? MassaNetwork.mainnet.apiUrl
-          : MassaNetwork.buildnet.apiUrl;
-      final endpoint = resolveEndpoint(
-        mode: mode,
-        customUrl: customUrl,
-        defaultUrl: defaultUrl,
-        embeddedUrl:
-            'http://127.0.0.1:${SettingsProvider.embeddedApiPort}/api/v2',
-        embeddedUsable: !isMainnet,
-      );
-
-      // Keepalive for the embedded node (respawn via prefs, best-effort).
-      if (mode == 'embedded' && !isMainnet) {
-        await EmbeddedNodeService.ensureRunningFromPrefs();
-      }
-
-      final client = MassaRpcClient(endpoint: endpoint);
-      try {
-        final infos = await client.getAddresses(accounts);
-        for (final info in infos) {
-          final key = info.address;
-          final value = info.finalBalance.toString();
-          final previous = lastBalances[key];
-          if (previous != null && previous != value) {
-            final delta = BigInt.parse(value) - BigInt.parse(previous);
-            final direction = delta > BigInt.zero ? '↑' : '↓';
-            await _notify(
-              title: 'Pyramids Wallet — balance changed',
-              body:
-                  '$direction ${_formatNano(delta.abs())} MAS · ${_short(key)}',
-            );
-          }
-          lastBalances[key] = value;
-        }
-        service.invoke('balances_updated', {
-          'at': DateTime.now().toIso8601String(),
-        });
-        // Feed the homescreen widget (it redraws on its own schedule —
-        // the MethodChannel nudge is only possible from the UI isolate).
-        final active = accounts.first;
-        for (final info in infos) {
-          if (info.address == active) {
-            await prefs.setString(
-              'massa_widget',
-              json.encode({
-                'balance': _formatNano(info.finalBalance),
-                'rolls': info.finalRollCount.toString(),
-                'address': info.address,
-                'network': isMainnet ? 'Mainnet' : 'Buildnet',
-                'updatedAt': DateTime.now().toIso8601String(),
-                'hideBalances': prefs.getBool('settings.hideBalances') ?? false,
-              }),
-            );
-            break;
-          }
-        }
-      } finally {
-        client.dispose();
-      }
-      // Roll auto-compound (cycle-aware) — best-effort, uses the secure
-      // store for signing when rewards arrive at cycle rollover.
-      if (prefs.getBool('ac.enabled') ?? false) {
-        try {
-          final ac = AutoCompoundService(
-            prefs: prefs,
-            repository: WalletRepository(),
-          );
-          final outcome = await ac.tick(
-            address: accounts.first,
-            endpoint: endpoint,
-          );
-          if (outcome.action == AutoCompoundAction.bought) {
-            await _notify(
-              title: 'Pyramids Wallet — auto-compound',
-              body:
-                  'Reinvested ${outcome.rollsBought} roll(s) · cycle ${outcome.cycle}',
-            );
-          }
-        } catch (e) {
-          debugPrint('auto-compound tick failed: $e');
-        }
-      }
-    } catch (e) {
-      debugPrint('bg sync tick failed: $e');
+  // Restore the cross-isolate baseline so a restart does not re-notify
+  // for changes that were already reported.
+  try {
+    final stored = prefs.getString('bg.lastBalances');
+    if (stored != null && stored.isNotEmpty) {
+      final decoded = json.decode(stored) as Map<String, dynamic>;
+      lastBalances.addAll(decoded.map((k, v) => MapEntry(k, v.toString())));
     }
+  } on Exception {
+    // Corrupt baseline — start fresh (worst case: one extra notification).
   }
 
-  // Initial sync right away, then every ~30s check whether the configured
-  // interval has elapsed.
-  await tick();
+  // Runtime accounting: begin a session; if the 24 h window is spent,
+  // stop immediately instead of waiting for the system kill.
+  final budget = FgsRuntimeBudget.fromPrefs(prefs);
+  budget.startSession(DateTime.now());
+  await budget.save(prefs);
+  if (budget.exhausted()) {
+    debugPrint('FGS budget exhausted — stopping service');
+    await prefs.setBool('fgs.stopRequested', true);
+    service.invoke('stopService');
+    return;
+  }
+
+  // 30-second supervisor loop: honors the user interval, checkpoints the
+  // runtime budget, and updates the notification line.
+  await runSyncTick(prefs, lastBalances, allowEmbeddedKeepalive: true);
+  await budget.checkpoint(prefs);
   var elapsed = 0;
   Timer.periodic(const Duration(seconds: 30), (timer) async {
     elapsed += 30;
-    final interval = prefs.getInt('settings.syncInterval') ?? 300;
-    if (elapsed >= interval) {
-      elapsed = 0;
-      await tick();
-    }
-    if (service is AndroidServiceInstance) {
-      if (await service.isForegroundService()) {
-        final now = DateTime.now();
-        unawaited(
-          service.setForegroundNotificationInfo(
-            title: 'Pyramids Wallet',
-            content:
-                'Sync active · last ${now.hour}:${now.minute.toString().padLeft(2, '0')}',
-          ),
-        );
+    try {
+      final interval = prefs.getInt('settings.syncInterval') ?? 300;
+      if (elapsed >= interval) {
+        elapsed = 0;
+        await runSyncTick(prefs, lastBalances, allowEmbeddedKeepalive: true);
+        // Close + persist the session every tick so process death never
+        // loses accounting, then keep counting.
+        await budget.checkpoint(prefs);
+        budget.startSession(DateTime.now());
+        if (budget.exhausted()) {
+          debugPrint('FGS self-cap reached — graceful stop before 6 h kill');
+          await prefs.setBool('fgs.stopRequested', true);
+          timer.cancel();
+          service.invoke('stopService');
+          return;
+        }
       }
+      if (service is AndroidServiceInstance) {
+        if (await service.isForegroundService()) {
+          final now = DateTime.now();
+          unawaited(
+            service.setForegroundNotificationInfo(
+              title: 'Pyramids Wallet',
+              content:
+                  'Sync active · last '
+                  '${now.hour}:${now.minute.toString().padLeft(2, '0')}',
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('FGS loop tick failed: $e');
     }
   });
 }
 
-Future<void> _notify({required String title, required String body}) async {
-  final plugin = FlutterLocalNotificationsPlugin();
-  const android = AndroidNotificationDetails(
-    alertChannelId,
-    'Pyramids Wallet alerts',
-    channelDescription: 'Balance change and staking alerts',
-    importance: Importance.high,
-    priority: Priority.high,
-  );
-  await plugin.show(
-    id: DateTime.now().millisecondsSinceEpoch % 2147483647,
-    title: title,
-    body: body,
-    notificationDetails: const NotificationDetails(android: android),
-  );
-}
-
-String _short(String address) => address.length <= 14
-    ? address
-    : '${address.substring(0, 8)}…${address.substring(address.length - 6)}';
-
-String _formatNano(BigInt nano) {
-  final negative = nano.isNegative;
-  final abs = negative ? -nano : nano;
-  final s = abs.toString().padLeft(10, '0');
-  final intPart = s.substring(0, s.length - 9);
-  var frac = s.substring(s.length - 9).replaceAll(RegExp(r'0+$'), '');
-  if (frac.length > 4) frac = frac.substring(0, 4);
-  return '${negative ? '-' : ''}$intPart${frac.isEmpty ? '' : '.$frac'}';
-}
-
-/// App-facing wrapper around the background service.
+/// App-facing wrapper around the legacy foreground service.
 class BackgroundSyncService {
   final FlutterBackgroundService _service = FlutterBackgroundService();
 
   /// Initializes notification channels and configures the service.
+  /// Safe to call on any Android version — callers gate [start] with
+  /// [foregroundSyncAllowed].
   Future<void> configure({
     required bool autoStart,
     required String title,

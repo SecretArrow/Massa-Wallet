@@ -7,9 +7,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/api/massa_rpc.dart' show MassaNetwork;
 import '../../core/i18n/app_i18n.dart';
+import '../../core/services/background_tick.dart'
+    show clampToWorkmanagerInterval, foregroundSyncAllowed;
+import '../../core/services/device_system_service.dart';
 import '../../ui/theme.dart';
 import '../../core/services/security_service.dart';
 import '../../core/services/settings_provider.dart';
@@ -165,17 +169,27 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
 
-          // Background sync
+          // Background sync — WorkManager periodic (default path).
+          // NOT a foreground service: Android 15 caps dataSync FGS at
+          // 6 h/day, while WorkManager workers have no such cap.
           SwitchListTile(
             secondary: const Icon(Icons.sync),
             value: settings.backgroundSync,
             onChanged: (v) =>
                 context.read<SettingsProvider>().setBackgroundSync(v),
             title: Text(context.t('settings.background')),
+            subtitle: Text(
+              context.t('settings.background.hint'),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
             activeThumbColor: PyramidsColors.brand,
           ),
           ListTile(
             title: Text(context.t('settings.background.interval')),
+            subtitle: Text(
+              context.t('settings.background.clampHint'),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
             trailing: DropdownButton<int>(
               value: settings.syncIntervalSeconds,
               isDense: true,
@@ -201,6 +215,33 @@ class SettingsScreen extends StatelessWidget {
               },
             ),
           ),
+          // Effective periodic interval after Android's 15-minute floor.
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.schedule,
+                  size: 14,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    context
+                        .t('settings.background.effective')
+                        .replaceAll(
+                          '{minutes}',
+                          '${clampToWorkmanagerInterval(settings.syncIntervalSeconds) ~/ 60}',
+                        ),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          _BackgroundStatusCard(),
+          _RealtimeSyncTile(sdkFuture: DeviceSystemService().androidSdkInt()),
 
           // Privacy
           SwitchListTile(
@@ -654,6 +695,159 @@ class _ExportSheetState extends State<_ExportSheet> {
             ),
         ],
       ),
+    );
+  }
+}
+
+/// Background-reliability card: shows the battery-optimization state
+/// (the biggest lever the user controls) and the last background sync.
+class _BackgroundStatusCard extends StatefulWidget {
+  @override
+  State<_BackgroundStatusCard> createState() => _BackgroundStatusCardState();
+}
+
+class _BackgroundStatusCardState extends State<_BackgroundStatusCard> {
+  final DeviceSystemService _system = DeviceSystemService();
+  bool _unrestricted = false;
+  bool _checking = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _refresh();
+  }
+
+  Future<void> _refresh() async {
+    final unrestricted = await _system.isIgnoringBatteryOptimizations();
+    if (!mounted) return;
+    setState(() {
+      _unrestricted = unrestricted;
+      _checking = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final lastSync = FutureBuilder<String?>(
+      future: () async {
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          return prefs.getString('bg.lastTickAt');
+        } on Exception {
+          return null;
+        }
+      }(),
+      builder: (context, snapshot) {
+        final raw = snapshot.data;
+        if (raw == null || raw.isEmpty) {
+          return Text(
+            context.t('settings.background.never'),
+            style: Theme.of(context).textTheme.bodySmall,
+          );
+        }
+        final at = DateTime.tryParse(raw);
+        return Text(
+          at == null
+              ? context.t('settings.background.never')
+              : context
+                    .t('settings.background.lastSync')
+                    .replaceAll(
+                      '{time}',
+                      '${at.hour.toString().padLeft(2, '0')}:${at.minute.toString().padLeft(2, '0')}',
+                    ),
+          style: Theme.of(context).textTheme.bodySmall,
+        );
+      },
+    );
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                _unrestricted ? Icons.battery_saver : Icons.battery_alert,
+                size: 18,
+                color: _unrestricted
+                    ? PyramidsColors.brand
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  _checking
+                      ? context.t('settings.battery.checking')
+                      : _unrestricted
+                      ? context.t('settings.battery.unrestricted')
+                      : context.t('settings.battery.restricted'),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            context.t('settings.battery.hint'),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          if (!_checking && !_unrestricted) ...[
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: () async {
+                await _system.requestIgnoreBatteryOptimizations();
+                // The system dialog returns before the setting settles —
+                // re-check after a short delay instead.
+                await Future<void>.delayed(const Duration(seconds: 2));
+                if (mounted) await _refresh();
+              },
+              icon: const Icon(Icons.settings_suggest, size: 18),
+              label: Text(context.t('settings.battery.action')),
+            ),
+          ],
+          const SizedBox(height: 8),
+          lastSync,
+        ],
+      ),
+    );
+  }
+}
+
+/// Legacy always-on foreground-service switch — only rendered on
+/// Android ≤ 14. Android 15 (SDK 35) caps dataSync foreground services
+/// at 6 h/day, so offering it there would invite a forced kill.
+class _RealtimeSyncTile extends StatelessWidget {
+  final Future<int> sdkFuture;
+
+  const _RealtimeSyncTile({required this.sdkFuture});
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>();
+    return FutureBuilder<int>(
+      future: sdkFuture,
+      builder: (context, snapshot) {
+        final sdk = snapshot.data ?? 0;
+        if (!foregroundSyncAllowed(sdk)) return const SizedBox.shrink();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SwitchListTile(
+              secondary: const Icon(Icons.bolt),
+              value: settings.realtimeSync,
+              onChanged: (v) =>
+                  context.read<SettingsProvider>().setRealtimeSync(v),
+              title: Text(context.t('settings.realtime')),
+              subtitle: Text(
+                context.t('settings.realtime.hint'),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              activeThumbColor: PyramidsColors.brand,
+            ),
+          ],
+        );
+      },
     );
   }
 }

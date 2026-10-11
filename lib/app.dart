@@ -10,7 +10,10 @@ import 'package:provider/provider.dart';
 
 import 'core/i18n/app_i18n.dart';
 import 'core/i18n/translations.dart' show translations;
+import 'core/services/background_scheduler.dart';
 import 'core/services/background_sync_service.dart';
+import 'core/services/background_tick.dart' show foregroundSyncAllowed;
+import 'core/services/device_system_service.dart';
 import 'core/services/security_service.dart';
 import 'core/services/settings_provider.dart';
 import 'core/services/wallet_provider.dart';
@@ -45,6 +48,10 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
   );
   SettingsProvider? _observedSettings;
 
+  /// Background-sync coordinator state (null until first apply).
+  BackgroundScheduler? _scheduler;
+  (bool, bool, int)? _lastAppliedSync;
+
   @override
   void initState() {
     super.initState();
@@ -56,13 +63,10 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
     // build" whenever the user switches language at runtime.
     _observedSettings = settings;
     settings.addListener(_onSettingsChanged);
-    final syncEnabled = settings.backgroundSync;
     settings.load().then((_) {
       _language.value = settings.language;
       security.setSecureFlag(true);
-      if (syncEnabled) {
-        unawaited(_startBackgroundSync());
-      }
+      unawaited(_applyBackgroundSync());
     });
   }
 
@@ -71,17 +75,57 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
     if (settings != null && _language.value != settings.language) {
       _language.value = settings.language;
     }
+    // Re-apply the sync topology when one of the relevant settings
+    // changed (toggle / interval / realtime switch).
+    final tuple = (
+      settings?.backgroundSync ?? true,
+      settings?.realtimeSync ?? false,
+      settings?.syncIntervalSeconds ?? 300,
+    );
+    if (tuple != _lastAppliedSync && _lastAppliedSync != null) {
+      unawaited(_applyBackgroundSync());
+    }
   }
 
-  Future<void> _startBackgroundSync() async {
+  /// Decides and applies which background path runs:
+  ///
+  /// * realtime switch ON + Android ≤ 14 → legacy always-on foreground
+  ///   service (no 6 h cap below Android 15); WorkManager cancelled.
+  /// * otherwise → WorkManager periodic (the DEFAULT; a dataSync FGS on
+  ///   Android 15+ would be limited to 6 h/day and crash on timeout).
+  /// * periodic switch OFF → nothing scheduled.
+  Future<void> _applyBackgroundSync() async {
     try {
+      final settings = context.read<SettingsProvider>();
+      final tuple = (
+        settings.backgroundSync,
+        settings.realtimeSync,
+        settings.syncIntervalSeconds,
+      );
+      _lastAppliedSync = tuple;
+      _scheduler ??= BackgroundScheduler();
       final service = BackgroundSyncService();
       await service.configure(
-        autoStart: true,
+        autoStart: false,
         title: 'Pyramids Wallet',
         content: 'Balance sync active',
       );
-      await service.start();
+      final sdk = await DeviceSystemService().androidSdkInt();
+      final realtimeAllowed = foregroundSyncAllowed(sdk);
+      if (settings.realtimeSync && realtimeAllowed) {
+        // Always-on FGS covers everything — no periodic worker needed.
+        await _scheduler!.disablePeriodic();
+        await service.start();
+      } else {
+        // Stop any FGS (also fixes stale auto-start config from older
+        // versions) and use WorkManager instead.
+        await service.stop();
+        if (settings.backgroundSync) {
+          await _scheduler!.enablePeriodic(settings.syncIntervalSeconds);
+        } else {
+          await _scheduler!.disablePeriodic();
+        }
+      }
     } on Exception {
       // Background sync is best-effort.
     }
@@ -97,6 +141,14 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
       security.checkIdle();
       if (settings.biometricRequired && security.gate == SecurityGate.locked) {
         security.unlock();
+      }
+      // Sync-on-open: the most reliable path there is (no OS quota
+      // applies in the foreground). Cheap — refreshBalances no-ops
+      // without accounts.
+      try {
+        unawaited(context.read<WalletProvider>().refreshBalances());
+      } on Exception {
+        // Never let a refresh error break the lock flow.
       }
     }
   }

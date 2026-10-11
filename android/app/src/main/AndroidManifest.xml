@@ -13,12 +13,19 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
-    <!-- Background sync (foreground service) -->
+    <!-- Background sync (foreground service, Android <= 14 realtime mode).
+         The default background path is WorkManager, which needs none of
+         the FGS permissions below. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Background reliability: lets the user grant the battery-
+         optimization exemption ("Unrestricted") via the official system
+         dialog, lifting Doze/App-Standby deferrals for WorkManager. -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
         android:label="Pyramids Wallet"

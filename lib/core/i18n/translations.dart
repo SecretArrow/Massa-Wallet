@@ -243,10 +243,29 @@ const Map<String, Map<String, String>> translations = {
     'settings.biometric': 'Require biometric/PIN',
     'settings.secureFlag': 'Block screenshots',
     'settings.background': 'Background sync',
+    'settings.background.hint':
+        'Short check every so often — not affected by the Android 15 six-hour background limit',
     'settings.background.interval': 'Sync interval',
+    'settings.background.clampHint':
+        'Android runs periodic checks at least every 15 minutes',
+    'settings.background.effective':
+        'Effective period: every {minutes} min (Android floor)',
     'settings.background.60': '1 minute',
     'settings.background.300': '5 minutes',
     'settings.background.900': '15 minutes',
+    'settings.background.lastSync': 'Last background sync: {time}',
+    'settings.background.never': 'Last background sync: never',
+    'settings.battery.checking': 'Checking battery restrictions…',
+    'settings.battery.unrestricted':
+        'Battery: unrestricted — full sync reliability',
+    'settings.battery.restricted':
+        'Battery: optimized — Android may delay background checks',
+    'settings.battery.hint':
+        'Allow unrestricted battery use so background sync is not deferred. You can change this anytime in system settings.',
+    'settings.battery.action': 'Allow unrestricted battery use',
+    'settings.realtime': 'Real-time mode (always-on service)',
+    'settings.realtime.hint':
+        'Persistent notification, instant alerts. Not available on Android 15+ (6 h/day system limit).',
     'settings.privacy': 'Hide balances',
     'settings.about': 'About',
     'settings.version': 'Version',
@@ -628,10 +647,29 @@ const Map<String, Map<String, String>> translations = {
     'settings.biometric': 'Wajib biometrik/PIN',
     'settings.secureFlag': 'Blokir screenshot',
     'settings.background': 'Sinkronisasi latar belakang',
+    'settings.background.hint':
+        'Pemeriksaan singkat berkala — tidak terpengaruh batas 6 jam/hari Android 15',
     'settings.background.interval': 'Interval sinkron',
+    'settings.background.clampHint':
+        'Android menjalankan pemeriksaan berkala minimal setiap 15 menit',
+    'settings.background.effective':
+        'Periode efektif: setiap {minutes} menit (batas Android)',
     'settings.background.60': '1 menit',
     'settings.background.300': '5 menit',
     'settings.background.900': '15 menit',
+    'settings.background.lastSync': 'Sinkronisasi terakhir: {time}',
+    'settings.background.never': 'Sinkronisasi terakhir: belum pernah',
+    'settings.battery.checking': 'Memeriksa batasan baterai…',
+    'settings.battery.unrestricted':
+        'Baterai: bebas — sinkronisasi paling andal',
+    'settings.battery.restricted':
+        'Baterai: dihemat — Android dapat menunda pemeriksaan',
+    'settings.battery.hint':
+        'Izinkan penggunaan baterai bebas agar sinkronisasi latar tidak ditunda. Bisa diubah kapan saja di pengaturan sistem.',
+    'settings.battery.action': 'Izinkan baterai bebas',
+    'settings.realtime': 'Mode real-time (layanan permanen)',
+    'settings.realtime.hint':
+        'Notifikasi permanen, peringatan instan. Tidak tersedia di Android 15+ (batas sistem 6 jam/hari).',
     'settings.privacy': 'Sembunyikan saldo',
     'settings.about': 'Tentang',
     'settings.version': 'Versi',

@@ -53,6 +53,7 @@ class SettingsProvider extends ChangeNotifier {
   static const _kBiometricRequired = 'settings.biometricRequired';
   static const _kBackgroundSync = 'settings.backgroundSync';
   static const _kSyncInterval = 'settings.syncInterval';
+  static const _kRealtimeSync = 'settings.realtimeSync';
   static const _kHideBalances = 'settings.hideBalances';
   static const _kCustomNodeUrl = 'settings.customNodeUrl';
   static const _kUseCustomNode = 'settings.useCustomNode';
@@ -72,6 +73,7 @@ class SettingsProvider extends ChangeNotifier {
   bool _biometricRequired = true;
   bool _backgroundSync = true;
   int _syncIntervalSeconds = 300;
+  bool _realtimeSync = false;
   bool _hideBalances = false;
   String _customNodeUrl = '';
   bool _useCustomNode = false;
@@ -92,11 +94,17 @@ class SettingsProvider extends ChangeNotifier {
   /// Whether biometric/device credential is required to unlock.
   bool get biometricRequired => _biometricRequired;
 
-  /// Whether background balance sync runs.
+  /// Whether periodic background sync runs (WorkManager — not subject
+  /// to Android 15's 6 h/day dataSync foreground-service cap).
   bool get backgroundSync => _backgroundSync;
 
   /// Background sync interval seconds.
   int get syncIntervalSeconds => _syncIntervalSeconds;
+
+  /// Whether the legacy always-on foreground service is requested. Only
+  /// effective on Android ≤ 14 (SDK < 35) — Android 15 caps dataSync
+  /// foreground services at 6 h/day, so the UI hides this option there.
+  bool get realtimeSync => _realtimeSync;
 
   /// Whether balances are hidden (privacy mode).
   bool get hideBalances => _hideBalances;
@@ -151,6 +159,7 @@ class SettingsProvider extends ChangeNotifier {
     _biometricRequired = p.getBool(_kBiometricRequired) ?? true;
     _backgroundSync = p.getBool(_kBackgroundSync) ?? true;
     _syncIntervalSeconds = p.getInt(_kSyncInterval) ?? 300;
+    _realtimeSync = p.getBool(_kRealtimeSync) ?? false;
     _hideBalances = p.getBool(_kHideBalances) ?? false;
     _customNodeUrl = p.getString(_kCustomNodeUrl) ?? '';
     _useCustomNode = p.getBool(_kUseCustomNode) ?? false;
@@ -217,6 +226,13 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> setSyncIntervalSeconds(int s) async {
     _syncIntervalSeconds = s;
     await _set(_kSyncInterval, s);
+  }
+
+  /// Toggles the legacy always-on foreground service (Android ≤ 14
+  /// only; ignored on Android 15+ by the sync coordinator).
+  Future<void> setRealtimeSync(bool v) async {
+    _realtimeSync = v;
+    await _set(_kRealtimeSync, v);
   }
 
   /// Toggles privacy mode.

@@ -1,7 +1,7 @@
 name: massa_wallet
 description: "Pyramids Wallet - Secure self-custodial Flutter wallet for the Massa blockchain with dApp browser, embedded node, staking and background sync."
 publish_to: "none"
-version: 1.5.1+7
+version: 1.5.2+8
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
@@ -23,7 +23,11 @@ dependencies:
   # Security
   flutter_secure_storage: ">=10.0.0 <12.0.0"
   local_auth: ">=2.2.0 <4.0.0"
-  # Background sync (foreground service)
+  # Background sync (default: WorkManager periodic workers — not a
+  # foreground service, so Android 15's 6 h/day dataSync FGS cap does
+  # not apply. 0.9.3 = last version compatible with Flutter 3.35).
+  workmanager: ">=0.9.0 <0.10.0"
+  # Legacy realtime mode (opt-in, Android <= 14 only)
   flutter_background_service: ">=5.0.10 <6.0.0"
   flutter_local_notifications: ">=17.2.0 <23.0.0"
   # Utility / storage
