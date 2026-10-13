@@ -365,12 +365,12 @@ class _TokensScreenState extends State<TokensScreen> {
             (r) => Card(
               child: ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: PyramidsColors.brand.withValues(alpha: 0.15),
+                  backgroundColor: PineColors.brand.withValues(alpha: 0.15),
                   child: Text(
                     r.token.symbol.isNotEmpty
                         ? r.token.symbol.substring(0, 1)
                         : '?',
-                    style: const TextStyle(color: PyramidsColors.brand),
+                    style: const TextStyle(color: PineColors.brand),
                   ),
                 ),
                 title: Text(r.token.name),
@@ -394,7 +394,7 @@ class _TokensScreenState extends State<TokensScreen> {
             context.t('tokens.registryNote'),
             style: const TextStyle(
               fontSize: 11,
-              color: PyramidsColors.textSecondary,
+              color: PineColors.textSecondary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -449,7 +449,7 @@ class _TokensScreenState extends State<TokensScreen> {
                       style: const TextStyle(
                         fontFamily: 'monospace',
                         fontSize: 11,
-                        color: PyramidsColors.textSecondary,
+                        color: PineColors.textSecondary,
                       ),
                     ),
                   ),

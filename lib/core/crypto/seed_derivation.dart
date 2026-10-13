@@ -1,4 +1,4 @@
-/// Seed-phrase → Massa key derivation (Pyramids Wallet standard).
+/// Seed-phrase → Massa key derivation (Pine Wallet standard).
 ///
 /// Documented, deterministic scheme so the phrase can be replayed in
 /// any compatible tool:
@@ -15,10 +15,10 @@ import 'bip39.dart';
 import 'massa_keys.dart';
 import 'slip10.dart';
 
-/// Pyramids Wallet derivation path (SLIP-44 MASSA = 4478).
-const String pyramidsDerivationPath = "m/44'/4478'/0'/0'/0'";
+/// Pine Wallet derivation path (SLIP-44 MASSA = 4478).
+const String pineDerivationPath = "m/44'/4478'/0'/0'/0'";
 
-const List<int> _pyramidsPath = [44, 4478, 0, 0, 0];
+const List<int> _pinePath = [44, 4478, 0, 0, 0];
 
 /// Derives the Massa private key for [mnemonic].
 ///
@@ -29,6 +29,6 @@ MassaPrivateKey privateKeyFromMnemonic(
   String passphrase = '',
 }) {
   final seed = mnemonicToSeed(mnemonic, passphrase: passphrase);
-  final key = slip10DeriveEd25519(seed, _pyramidsPath);
+  final key = slip10DeriveEd25519(seed, _pinePath);
   return MassaPrivateKey.fromBytes(key);
 }

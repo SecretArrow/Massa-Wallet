@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — Nederlands.
+// Pine Wallet UI translations — Nederlands.
 library;
 
 const Map<String, String> nlTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Zelfbeherende wallet voor de Massa-blockchain",
   "welcome.title": "Uw sleutels, uw coins",
   "welcome.body": "Sleutels worden versleuteld opgeslagen, uitsluitend op dit apparaat (hardware-ondersteunde keystore, biometrische ontgrendeling, schermafbeeldingbeveiliging). Niemand kan ze voor u herstellen — maak een back-up van uw geheime sleutel.",
@@ -238,7 +238,7 @@ const Map<String, String> nlTranslations = {
   "common.retry": "Opnieuw",
   "common.confirm": "Bevestigen",
   "common.unlock": "Ontgrendelen",
-  "common.unlockReason": "Ontgrendel uw Pyramids Wallet",
+  "common.unlockReason": "Ontgrendel uw Pine Wallet",
   "common.locked": "Wallet vergrendeld",
   "common.back": "Terug",
   "common.next": "Volgende",
@@ -373,7 +373,7 @@ const Map<String, String> nlTranslations = {
   "seed.method.seed.sub": "BIP-39-herstelzin — aanbevolen",
   "seed.generate.title": "Uw herstelzin",
   "seed.generate.body": "Schrijf deze 12 woorden op papier, in de exacte volgorde. Wie ze bemachtigt, beheerst uw geld.",
-  "seed.generate.warn.share": "Deel de zin nooit — niemand van Pyramids Wallet zal er ooit om vragen",
+  "seed.generate.warn.share": "Deel de zin nooit — niemand van Pine Wallet zal er ooit om vragen",
   "seed.generate.warn.digital": "Bewaar het nooit in foto's, cloudnotities of e-mail — alleen papier",
   "seed.generate.screenshotBlocked": "Schermafbeeldingen zijn geblokkeerd op dit scherm",
   "seed.generate.reveal": "Tik op de woorden om ze te tonen",

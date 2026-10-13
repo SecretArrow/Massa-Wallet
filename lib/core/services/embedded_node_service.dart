@@ -493,7 +493,7 @@ class EmbeddedNodeService extends ChangeNotifier {
 
       final raw = File('${baseConfig.path}/config.toml').readAsStringSync();
       File('${baseConfig.path}/config.toml').writeAsStringSync(
-        '// Generated for Pyramids Wallet embedded node '
+        '// Generated for Pine Wallet embedded node '
         '($version · ${network.name}) — binds forced to loopback.\n'
         '${patchNodeConfig(raw)}',
       );

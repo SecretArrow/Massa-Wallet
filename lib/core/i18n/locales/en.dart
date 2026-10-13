@@ -1,9 +1,9 @@
 // Generated locale file — en.
-// Part of the Pyramids Wallet i18n tables (27 locales).
+// Part of the Pine Wallet i18n tables (27 locales).
 library;
 
 const Map<String, String> enTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Self-custodial wallet for the Massa blockchain",
   "welcome.title": "Your keys, your coins",
   "welcome.body": "Keys are stored encrypted on this device only (hardware-backed keystore, biometric unlock, screenshot guard). Nobody can recover them for you — back up your secret key.",
@@ -239,7 +239,7 @@ const Map<String, String> enTranslations = {
   "common.retry": "Retry",
   "common.confirm": "Confirm",
   "common.unlock": "Unlock",
-  "common.unlockReason": "Unlock your Pyramids Wallet",
+  "common.unlockReason": "Unlock your Pine Wallet",
   "common.locked": "Wallet locked",
   "common.back": "Back",
   "common.next": "Next",
@@ -375,7 +375,7 @@ const Map<String, String> enTranslations = {
   "seed.method.seed.sub": "BIP-39 recovery phrase — recommended",
   "seed.generate.title": "Your recovery phrase",
   "seed.generate.body": "Write these 12 words on paper, in the exact order. Anyone who gets them controls your funds.",
-  "seed.generate.warn.share": "Never share the phrase — nobody from Pyramids Wallet will ever ask for it",
+  "seed.generate.warn.share": "Never share the phrase — nobody from Pine Wallet will ever ask for it",
   "seed.generate.warn.digital": "Never store it in photos, cloud notes or email — paper only",
   "seed.generate.screenshotBlocked": "Screenshots are blocked on this screen",
   "seed.generate.reveal": "Tap the words to reveal them",

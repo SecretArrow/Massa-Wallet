@@ -167,7 +167,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   decoration: BoxDecoration(
                     color: settings.network == MassaNetwork.mainnet
-                        ? PyramidsColors.orange
+                        ? PineColors.orange
                         : Theme.of(context).colorScheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -184,7 +184,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: PyramidsColors.brand.withValues(alpha: 0.15),
+                      color: PineColors.brand.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -193,7 +193,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         const Icon(
                           Icons.visibility,
                           size: 12,
-                          color: PyramidsColors.brand,
+                          color: PineColors.brand,
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -320,7 +320,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               (a) => ListTile(
                 leading: const Icon(
                   Icons.account_circle,
-                  color: PyramidsColors.brand,
+                  color: PineColors.brand,
                 ),
                 title: Text(
                   a.nickname.isEmpty ? _shortAddr(a.address) : a.nickname,
@@ -329,7 +329,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 trailing: a.isActive
                     ? Chip(
                         label: Text(sheetCtx.t('wallet.active')),
-                        backgroundColor: PyramidsColors.brand.withValues(
+                        backgroundColor: PineColors.brand.withValues(
                           alpha: 0.15,
                         ),
                       )
@@ -473,7 +473,7 @@ class _RecentTile extends StatelessWidget {
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: item.status == ActivityStatus.failed
-                      ? PyramidsColors.error
+                      ? PineColors.error
                       : null,
                 ),
               ),
@@ -485,37 +485,37 @@ class _RecentTile extends StatelessWidget {
       switch (item.kind) {
         ActivityKind.send => (
           Icons.north_east,
-          PyramidsColors.orange,
+          PineColors.orange,
           context.t('history.sent'),
         ),
         ActivityKind.receive => (
           Icons.south_west,
-          PyramidsColors.green,
+          PineColors.green,
           context.t('history.received'),
         ),
         ActivityKind.rollBuy => (
           Icons.stacked_bar_chart,
-          PyramidsColors.brand,
+          PineColors.brand,
           context.t('history.rollBuy'),
         ),
         ActivityKind.rollSell => (
           Icons.south,
-          PyramidsColors.brand,
+          PineColors.brand,
           context.t('history.rollSell'),
         ),
         ActivityKind.callSC => (
           Icons.code,
-          PyramidsColors.deepBrand,
+          PineColors.deepBrand,
           context.t('history.call'),
         ),
         ActivityKind.tokenTransfer => (
           Icons.token,
-          PyramidsColors.deepBrand,
+          PineColors.deepBrand,
           context.t('history.token'),
         ),
         ActivityKind.dapp => (
           Icons.public,
-          PyramidsColors.deepBrand,
+          PineColors.deepBrand,
           context.t('history.dapp'),
         ),
       };
@@ -698,13 +698,13 @@ class _TokensSectionState extends State<_TokensSection> {
                 dense: true,
                 leading: CircleAvatar(
                   radius: 16,
-                  backgroundColor: PyramidsColors.brand.withValues(alpha: 0.15),
+                  backgroundColor: PineColors.brand.withValues(alpha: 0.15),
                   child: Text(
                     r.token.symbol.isNotEmpty
                         ? r.token.symbol.substring(0, 1)
                         : '?',
                     style: const TextStyle(
-                      color: PyramidsColors.brand,
+                      color: PineColors.brand,
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                     ),
@@ -765,7 +765,7 @@ class _PriceTicker extends StatelessWidget {
           dense: true,
           leading: const Icon(
             Icons.currency_exchange,
-            color: PyramidsColors.brand,
+            color: PineColors.brand,
           ),
           title: Text(
             '$symbol${_formatNumber(value)} $currencyLabel',

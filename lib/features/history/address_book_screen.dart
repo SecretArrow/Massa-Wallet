@@ -182,19 +182,19 @@ class _AddressBookScreenState extends State<AddressBookScreen> {
                 return Card(
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: PyramidsColors.brand.withValues(
+                      backgroundColor: PineColors.brand.withValues(
                         alpha: 0.15,
                       ),
                       child: c.domain.isNotEmpty
                           ? const Icon(
                               Icons.dns_outlined,
-                              color: PyramidsColors.brand,
+                              color: PineColors.brand,
                               size: 20,
                             )
                           : Text(
                               c.name.isEmpty ? '?' : c.name[0].toUpperCase(),
                               style: const TextStyle(
-                                color: PyramidsColors.brand,
+                                color: PineColors.brand,
                               ),
                             ),
                     ),

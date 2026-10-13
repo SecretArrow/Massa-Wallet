@@ -115,7 +115,7 @@ class SecurityService extends ChangeNotifier {
   Future<bool> unlock({String reason = ''}) async {
     try {
       final ok = await _localAuth.authenticate(
-        localizedReason: reason.isEmpty ? 'Unlock Pyramids Wallet' : reason,
+        localizedReason: reason.isEmpty ? 'Unlock Pine Wallet' : reason,
         // NOTE: persistAcrossBackgrounding intentionally NOT set —
         // combined with the lifecycle handler it used to re-prompt in a
         // loop right after the app resumed (the "crazy unlock bug").

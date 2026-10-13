@@ -186,7 +186,7 @@ Future<void> systemNotify(String title, String body) async {
     final plugin = FlutterLocalNotificationsPlugin();
     const android = AndroidNotificationDetails(
       'massa_wallet_alerts',
-      'Pyramids Wallet alerts',
+      'Pine Wallet alerts',
       channelDescription: 'Balance change and staking alerts',
       importance: Importance.high,
       priority: Priority.high,
@@ -324,7 +324,7 @@ Future<SyncTickResult> runSyncTick(
 
         // Balance diffs → notifications (baseline from storage).
         for (final message in balanceChangeMessages(lastBalances, fresh)) {
-          await hooks.notify('Pyramids Wallet — balance changed', message);
+          await hooks.notify('Pine Wallet — balance changed', message);
           notified++;
         }
         lastBalances
@@ -367,7 +367,7 @@ Future<SyncTickResult> runSyncTick(
             );
             if (outcome.action == AutoCompoundAction.bought) {
               await hooks.notify(
-                'Pyramids Wallet — auto-compound',
+                'Pine Wallet — auto-compound',
                 'Reinvested ${outcome.rollsBought} roll(s) · '
                     'cycle ${outcome.cycle}',
               );

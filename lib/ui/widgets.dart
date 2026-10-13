@@ -39,11 +39,11 @@ class BalanceCard extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [PyramidsColors.deepBrand, PyramidsColors.brandLight],
+          colors: [PineColors.deepBrand, PineColors.brandLight],
         ),
         boxShadow: [
           BoxShadow(
-            color: PyramidsColors.brand.withValues(alpha: 0.25),
+            color: PineColors.brand.withValues(alpha: 0.25),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -159,7 +159,7 @@ class ActionTile extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
-    this.color = PyramidsColors.brand,
+    this.color = PineColors.brand,
   });
 
   @override

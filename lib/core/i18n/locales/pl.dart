@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — Polski.
+// Pine Wallet UI translations — Polski.
 library;
 
 const Map<String, String> plTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Niepowierniczy portfel dla blockchaina Massa",
   "welcome.title": "Twoje klucze, Twoje monety",
   "welcome.body": "Klucze są przechowywane w postaci zaszyfrowanej wyłącznie na tym urządzeniu (keystore wspierany sprzętowo, odblokowanie biometryczne, blokada zrzutów ekranu). Nikt nie odzyska ich za Ciebie — wykonaj kopię zapasową klucza tajnego.",
@@ -238,7 +238,7 @@ const Map<String, String> plTranslations = {
   "common.retry": "Ponów",
   "common.confirm": "Potwierdź",
   "common.unlock": "Odblokuj",
-  "common.unlockReason": "Odblokuj swój Pyramids Wallet",
+  "common.unlockReason": "Odblokuj swój Pine Wallet",
   "common.locked": "Portfel zablokowany",
   "common.back": "Wstecz",
   "common.next": "Dalej",
@@ -373,7 +373,7 @@ const Map<String, String> plTranslations = {
   "seed.method.seed.sub": "Fraza odzyskiwania BIP-39 — zalecana",
   "seed.generate.title": "Twoja fraza odzyskiwania",
   "seed.generate.body": "Zapisz te 12 słów na papierze, w dokładnej kolejności. Kto je zdobędzie, ten kontroluje Twoje środki.",
-  "seed.generate.warn.share": "Nigdy nie udostępniaj frazy — nikt z Pyramids Wallet nigdy o nią nie poprosi",
+  "seed.generate.warn.share": "Nigdy nie udostępniaj frazy — nikt z Pine Wallet nigdy o nią nie poprosi",
   "seed.generate.warn.digital": "Nigdy nie przechowuj jej w zdjęciach, notatkach w chmurze ani e-mailu — tylko papier",
   "seed.generate.screenshotBlocked": "Zrzuty ekranu są zablokowane na tym ekranie",
   "seed.generate.reveal": "Dotknij słów, aby je odsłonić",

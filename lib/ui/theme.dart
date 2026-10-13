@@ -1,6 +1,6 @@
-/// Pyramids Wallet visual identity — Material 3, light & dark.
+/// Pine Wallet visual identity — Material 3, light & dark.
 ///
-/// Brand: crimson-red pyramid accent. Both themes build a full
+/// Brand: crimson-red pine accent. Both themes build a full
 /// M3 `ColorScheme.fromSeed` with modern component themes and force
 /// transparent system bars (edge-to-edge) with per-theme icon brightness.
 library;
@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 /// Brand colors.
-abstract final class PyramidsColors {
+abstract final class PineColors {
   /// Primary brand red (dark-theme primary).
   static const Color brand = Color(0xFFE5344A);
 
@@ -70,30 +70,30 @@ class AppTheme {
   static ThemeData get dark {
     final scheme =
         ColorScheme.fromSeed(
-          seedColor: PyramidsColors.brand,
+          seedColor: PineColors.brand,
           brightness: Brightness.dark,
         ).copyWith(
-          primary: PyramidsColors.brand,
-          secondary: PyramidsColors.orange,
-          surface: PyramidsColors.surface,
-          error: PyramidsColors.error,
+          primary: PineColors.brand,
+          secondary: PineColors.orange,
+          surface: PineColors.surface,
+          error: PineColors.error,
         );
 
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
       splashFactory: InkSparkle.splashFactory,
-      scaffoldBackgroundColor: PyramidsColors.bg,
+      scaffoldBackgroundColor: PineColors.bg,
       appBarTheme: const AppBarTheme(
-        backgroundColor: PyramidsColors.bg,
-        foregroundColor: PyramidsColors.textPrimary,
+        backgroundColor: PineColors.bg,
+        foregroundColor: PineColors.textPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
         systemOverlayStyle: overlayDark,
       ),
       cardTheme: const CardThemeData(
-        color: PyramidsColors.card,
+        color: PineColors.card,
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
@@ -102,7 +102,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: PyramidsColors.surface,
+        fillColor: PineColors.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Color(0xFF30363D)),
@@ -113,14 +113,14 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: PyramidsColors.brand, width: 2),
+          borderSide: const BorderSide(color: PineColors.brand, width: 2),
         ),
-        labelStyle: const TextStyle(color: PyramidsColors.textSecondary),
-        hintStyle: const TextStyle(color: PyramidsColors.textSecondary),
+        labelStyle: const TextStyle(color: PineColors.textSecondary),
+        hintStyle: const TextStyle(color: PineColors.textSecondary),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: PyramidsColors.brand,
+          backgroundColor: PineColors.brand,
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(52),
           shape: RoundedRectangleBorder(
@@ -131,9 +131,9 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: PyramidsColors.brand,
+          foregroundColor: PineColors.brand,
           minimumSize: const Size.fromHeight(52),
-          side: const BorderSide(color: PyramidsColors.brand),
+          side: const BorderSide(color: PineColors.brand),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -145,15 +145,15 @@ class AppTheme {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           side: WidgetStatePropertyAll(
-            BorderSide(color: PyramidsColors.brand.withValues(alpha: 0.5)),
+            BorderSide(color: PineColors.brand.withValues(alpha: 0.5)),
           ),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: PyramidsColors.surface,
-        indicatorColor: PyramidsColors.brand.withValues(alpha: 0.18),
+        backgroundColor: PineColors.surface,
+        indicatorColor: PineColors.brand.withValues(alpha: 0.18),
         labelTextStyle: WidgetStateProperty.all(
-          const TextStyle(fontSize: 12, color: PyramidsColors.textSecondary),
+          const TextStyle(fontSize: 12, color: PineColors.textSecondary),
         ),
       ),
       dividerTheme: const DividerThemeData(
@@ -161,39 +161,39 @@ class AppTheme {
         thickness: 1,
       ),
       listTileTheme: const ListTileThemeData(
-        iconColor: PyramidsColors.textSecondary,
-        textColor: PyramidsColors.textPrimary,
+        iconColor: PineColors.textSecondary,
+        textColor: PineColors.textPrimary,
       ),
       snackBarTheme: const SnackBarThemeData(
-        backgroundColor: PyramidsColors.card,
-        contentTextStyle: TextStyle(color: PyramidsColors.textPrimary),
+        backgroundColor: PineColors.card,
+        contentTextStyle: TextStyle(color: PineColors.textPrimary),
         behavior: SnackBarBehavior.floating,
       ),
       bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: PyramidsColors.surface,
-        modalBackgroundColor: PyramidsColors.surface,
+        backgroundColor: PineColors.surface,
+        modalBackgroundColor: PineColors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
         showDragHandle: true,
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: PyramidsColors.surface,
+        backgroundColor: PineColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       ),
       chipTheme: const ChipThemeData(
-        backgroundColor: PyramidsColors.card,
+        backgroundColor: PineColors.card,
         side: BorderSide(color: Color(0xFF30363D)),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
       ),
       popupMenuTheme: PopupMenuThemeData(
-        color: PyramidsColors.card,
+        color: PineColors.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: PyramidsColors.brand,
+        color: PineColors.brand,
         linearTrackColor: Color(0xFF21262D),
       ),
       expansionTileTheme: const ExpansionTileThemeData(
@@ -203,24 +203,24 @@ class AppTheme {
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? PyramidsColors.brand
-              : PyramidsColors.textSecondary,
+              ? PineColors.brand
+              : PineColors.textSecondary,
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? PyramidsColors.brand.withValues(alpha: 0.35)
+              ? PineColors.brand.withValues(alpha: 0.35)
               : const Color(0xFF30363D),
         ),
       ),
       sliderTheme: const SliderThemeData(
-        activeTrackColor: PyramidsColors.brand,
-        thumbColor: PyramidsColors.brand,
+        activeTrackColor: PineColors.brand,
+        thumbColor: PineColors.brand,
       ),
     );
     return base.copyWith(
       textTheme: base.textTheme.apply(
-        bodyColor: PyramidsColors.textPrimary,
-        displayColor: PyramidsColors.textPrimary,
+        bodyColor: PineColors.textPrimary,
+        displayColor: PineColors.textPrimary,
       ),
     );
   }
@@ -236,11 +236,11 @@ class AppTheme {
 
     final scheme =
         ColorScheme.fromSeed(
-          seedColor: PyramidsColors.deepBrand,
+          seedColor: PineColors.deepBrand,
           brightness: Brightness.light,
         ).copyWith(
-          primary: PyramidsColors.deepBrand,
-          secondary: PyramidsColors.orange,
+          primary: PineColors.deepBrand,
+          secondary: PineColors.orange,
           surface: surface,
           error: const Color(0xFFC93C37),
         );
@@ -281,7 +281,7 @@ class AppTheme {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(
-            color: PyramidsColors.deepBrand,
+            color: PineColors.deepBrand,
             width: 2,
           ),
         ),
@@ -290,7 +290,7 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: PyramidsColors.deepBrand,
+          backgroundColor: PineColors.deepBrand,
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(52),
           shape: RoundedRectangleBorder(
@@ -301,9 +301,9 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: PyramidsColors.deepBrand,
+          foregroundColor: PineColors.deepBrand,
           minimumSize: const Size.fromHeight(52),
-          side: const BorderSide(color: PyramidsColors.deepBrand),
+          side: const BorderSide(color: PineColors.deepBrand),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -315,13 +315,13 @@ class AppTheme {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           side: WidgetStatePropertyAll(
-            BorderSide(color: PyramidsColors.deepBrand.withValues(alpha: 0.5)),
+            BorderSide(color: PineColors.deepBrand.withValues(alpha: 0.5)),
           ),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surface,
-        indicatorColor: PyramidsColors.deepBrand.withValues(alpha: 0.12),
+        indicatorColor: PineColors.deepBrand.withValues(alpha: 0.12),
         labelTextStyle: WidgetStateProperty.all(
           const TextStyle(fontSize: 12, color: textSecondary),
         ),
@@ -360,7 +360,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: PyramidsColors.deepBrand,
+        color: PineColors.deepBrand,
         linearTrackColor: Color(0xFFD0D7DE),
       ),
       expansionTileTheme: const ExpansionTileThemeData(
@@ -370,18 +370,18 @@ class AppTheme {
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? PyramidsColors.deepBrand
+              ? PineColors.deepBrand
               : textSecondary,
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? PyramidsColors.deepBrand.withValues(alpha: 0.35)
+              ? PineColors.deepBrand.withValues(alpha: 0.35)
               : border,
         ),
       ),
       sliderTheme: const SliderThemeData(
-        activeTrackColor: PyramidsColors.deepBrand,
-        thumbColor: PyramidsColors.deepBrand,
+        activeTrackColor: PineColors.deepBrand,
+        thumbColor: PineColors.deepBrand,
       ),
     );
     return base.copyWith(

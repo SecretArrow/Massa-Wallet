@@ -189,7 +189,7 @@ class _SeedCreateScreenState extends State<SeedCreateScreen> {
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: revealed
-                              ? PyramidsColors.brand.withValues(alpha: 0.4)
+                              ? PineColors.brand.withValues(alpha: 0.4)
                               : cs.outlineVariant,
                         ),
                       ),
@@ -204,7 +204,7 @@ class _SeedCreateScreenState extends State<SeedCreateScreen> {
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w700,
-                                        color: PyramidsColors.brand,
+                                        color: PineColors.brand,
                                       ),
                                     ),
                                     TextSpan(
@@ -365,12 +365,12 @@ class _WarningRow extends StatelessWidget {
       decoration: BoxDecoration(
         color: cs.surfaceContainerLow,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: PyramidsColors.orange.withValues(alpha: 0.5)),
+        border: Border.all(color: PineColors.orange.withValues(alpha: 0.5)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: PyramidsColors.orange),
+          Icon(icon, size: 20, color: PineColors.orange),
           const SizedBox(width: 10),
           Expanded(
             child: Text(

@@ -105,7 +105,7 @@ String normalizeMnemonic(String mnemonic) => mnemonic
 /// Derives the 64-byte BIP-39 seed from a mnemonic.
 ///
 /// PBKDF2-HMAC-SHA512, 2048 iterations, salt `"mnemonic" + [passphrase]`
-/// (the optional passphrase is the "25th word"; Pyramids Wallet keeps it
+/// (the optional passphrase is the "25th word"; Pine Wallet keeps it
 /// empty — an explicit empty passphrase is interoperable with all
 /// standard wallets).
 Uint8List mnemonicToSeed(String mnemonic, {String passphrase = ''}) {

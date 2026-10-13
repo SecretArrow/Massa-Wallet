@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔺 Pyramids Wallet
+# 🌲 Pine Wallet
 
 **Secure self-custodial Flutter wallet for the Massa blockchain — with a built-in dApp browser**
 
@@ -23,6 +23,16 @@ Flutter • Android • Material Design 3 (dark/light/system) • Bilingual (�
 
 **ID** — Wallet mobile self-custodial kualitas production untuk [blockchain Massa](https://massa.net), dibangun dengan Flutter. Berjalan sebagai **light client** yang terhubung ke API publik Massa JSON-RPC v2 (atau node milik Anda sendiri), dengan tumpukan kripto lokal yang diporting 1:1 dari SDK resmi `@massalabs/massa-web3` dan divalidasi terhadap test vector resminya. Termasuk **browser dApp bawaan untuk situs `.massa` on-chain (DeWeb)** dengan provider `window.massa` terinjeksi, **pengelolaan token MRC-20**, riwayat aktivitas, buku alamat, staking, panggilan smart contract, sinkronisasi saldo latar belakang dengan notifikasi, penyimpanan kunci hardware-backed, buka kunci biometrik, tema gelap/terang, mode eksperimental "hubungkan ke node sendiri", dan — baru di v1.3.0 — **hybrid sejati**: pilih antara RPC Publik, RPC Kustom milik Anda, atau **node massa-node asli yang berjalan di dalam sandbox aplikasi** (Buildnet, eksperimental).
 
+## 🆕 What's new in v1.7.0
+
+| Feature | Description / Keterangan |
+|---|---|
+| 🌲 **Pine Wallet** | Full rebrand from "Pyramids Wallet" to **Pine Wallet**: display name (Android launcher, iOS, widget), in-app titles, all 27 locale tables, unlock/lock strings, notification channels, CI artifact names — plus a brand-new layered **red pine-tree** logo (launcher, adaptive foreground, native + in-app splash, all iOS icons). Same applicationId `site.massawallet.app`, so existing installs update in place. / *Rebrand total menjadi "Pine Wallet": nama, judul, 27 bahasa, dan logo pohon pinus merah baru di ikon dan splash.* |
+| 🖧 **One binary, two networks** | Embedded node ships **one** per-ABI binary; mainnet vs buildnet is purely configuration — per-network `assets/node/mainnet/` & `assets/node/buildnet/` config/genesis/bootstrap sets with separate data dirs. Node screen lets you pick the network; no binary duplication. / *Satu binary, mainnet/buildnet cukup beda config & folder data.* |
+| 🔓 **Unlock repair** | Fixed the "crazy unlock" bug: no more re-prompt loop after resume (`persistAcrossBackgrounding` removed), hardware-support vs enrolled-biometrics distinction, and a defined fail-open only when the device has no usable credential at all (so the wallet can never be bricked on the lock screen). / *Bug unlock diperbaiki; gagal-buka hanya bila perangkat tidak punya kredensial sama sekali.* |
+| 🪙 **Home tokens section** | Dashboard shows the **Tokens** section (native MAS + MRC20 when present); the old accounts block and the add-accounts button under rolls are gone. / *Home menampilkan Tokens; blok accounts & tombol add-accounts dihapus.* |
+| 🩺 **Node linker diagnostics** | `cannot link executable` now produces actionable diagnostics (ABI, arch, permissions, SELinux/W^X hints) + `test/node_link_diagnostics_test.dart`. / *Diagnosa jelas saat node gagal link.* |
+
 ## 🆕 What's new in v1.6.0
 
 | Feature | Description / Keterangan |
@@ -37,7 +47,7 @@ Flutter • Android • Material Design 3 (dark/light/system) • Bilingual (�
 | Feature | Description / Keterangan |
 |---|---|
 | 🔴 **Red identity, total** | Brand color switched to **crimson red** across the entire app: M3 seed colors, balance-card gradient, buttons, switches, sliders, chips, lock screen, browser accents and the homescreen widget. / *Warna merek diganti total menjadi merah crimson di seluruh aplikasi dan widget.* |
-| 🔺 **Red pyramid logo everywhere** | New layered red-pyramid logo (regenerated Android launcher + adaptive icons **and** all 15 iOS app icons). The splash screen now shows the logo: native launch splash (pre-12 layer-list + Android 12+ `windowSplashScreenAnimatedIcon`) **and** an in-app branded splash while accounts load. No more `$` icons — the welcome screen shows the pyramid, fiat rows use `currency_exchange`. / *Logo piramida merah di ikon, splash native, splash in-app, dan layar welcome — tanpa ikon `$`.* |
+| 🌲 **Red pine logo everywhere** | New layered red pine-tree logo (regenerated Android launcher + adaptive icons **and** all 15 iOS app icons). The splash screen now shows the logo: native launch splash (pre-12 layer-list + Android 12+ `windowSplashScreenAnimatedIcon`) **and** an in-app branded splash while accounts load. No more `$` icons — the welcome screen shows the pine, fiat rows use `currency_exchange`. / *Logo pinus merah di ikon, splash native, splash in-app, dan layar welcome — tanpa ikon `$`.* |
 | 🇬🇧 **English by default** | Fresh installs now start in **English** (an explicit Indonesian preference is still honored; Settings → Language works as before). Background-sync notifications and all service strings are English-first too. / *Bahasa default instalasi baru kini Inggris; preferensi Indonesia yang tersimpan tetap dihormati.* |
 | 🌗 **System theme default** | Theme mode now defaults to **System** (follows OS), with Light/Dark/System still selectable. / *Tema default mengikuti sistem; Gelap/Terang/Sistem tetap bisa dipilih.* |
 | 🎨 **Light-theme deep clean** | ~40 remaining hardcoded dark-surface colors (sheets, dialogs, dropdowns, empty states, secondary texts, browser bottom bar) are now theme-aware — light mode no longer shows dark patches. / *±40 warna gelap hardcoded kini theme-aware — mode terang bersih total.* |
@@ -47,7 +57,7 @@ Flutter • Android • Material Design 3 (dark/light/system) • Bilingual (�
 
 | Feature | Description / Keterangan |
 |---|---|
-| 🔺 **Pyramids Wallet rebrand** | New name, new golden-pyramid app icon (regenerated launcher + adaptive icons). Same applicationId, so existing installs update in place. / *Nama baru & ikon piramida emas; applicationId tetap sehingga instalasi lama bisa update.* |
+| 🌲 **Pine Wallet rebrand** | New name, new red pine-tree app icon (regenerated launcher + adaptive icons). Same applicationId, so existing installs update in place. / *Nama baru & ikon pohon pinus merah; applicationId tetap sehingga instalasi lama bisa update.* |
 | 🏠 **Browser start page** | The dApp browser now opens on a rich start page: curated Massa dApps (explorers, docs, faucet info), on-chain DeWeb sites, **bookmarks** and **persistent history** (star any page to bookmark). / *Halaman awal browser berisi dApp Massa pilihan, situs DeWeb, bookmark, dan riwayat permanen.* |
 | ✍️ **Canonical dApp `signOperation`** | dApp signing requests are now decoded (operation type, recipient, amount, fee) and signed with the correct canonical bytes — `u64BE(chainId) ‖ versionedPubkey ‖ serializedOp` — matching massa-web3 exactly. Opaque blobs are flagged. / *Permintaan tanda tangan dApp kini didekode dan ditandatangani dengan byte kanonik yang benar.* |
 | 🚰 **Buildnet faucet helper** | Receive screen (buildnet) tries the legacy HTTP faucet first; when it is offline (it currently is — the official faucet is the Discord `#buildnet-faucet` channel), a fallback sheet offers one-tap Discord + docs links opened in the in-app browser. / *Tombol faucet buildnet dengan fallback ke kanal Discord resmi.* |

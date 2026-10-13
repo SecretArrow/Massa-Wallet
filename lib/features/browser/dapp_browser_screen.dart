@@ -321,7 +321,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
         return [
           {
             'address': a.address,
-            'name': a.nickname.isEmpty ? 'Pyramids Wallet' : a.nickname,
+            'name': a.nickname.isEmpty ? 'Pine Wallet' : a.nickname,
           },
         ];
       case 'accounts':
@@ -330,7 +330,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
         return [
           {
             'address': a.address,
-            'name': a.nickname.isEmpty ? 'Pyramids Wallet' : a.nickname,
+            'name': a.nickname.isEmpty ? 'Pine Wallet' : a.nickname,
           },
         ];
       case 'network':
@@ -561,7 +561,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
                 e.key,
                 style: const TextStyle(
                   fontSize: 12,
-                  color: PyramidsColors.textSecondary,
+                  color: PineColors.textSecondary,
                 ),
               ),
               SelectableText(
@@ -676,7 +676,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
                   value: _progress == 0 ? null : _progress,
                   minHeight: 2,
                   backgroundColor: Colors.transparent,
-                  color: PyramidsColors.brand,
+                  color: PineColors.brand,
                 ),
               )
             : null,
@@ -817,7 +817,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
                 style: const TextStyle(
                   fontFamily: 'monospace',
                   fontSize: 12,
-                  color: PyramidsColors.brand,
+                  color: PineColors.brand,
                 ),
               ),
               const SizedBox(height: 12),
@@ -825,7 +825,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
                 '${ctx.t('browser.servedLocally')}',
                 style: const TextStyle(
                   fontSize: 12,
-                  color: PyramidsColors.textSecondary,
+                  color: PineColors.textSecondary,
                 ),
               ),
             ],

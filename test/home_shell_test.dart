@@ -118,10 +118,10 @@ void main() {
     expect(find.text('System'), findsOneWidget);
     // Version/network footer at the very bottom.
     await tester.scrollUntilVisible(
-      find.textContaining('Pyramids Wallet ·'),
+      find.textContaining('Pine Wallet ·'),
       200,
     );
-    expect(find.textContaining('Pyramids Wallet ·'), findsOneWidget);
+    expect(find.textContaining('Pine Wallet ·'), findsOneWidget);
   });
 
   testWidgets('navigation labels follow the app language', (tester) async {

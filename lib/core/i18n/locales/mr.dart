@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — मराठी.
+// Pine Wallet UI translations — मराठी.
 library;
 
 const Map<String, String> mrTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Massa ब्लॉकचेनसाठी सेल्फ-कस्टोडियल वॉलेट",
   "welcome.title": "तुमची की, तुमची नाणी",
   "welcome.body": "की फक्त याच डिव्हाइसवर एन्क्रिप्टेड स्वरूपात साठवल्या जातात (हार्डवेअर-आधारित कीस्टोअर, बायोमेट्रिक अनलॉक, स्क्रीनशॉट गार्ड). त्या तुमच्यासाठी कोणीही पुनर्प्राप्त करू शकत नाही — तुमच्या गुप्त कीचा बॅकअप नक्की करा.",
@@ -238,7 +238,7 @@ const Map<String, String> mrTranslations = {
   "common.retry": "पुन्हा प्रयत्न करा",
   "common.confirm": "पुष्टी करा",
   "common.unlock": "अनलॉक",
-  "common.unlockReason": "तुमचे Pyramids Wallet अनलॉक करा",
+  "common.unlockReason": "तुमचे Pine Wallet अनलॉक करा",
   "common.locked": "वॉलेट लॉक आहे",
   "common.back": "मागे",
   "common.next": "पुढे",
@@ -373,7 +373,7 @@ const Map<String, String> mrTranslations = {
   "seed.method.seed.sub": "BIP-39 रिकव्हरी फ्रेज — शिफारस केलेले",
   "seed.generate.title": "तुमची रिकव्हरी फ्रेज",
   "seed.generate.body": "हे 12 शब्द कागदावर, अगदी याच क्रमाने लिहा. ते मिळवणारा कोणीही तुमचा निधी नियंत्रित करू शकतो.",
-  "seed.generate.warn.share": "फ्रेज कधीही शेअर करू नका — Pyramids Wallet मधील कोणीही ती कधी विचारणार नाही",
+  "seed.generate.warn.share": "फ्रेज कधीही शेअर करू नका — Pine Wallet मधील कोणीही ती कधी विचारणार नाही",
   "seed.generate.warn.digital": "ती फोटो, क्लाउड नोट्स किंवा ईमेलमध्ये कधीही ठेवू नका — फक्त कागद",
   "seed.generate.screenshotBlocked": "या स्क्रीनवर स्क्रीनशॉट अवरोधित आहेत",
   "seed.generate.reveal": "शब्द पाहण्यासाठी टॅप करा",

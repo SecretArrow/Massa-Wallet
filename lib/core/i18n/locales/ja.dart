@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — 日本語.
+// Pine Wallet UI translations — 日本語.
 library;
 
 const Map<String, String> jaTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Massaブロックチェーンのセルフカストディ型ウォレット",
   "welcome.title": "あなたの鍵、あなたの資産",
   "welcome.body": "キーはこの端末内にのみ暗号化して保存されます（ハードウェアバックアップのキーストア、生体認証ロック解除、スクリーンショット保護）。誰もあなたの代わりに復元することはできません — 秘密鍵をバックアップしてください。",
@@ -238,7 +238,7 @@ const Map<String, String> jaTranslations = {
   "common.retry": "再試行",
   "common.confirm": "確認",
   "common.unlock": "ロック解除",
-  "common.unlockReason": "Pyramids Walletのロックを解除",
+  "common.unlockReason": "Pine Walletのロックを解除",
   "common.locked": "ウォレットはロックされています",
   "common.back": "戻る",
   "common.next": "次へ",
@@ -373,7 +373,7 @@ const Map<String, String> jaTranslations = {
   "seed.method.seed.sub": "BIP-39リカバリーフレーズ — 推奨",
   "seed.generate.title": "あなたのリカバリーフレーズ",
   "seed.generate.body": "この12語を正しい順序で紙に書き写してください。誰かがこれらを入手すると資金を支配されてしまいます。",
-  "seed.generate.warn.share": "フレーズを共有しないでください — Pyramids Walletが尋ねることは決してありません",
+  "seed.generate.warn.share": "フレーズを共有しないでください — Pine Walletが尋ねることは決してありません",
   "seed.generate.warn.digital": "写真・クラウドメモ・メールに保存しないでください — 紙のみに保管",
   "seed.generate.screenshotBlocked": "この画面ではスクリーンショットがブロックされています",
   "seed.generate.reveal": "単語をタップして表示",

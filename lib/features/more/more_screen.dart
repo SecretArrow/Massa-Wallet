@@ -38,7 +38,7 @@ class MoreScreen extends StatelessWidget {
               children: [
                 _MoreItem(
                   icon: Icons.stacked_bar_chart,
-                  color: PyramidsColors.orange,
+                  color: PineColors.orange,
                   title: context.t('wallet.staking'),
                   subtitle: context.t('more.staking.sub'),
                   route: '/staking',
@@ -61,7 +61,7 @@ class MoreScreen extends StatelessWidget {
               children: [
                 _MoreItem(
                   icon: Icons.token,
-                  color: PyramidsColors.brand,
+                  color: PineColors.brand,
                   title: context.t('wallet.tokens'),
                   subtitle: context.t('more.tokens.sub'),
                   route: '/tokens',
@@ -77,7 +77,7 @@ class MoreScreen extends StatelessWidget {
                 const _Divider(),
                 _MoreItem(
                   icon: Icons.import_contacts,
-                  color: PyramidsColors.green,
+                  color: PineColors.green,
                   title: context.t('wallet.addressBook'),
                   subtitle: context.t('more.contacts.sub'),
                   route: '/addressBook',
@@ -137,7 +137,7 @@ class _AccountHeader extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [PyramidsColors.deepBrand, PyramidsColors.brandLight],
+          colors: [PineColors.deepBrand, PineColors.brandLight],
         ),
       ),
       child: Row(
@@ -305,11 +305,11 @@ class _NetworkFooter extends StatelessWidget {
           const Icon(
             Icons.shield_outlined,
             size: 14,
-            color: PyramidsColors.brand,
+            color: PineColors.brand,
           ),
           const SizedBox(width: 6),
           Text(
-            'Pyramids Wallet · ${settings.network.name.toUpperCase()}',
+            'Pine Wallet · ${settings.network.name.toUpperCase()}',
             style: TextStyle(
               fontSize: 11,
               letterSpacing: 0.5,
@@ -321,7 +321,7 @@ class _NetworkFooter extends StatelessWidget {
             const Icon(
               Icons.verified_outlined,
               size: 14,
-              color: PyramidsColors.green,
+              color: PineColors.green,
             ),
           ],
         ],

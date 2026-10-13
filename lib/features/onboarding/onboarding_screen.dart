@@ -40,7 +40,7 @@ Future<void> showCreateMethodSheet(
             ),
             _MethodCard(
               icon: Icons.psychology_alt_outlined,
-              color: PyramidsColors.brand,
+              color: PineColors.brand,
               title: sheetCtx.t('seed.method.seed.title'),
               subtitle: sheetCtx.t('seed.method.seed.sub'),
               recommended: true,
@@ -52,7 +52,7 @@ Future<void> showCreateMethodSheet(
             const SizedBox(height: 10),
             _MethodCard(
               icon: Icons.vpn_key_outlined,
-              color: PyramidsColors.orange,
+              color: PineColors.orange,
               title: sheetCtx.t('seed.method.random.title'),
               subtitle: sheetCtx.t('seed.method.random.sub'),
               onTap: () {
@@ -96,7 +96,7 @@ class _MethodCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: recommended
-                ? PyramidsColors.brand.withValues(alpha: 0.5)
+                ? PineColors.brand.withValues(alpha: 0.5)
                 : Theme.of(context).colorScheme.outlineVariant,
           ),
         ),
@@ -131,14 +131,14 @@ class _MethodCard extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: PyramidsColors.brand.withValues(alpha: 0.12),
+                            color: PineColors.brand.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Text(
                             '★',
                             style: TextStyle(
                               fontSize: 10,
-                              color: PyramidsColors.brand,
+                              color: PineColors.brand,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -244,7 +244,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: PyramidsColors.orange,
+                        color: PineColors.orange,
                         width: 1,
                       ),
                     ),
@@ -256,7 +256,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         fontFamily: 'monospace',
                         fontSize: 13,
                         color: revealed
-                            ? PyramidsColors.orange
+                            ? PineColors.orange
                             : Theme.of(sheetCtx).colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -321,7 +321,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       const Spacer(),
                       Center(
                         child: Image.asset(
-                          'assets/icon/pyramids_logo.png',
+                          'assets/icon/pine_logo.png',
                           width: 128,
                           height: 128,
                           filterQuality: FilterQuality.high,
@@ -352,7 +352,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             children: [
                               const Icon(
                                 Icons.shield,
-                                color: PyramidsColors.brand,
+                                color: PineColors.brand,
                                 size: 28,
                               ),
                               const SizedBox(width: 12),
@@ -570,7 +570,7 @@ class _ImportScreenState extends State<ImportScreen> {
                     children: [
                       const Icon(
                         Icons.visibility,
-                        color: PyramidsColors.brand,
+                        color: PineColors.brand,
                         size: 20,
                       ),
                       const SizedBox(width: 8),

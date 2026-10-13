@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — Português-Brasil.
+// Pine Wallet UI translations — Português-Brasil.
 library;
 
 const Map<String, String> ptTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Carteira autocustodiada para a blockchain Massa",
   "welcome.title": "Suas chaves, suas moedas",
   "welcome.body": "As chaves ficam armazenadas criptografadas somente neste dispositivo (keystore com respaldo de hardware, desbloqueio biométrico, proteção contra capturas de tela). Ninguém pode recuperá-las por você — faça backup da sua chave secreta.",
@@ -238,7 +238,7 @@ const Map<String, String> ptTranslations = {
   "common.retry": "Tentar novamente",
   "common.confirm": "Confirmar",
   "common.unlock": "Desbloquear",
-  "common.unlockReason": "Desbloqueie sua Pyramids Wallet",
+  "common.unlockReason": "Desbloqueie sua Pine Wallet",
   "common.locked": "Carteira bloqueada",
   "common.back": "Voltar",
   "common.next": "Avançar",
@@ -373,7 +373,7 @@ const Map<String, String> ptTranslations = {
   "seed.method.seed.sub": "Frase de recuperação BIP-39 — recomendada",
   "seed.generate.title": "Sua frase de recuperação",
   "seed.generate.body": "Escreva estas 12 palavras no papel, na ordem exata. Quem as obtiver controla seus fundos.",
-  "seed.generate.warn.share": "Nunca compartilhe a frase — ninguém da Pyramids Wallet jamais a pedirá",
+  "seed.generate.warn.share": "Nunca compartilhe a frase — ninguém da Pine Wallet jamais a pedirá",
   "seed.generate.warn.digital": "Nunca a guarde em fotos, notas na nuvem ou e-mail — somente papel",
   "seed.generate.screenshotBlocked": "As capturas de tela estão bloqueadas nesta tela",
   "seed.generate.reveal": "Toque nas palavras para revelá-las",

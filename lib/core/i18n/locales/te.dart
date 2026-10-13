@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — Telugu (తెలుగు).
+// Pine Wallet UI translations — Telugu (తెలుగు).
 library;
 
 const Map<String, String> teTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Massa బ్లాక్చెయిన్ కోసం స్వీయ-కస్టడీ వాలెట్",
   "welcome.title": "మీ కీలు, మీ నాణేలు",
   "welcome.body": "కీలు ఈ పరికరంలోనే ఎన్క్రిప్ట్ చేయబడి నిల్వ ఉంటాయి (హార్డ్వేర్ ఆధారిత కీస్టోర్, బయోమెట్రిక్ అన్లాక్, స్క్రీన్షాట్ రక్షణ). మీ కోసం ఎవరూ వాటిని పునరుద్ధరించలేరు — మీ రహస్య కీని బ్యాకప్ చేయండి.",
@@ -238,7 +238,7 @@ const Map<String, String> teTranslations = {
   "common.retry": "మళ్లీ ప్రయత్నించండి",
   "common.confirm": "నిర్ధారించండి",
   "common.unlock": "అన్లాక్ చేయండి",
-  "common.unlockReason": "మీ Pyramids Walletను అన్లాక్ చేయండి",
+  "common.unlockReason": "మీ Pine Walletను అన్లాక్ చేయండి",
   "common.locked": "వాలెట్ లాక్ అయింది",
   "common.back": "వెనుకకు",
   "common.next": "తర్వాత",
@@ -373,7 +373,7 @@ const Map<String, String> teTranslations = {
   "seed.method.seed.sub": "BIP-39 రికవరీ ఫ్రేజ్ — సిఫార్సు చేయబడింది",
   "seed.generate.title": "మీ రికవరీ ఫ్రేజ్",
   "seed.generate.body": "ఈ 12 పదాలను సరిగ్గా అదే క్రమంలో కాగితంపై రాయండి. వీటిని పొందే ఎవరైనా మీ నిధులను నియంత్రిస్తారు.",
-  "seed.generate.warn.share": "ఫ్రేజ్ను ఎప్పుడూ షేర్ చేయకండి — Pyramids Wallet నుండి ఎవరూ దీన్ని ఎప్పుడూ అడగరు",
+  "seed.generate.warn.share": "ఫ్రేజ్ను ఎప్పుడూ షేర్ చేయకండి — Pine Wallet నుండి ఎవరూ దీన్ని ఎప్పుడూ అడగరు",
   "seed.generate.warn.digital": "దీన్ని ఫోటోలు, క్లౌడ్ నోట్స్ లేదా ఇమెయిల్లో ఎప్పుడూ నిల్వ చేయకండి — కాగితంపై మాత్రమే",
   "seed.generate.screenshotBlocked": "ఈ స్క్రీన్పై స్క్రీన్షాట్లు నిరోధించబడ్డాయి",
   "seed.generate.reveal": "పదాలను చూపించడానికి వాటిపై నొక్కండి",

@@ -31,7 +31,7 @@ void main() {
           ),
         ),
       ],
-      child: const PyramidsWalletApp(),
+      child: const PineWalletApp(),
     ),
   );
 }

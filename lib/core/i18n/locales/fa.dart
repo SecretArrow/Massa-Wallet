@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — فارسی.
+// Pine Wallet UI translations — فارسی.
 library;
 
 const Map<String, String> faTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "کیف پول با حفظ کلید شخصی برای بلاکچین Massa",
   "welcome.title": "کلیدهای شما، سکه‌های شما",
   "welcome.body": "کلیدها فقط روی همین دستگاه به‌صورت رمزنگاری‌شده ذخیره می‌شوند (keystore سخت‌افزاری، باز کردن با بیومتریک، محافظ اسکرین‌شات). هیچ‌کس نمی‌تواند آن‌ها را برای شما بازیابی کند — از کلید مخفی خود نسخه پشتیبان تهیه کنید.",
@@ -238,7 +238,7 @@ const Map<String, String> faTranslations = {
   "common.retry": "تلاش دوباره",
   "common.confirm": "تأیید",
   "common.unlock": "باز کردن قفل",
-  "common.unlockReason": "باز کردن قفل کیف پول Pyramids Wallet",
+  "common.unlockReason": "باز کردن قفل کیف پول Pine Wallet",
   "common.locked": "کیف پول قفل است",
   "common.back": "بازگشت",
   "common.next": "بعدی",
@@ -373,7 +373,7 @@ const Map<String, String> faTranslations = {
   "seed.method.seed.sub": "عبارت بازیابی BIP-39 — توصیه‌شده",
   "seed.generate.title": "عبارت بازیابی شما",
   "seed.generate.body": "این 12 کلمه را به همین ترتیب دقیق روی کاغذ بنویسید. هر کس آن‌ها را به دست آورد بر دارایی‌های شما کنترل دارد.",
-  "seed.generate.warn.share": "هرگز عبارت را به اشتراک نگذارید — هیچ‌کس از Pyramids Wallet هرگز آن را از شما نمی‌پرسد",
+  "seed.generate.warn.share": "هرگز عبارت را به اشتراک نگذارید — هیچ‌کس از Pine Wallet هرگز آن را از شما نمی‌پرسد",
   "seed.generate.warn.digital": "هرگز آن را در عکس‌ها، یادداشت‌های ابری یا ایمیل ذخیره نکنید — فقط کاغذ",
   "seed.generate.screenshotBlocked": "اسکرین‌شات در این صفحه مسدود است",
   "seed.generate.reveal": "برای نمایش کلمات روی آن‌ها ضربه بزنید",

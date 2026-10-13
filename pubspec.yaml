@@ -1,7 +1,7 @@
 name: massa_wallet
-description: "Pyramids Wallet - Secure self-custodial Flutter wallet for the Massa blockchain with dApp browser, embedded node, staking and background sync."
+description: "Pine Wallet - Secure self-custodial Flutter wallet for the Massa blockchain with dApp browser, embedded node, staking and background sync."
 publish_to: "none"
-version: 1.6.1+10
+version: 1.7.0+11
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
@@ -60,13 +60,13 @@ flutter:
     - assets/node/gas_costs/
     - assets/node/mainnet/
     - assets/node/mainnet/gas_costs/
-    - assets/icon/pyramids_logo.png
+    - assets/icon/pine_logo.png
 
 flutter_launcher_icons:
   android: true
-  image_path: "assets/icon/pyramids_icon.png"
+  image_path: "assets/icon/pine_icon.png"
   adaptive_icon_background: "#0D1117"
-  adaptive_icon_foreground: "assets/icon/pyramids_icon_foreground.png"
+  adaptive_icon_foreground: "assets/icon/pine_icon_foreground.png"
 
 # workmanager's federated 0.9.x releases are internally broken for
 # Flutter <3.38: platform_interface 0.9.4 added `foregroundServiceConfig`

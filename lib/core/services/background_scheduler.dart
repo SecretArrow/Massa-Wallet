@@ -30,10 +30,10 @@ import 'package:workmanager/workmanager.dart';
 import 'background_tick.dart';
 
 /// Unique name of the periodic job (used to cancel/replace it).
-const String kPeriodicSyncUniqueName = 'pyramids.background.sync';
+const String kPeriodicSyncUniqueName = 'pine.background.sync';
 
 /// Task name delivered to the dispatcher.
-const String kPeriodicSyncTaskName = 'pyramids.background.sync.tick';
+const String kPeriodicSyncTaskName = 'pine.background.sync.tick';
 
 @pragma('vm:entry-point')
 void backgroundSyncCallbackDispatcher() {

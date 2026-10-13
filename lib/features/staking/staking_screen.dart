@@ -195,7 +195,7 @@ class _StakingScreenState extends State<StakingScreen> {
                 padding: const EdgeInsets.all(12),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline, color: PyramidsColors.brand),
+                    const Icon(Icons.info_outline, color: PineColors.brand),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -254,7 +254,7 @@ class _StakingScreenState extends State<StakingScreen> {
                         _acStatus!,
                         style: const TextStyle(
                           fontSize: 11,
-                          color: PyramidsColors.brand,
+                          color: PineColors.brand,
                         ),
                       ),
                     ],

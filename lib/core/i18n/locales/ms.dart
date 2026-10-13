@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — Bahasa Melayu (Malay).
+// Pine Wallet UI translations — Bahasa Melayu (Malay).
 library;
 
 const Map<String, String> msTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Dompet penjagaan sendiri untuk blockchain Massa",
   "welcome.title": "Kunci anda, syiling anda",
   "welcome.body": "Kunci disimpan dalam keadaan disulitkan pada peranti ini sahaja (keystore berasaskan perkakasan, buka kunci biometrik, perlindungan tangkapan skrin). Tiada sesiapa boleh memulihkannya untuk anda — buat sandaran kunci rahsia anda.",
@@ -238,7 +238,7 @@ const Map<String, String> msTranslations = {
   "common.retry": "Cuba lagi",
   "common.confirm": "Sahkan",
   "common.unlock": "Buka kunci",
-  "common.unlockReason": "Buka kunci Pyramids Wallet anda",
+  "common.unlockReason": "Buka kunci Pine Wallet anda",
   "common.locked": "Dompet terkunci",
   "common.back": "Kembali",
   "common.next": "Seterusnya",
@@ -373,7 +373,7 @@ const Map<String, String> msTranslations = {
   "seed.method.seed.sub": "Frasa pemulihan BIP-39 — disyorkan",
   "seed.generate.title": "Frasa pemulihan anda",
   "seed.generate.body": "Tulis 12 perkataan ini di atas kertas, mengikut susunan tepat. Sesiapa yang mendapatinya mengawal dana anda.",
-  "seed.generate.warn.share": "Jangan sesekali kongsi frasa ini — tiada sesiapa daripada Pyramids Wallet akan memintanya",
+  "seed.generate.warn.share": "Jangan sesekali kongsi frasa ini — tiada sesiapa daripada Pine Wallet akan memintanya",
   "seed.generate.warn.digital": "Jangan sesekali simpan dalam foto, nota awan atau e-mel — kertas sahaja",
   "seed.generate.screenshotBlocked": "Tangkapan skrin disekat pada skrin ini",
   "seed.generate.reveal": "Ketik perkataan untuk menunjukkannya",

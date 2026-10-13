@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — Türkçe.
+// Pine Wallet UI translations — Türkçe.
 library;
 
 const Map<String, String> trTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Massa blok zinciri için self-custody cüzdanı",
   "welcome.title": "Anahtarlar sizin, coinler sizin",
   "welcome.body": "Anahtarlar yalnızca bu cihazda şifreli olarak saklanır (donanım destekli keystore, biyometrik kilit açma, ekran görüntüsü koruması). Kimse onları sizin için kurtaramaz — gizli anahtarınızı yedekleyin.",
@@ -238,7 +238,7 @@ const Map<String, String> trTranslations = {
   "common.retry": "Yeniden dene",
   "common.confirm": "Onayla",
   "common.unlock": "Kilidi aç",
-  "common.unlockReason": "Pyramids Wallet kilidini açın",
+  "common.unlockReason": "Pine Wallet kilidini açın",
   "common.locked": "Cüzdan kilitli",
   "common.back": "Geri",
   "common.next": "İleri",
@@ -373,7 +373,7 @@ const Map<String, String> trTranslations = {
   "seed.method.seed.sub": "BIP-39 kurtarma ifadesi — önerilir",
   "seed.generate.title": "Kurtarma ifadeniz",
   "seed.generate.body": "Bu 12 kelimeyi tam olarak bu sırayla kâğıda yazın. Kelimelere ulaşan herkes fonlarınızı kontrol eder.",
-  "seed.generate.warn.share": "İfadeyi asla paylaşmayın — Pyramids Wallet'tan kimse sizden asla istemez",
+  "seed.generate.warn.share": "İfadeyi asla paylaşmayın — Pine Wallet'tan kimse sizden asla istemez",
   "seed.generate.warn.digital": "Asla fotoğraflarda, bulut notlarında veya e-postada saklamayın — yalnızca kâğıt",
   "seed.generate.screenshotBlocked": "Bu ekranda ekran görüntüsü alınamaz",
   "seed.generate.reveal": "Kelimeleri görmek için dokunun",

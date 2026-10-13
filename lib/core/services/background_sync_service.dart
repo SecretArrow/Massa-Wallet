@@ -94,7 +94,7 @@ Future<void> _onStart(ServiceInstance service) async {
           final now = DateTime.now();
           unawaited(
             service.setForegroundNotificationInfo(
-              title: 'Pyramids Wallet',
+              title: 'Pine Wallet',
               content:
                   'Sync active · last '
                   '${now.hour}:${now.minute.toString().padLeft(2, '0')}',
@@ -122,13 +122,13 @@ class BackgroundSyncService {
   }) async {
     const channel = AndroidNotificationChannel(
       bgChannelId,
-      'Pyramids Wallet background sync',
+      'Pine Wallet background sync',
       description: 'Keeps balances fresh in the background',
       importance: Importance.low,
     );
     const alertChannel = AndroidNotificationChannel(
       alertChannelId,
-      'Pyramids Wallet alerts',
+      'Pine Wallet alerts',
       description: 'Balance change and staking alerts',
       importance: Importance.high,
     );

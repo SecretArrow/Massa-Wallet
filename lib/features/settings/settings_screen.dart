@@ -86,7 +86,7 @@ class SettingsScreen extends StatelessWidget {
                             trailing: selected
                                 ? Icon(
                                     Icons.check_circle,
-                                    color: PyramidsColors.brand,
+                                    color: PineColors.brand,
                                   )
                                 : null,
                             onTap: () {
@@ -142,7 +142,7 @@ class SettingsScreen extends StatelessWidget {
               settings.network == MassaNetwork.buildnet
                   ? Icons.radio_button_checked
                   : Icons.radio_button_off,
-              color: PyramidsColors.brand,
+              color: PineColors.brand,
             ),
             onTap: () => context.read<SettingsProvider>().setNetwork(
               MassaNetwork.buildnet,
@@ -154,7 +154,7 @@ class SettingsScreen extends StatelessWidget {
               settings.network == MassaNetwork.mainnet
                   ? Icons.radio_button_checked
                   : Icons.radio_button_off,
-              color: PyramidsColors.brand,
+              color: PineColors.brand,
             ),
             onTap: () async {
               final ok = await showDialog<bool>(
@@ -194,13 +194,13 @@ class SettingsScreen extends StatelessWidget {
             onChanged: (v) =>
                 context.read<SettingsProvider>().setBiometricRequired(v),
             title: Text(context.t('settings.biometric')),
-            activeThumbColor: PyramidsColors.brand,
+            activeThumbColor: PineColors.brand,
           ),
           SwitchListTile(
             value: true,
             onChanged: security.setSecureFlag,
             title: Text(context.t('settings.secureFlag')),
-            activeThumbColor: PyramidsColors.brand,
+            activeThumbColor: PineColors.brand,
           ),
           ListTile(
             title: Text(context.t('settings.autoLock')),
@@ -246,7 +246,7 @@ class SettingsScreen extends StatelessWidget {
               context.t('settings.background.hint'),
               style: Theme.of(context).textTheme.bodySmall,
             ),
-            activeThumbColor: PyramidsColors.brand,
+            activeThumbColor: PineColors.brand,
           ),
           ListTile(
             title: Text(context.t('settings.background.interval')),
@@ -314,14 +314,14 @@ class SettingsScreen extends StatelessWidget {
             onChanged: (v) =>
                 context.read<SettingsProvider>().setHideBalances(v),
             title: Text(context.t('settings.privacy')),
-            activeThumbColor: PyramidsColors.brand,
+            activeThumbColor: PineColors.brand,
           ),
           SwitchListTile(
             secondary: const Icon(Icons.currency_exchange),
             value: settings.showFiat,
             onChanged: (v) => context.read<SettingsProvider>().setShowFiat(v),
             title: Text(context.t('settings.showFiat')),
-            activeThumbColor: PyramidsColors.brand,
+            activeThumbColor: PineColors.brand,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
@@ -835,7 +835,7 @@ class _BackgroundStatusCardState extends State<_BackgroundStatusCard> {
                 _unrestricted ? Icons.battery_saver : Icons.battery_alert,
                 size: 18,
                 color: _unrestricted
-                    ? PyramidsColors.brand
+                    ? PineColors.brand
                     : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: 8),
@@ -907,7 +907,7 @@ class _RealtimeSyncTile extends StatelessWidget {
                 context.t('settings.realtime.hint'),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
-              activeThumbColor: PyramidsColors.brand,
+              activeThumbColor: PineColors.brand,
             ),
           ],
         );

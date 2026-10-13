@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Pyramids Wallet launch splash: near-black backdrop + centered red
-     pyramid logo. Pre-Android-12 variant (v31+ uses windowSplashScreen*). -->
+<!-- Pine Wallet launch splash: near-black backdrop + centered red
+     pine logo. Pre-Android-12 variant (v31+ uses windowSplashScreen*). -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/launch_background" />
     <item

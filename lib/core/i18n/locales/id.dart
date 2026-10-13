@@ -1,9 +1,9 @@
 // Generated locale file — id.
-// Part of the Pyramids Wallet i18n tables (27 locales).
+// Part of the Pine Wallet i18n tables (27 locales).
 library;
 
 const Map<String, String> idTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Wallet self-custodial untuk blockchain Massa",
   "welcome.title": "Kunci Anda, koin Anda",
   "welcome.body": "Kunci disimpan terenkripsi hanya di perangkat ini (keystore hardware-backed, buka dengan biometrik, anti-screenshot). Tidak ada yang bisa memulihkannya selain Anda — simpan secret key dengan aman.",
@@ -239,7 +239,7 @@ const Map<String, String> idTranslations = {
   "common.retry": "Coba lagi",
   "common.confirm": "Konfirmasi",
   "common.unlock": "Buka",
-  "common.unlockReason": "Buka Pyramids Wallet Anda",
+  "common.unlockReason": "Buka Pine Wallet Anda",
   "common.locked": "Wallet terkunci",
   "common.back": "Kembali",
   "common.next": "Lanjut",
@@ -375,7 +375,7 @@ const Map<String, String> idTranslations = {
   "seed.method.seed.sub": "Frasa pemulihan BIP-39 — direkomendasikan",
   "seed.generate.title": "Frasa pemulihan Anda",
   "seed.generate.body": "Tulis 12 kata ini di kertas, dengan urutan yang tepat. Siapa pun yang mendapatkannya menguasai dana Anda.",
-  "seed.generate.warn.share": "Jangan pernah membagikan frasa ini — tidak ada pihak Pyramids Wallet yang akan memintanya",
+  "seed.generate.warn.share": "Jangan pernah membagikan frasa ini — tidak ada pihak Pine Wallet yang akan memintanya",
   "seed.generate.warn.digital": "Jangan pernah menyimpannya di foto, catatan cloud, atau email — kertas saja",
   "seed.generate.screenshotBlocked": "Tangkapan layar diblokir di layar ini",
   "seed.generate.reveal": "Ketuk kata-kata untuk menampilkannya",

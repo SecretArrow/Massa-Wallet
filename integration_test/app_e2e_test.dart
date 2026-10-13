@@ -1,4 +1,4 @@
-/// Pyramids Wallet — per-feature end-to-end tests (real device/emulator).
+/// Pine Wallet — per-feature end-to-end tests (real device/emulator).
 ///
 /// Run via `flutter test integration_test` (see .github/workflows/e2e.yml).
 ///
@@ -131,7 +131,7 @@ Widget _appTree(
       ChangeNotifierProvider<EmbeddedNodeService>.value(value: embedded),
       ChangeNotifierProvider<WalletProvider>.value(value: wallet),
     ],
-    child: const PyramidsWalletApp(),
+    child: const PineWalletApp(),
   );
 }
 
@@ -489,7 +489,7 @@ void main() {
     await _pumpFor(tester, const Duration(seconds: 1));
 
     // Start page: brand title + curated sections (no WebView yet).
-    expect(find.text('Pyramids Wallet'), findsOneWidget);
+    expect(find.text('Pine Wallet'), findsOneWidget);
     expect(find.text('Massa dApps'), findsOneWidget);
     expect(find.text('Massa Explorer'), findsOneWidget);
 

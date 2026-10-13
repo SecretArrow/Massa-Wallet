@@ -138,7 +138,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 12,
-                        color: PyramidsColors.textSecondary,
+                        color: PineColors.textSecondary,
                       ),
                     ),
                   ),
@@ -215,31 +215,31 @@ class _ActivityCard extends StatelessWidget {
       case ActivityKind.send:
         return (
           Icons.north_east,
-          PyramidsColors.orange,
+          PineColors.orange,
           context.t('history.sent'),
         );
       case ActivityKind.receive:
         return (
           Icons.south_west,
-          PyramidsColors.green,
+          PineColors.green,
           context.t('history.received'),
         );
       case ActivityKind.rollBuy:
         return (
           Icons.stacked_bar_chart,
-          PyramidsColors.brand,
+          PineColors.brand,
           context.t('history.rollBuy'),
         );
       case ActivityKind.rollSell:
         return (
           Icons.south,
-          PyramidsColors.brand,
+          PineColors.brand,
           context.t('history.rollSell'),
         );
       case ActivityKind.callSC:
         return (
           Icons.code,
-          PyramidsColors.deepBrand,
+          PineColors.deepBrand,
           item.function?.isNotEmpty == true
               ? '${context.t('history.call')}: ${item.function}'
               : context.t('history.call'),
@@ -247,13 +247,13 @@ class _ActivityCard extends StatelessWidget {
       case ActivityKind.tokenTransfer:
         return (
           Icons.token,
-          PyramidsColors.deepBrand,
+          PineColors.deepBrand,
           '${context.t('history.token')} ${item.tokenSymbol ?? ''}',
         );
       case ActivityKind.dapp:
         return (
           Icons.public,
-          PyramidsColors.deepBrand,
+          PineColors.deepBrand,
           context.t('history.dapp'),
         );
     }
@@ -278,15 +278,15 @@ class _ActivityCard extends StatelessWidget {
     final (label, color) = switch (item.status) {
       ActivityStatus.submitted => (
         context.t('history.pending'),
-        PyramidsColors.orange,
+        PineColors.orange,
       ),
       ActivityStatus.final_ => (
         context.t('history.final'),
-        PyramidsColors.green,
+        PineColors.green,
       ),
       ActivityStatus.failed => (
         context.t('history.failed'),
-        PyramidsColors.error,
+        PineColors.error,
       ),
     };
     return Container(

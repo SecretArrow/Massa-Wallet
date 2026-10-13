@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — العربية (Modern Standard Arabic).
+// Pine Wallet UI translations — العربية (Modern Standard Arabic).
 library;
 
 const Map<String, String> arTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "محفظة ذاتية الحفظ لبلوكشين Massa",
   "welcome.title": "مفاتيحك، عملاتك",
   "welcome.body": "تُخزَّن المفاتيح مشفّرةً على هذا الجهاز فقط (مخزن مفاتيح مدعوم بالأجهزة، وفتح بالقياسات الحيوية، وحماية من لقطات الشاشة). لا يمكن لأحد استعادتها نيابةً عنك — احتفظ بنسخة احتياطية من مفتاحك السري.",
@@ -238,7 +238,7 @@ const Map<String, String> arTranslations = {
   "common.retry": "إعادة المحاولة",
   "common.confirm": "تأكيد",
   "common.unlock": "فتح القفل",
-  "common.unlockReason": "افتح قفل Pyramids Wallet",
+  "common.unlockReason": "افتح قفل Pine Wallet",
   "common.locked": "المحفظة مقفلة",
   "common.back": "رجوع",
   "common.next": "التالي",
@@ -373,7 +373,7 @@ const Map<String, String> arTranslations = {
   "seed.method.seed.sub": "عبارة استرداد BIP-39 — مستحسن",
   "seed.generate.title": "عبارة الاسترداد الخاصة بك",
   "seed.generate.body": "اكتب هذه الكلمات الـ 12 على ورق، بالترتيب نفسه تمامًا. أي شخص يحصل عليها يتحكم في أموالك.",
-  "seed.generate.warn.share": "لا تشارك العبارة أبدًا — لن يطلبها منك أحد من فريق Pyramids Wallet",
+  "seed.generate.warn.share": "لا تشارك العبارة أبدًا — لن يطلبها منك أحد من فريق Pine Wallet",
   "seed.generate.warn.digital": "لا تخزّنها أبدًا في الصور أو ملاحظات السحابة أو البريد الإلكتروني — على الورق فقط",
   "seed.generate.screenshotBlocked": "لقطات الشاشة محظورة على هذه الشاشة",
   "seed.generate.reveal": "انقر على الكلمات لكشفها",

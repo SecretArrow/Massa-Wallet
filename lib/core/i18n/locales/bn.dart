@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — বাংলা.
+// Pine Wallet UI translations — বাংলা.
 library;
 
 const Map<String, String> bnTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Massa ব্লকচেনের জন্য সেলফ-কাস্টোডিয়াল ওয়ালেট",
   "welcome.title": "আপনার কী, আপনার কয়েন",
   "welcome.body": "কীগুলো শুধু এই ডিভাইসেই এনক্রিপ্ট করা অবস্থায় থাকে (হার্ডওয়্যার-সমর্থিত কিস্টোর, বায়োমেট্রিক আনলক, স্ক্রিনশট গার্ড)। কেউই আপনার হয়ে সেগুলো পুনরুদ্ধার করতে পারবে না — আপনার গোপন কী-এর ব্যাকআপ নিন।",
@@ -238,7 +238,7 @@ const Map<String, String> bnTranslations = {
   "common.retry": "আবার চেষ্টা করুন",
   "common.confirm": "নিশ্চিত করুন",
   "common.unlock": "আনলক",
-  "common.unlockReason": "আপনার Pyramids Wallet আনলক করুন",
+  "common.unlockReason": "আপনার Pine Wallet আনলক করুন",
   "common.locked": "ওয়ালেট লক করা আছে",
   "common.back": "পিছনে",
   "common.next": "পরবর্তী",
@@ -373,7 +373,7 @@ const Map<String, String> bnTranslations = {
   "seed.method.seed.sub": "BIP-39 রিকভারি ফ্রেজ — সুপারিশকৃত",
   "seed.generate.title": "আপনার রিকভারি ফ্রেজ",
   "seed.generate.body": "এই 12টি শব্দ ঠিক এই ক্রমেই কাগজে লিখুন। যে-ই এগুলো পাবে, আপনার তহবিল নিয়ন্ত্রণ করবে।",
-  "seed.generate.warn.share": "ফ্রেজ কখনো শেয়ার করবেন না — Pyramids Wallet-এর কেউই কখনো এটি চাইবে না",
+  "seed.generate.warn.share": "ফ্রেজ কখনো শেয়ার করবেন না — Pine Wallet-এর কেউই কখনো এটি চাইবে না",
   "seed.generate.warn.digital": "ছবি, ক্লাউড নোট বা ইমেইলে কখনো রাখবেন না — শুধু কাগজে",
   "seed.generate.screenshotBlocked": "এই স্ক্রিনে স্ক্রিনশট ব্লক করা আছে",
   "seed.generate.reveal": "শব্দগুলো দেখতে ট্যাপ করুন",

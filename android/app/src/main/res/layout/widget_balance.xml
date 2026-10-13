@@ -16,14 +16,14 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:src="@mipmap/ic_launcher"
-            android:contentDescription="Pyramids Wallet" />
+            android:contentDescription="Pine Wallet" />
 
         <TextView
             android:id="@+id/widget_network"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
-            android:text="Pyramids Wallet"
+            android:text="Pine Wallet"
             android:textColor="#8B949E"
             android:textSize="11sp" />
     </LinearLayout>

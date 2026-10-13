@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — Tamil (தமிழ்).
+// Pine Wallet UI translations — Tamil (தமிழ்).
 library;
 
 const Map<String, String> taTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Massa பிளாக்செயினுக்கான சுய-கஸ்டடி வாலட்",
   "welcome.title": "உங்கள் கீகள், உங்கள் நாணயங்கள்",
   "welcome.body": "கீகள் இந்தச் சாதனத்தில் மட்டுமே என்க்ரிப்ட் செய்யப்பட்டு சேமிக்கப்படுகின்றன (ஹார்ட்வேர் ஆதாரம் கொண்ட கீஸ்டோர், பயோமெட்ரிக் அன்லாக், ஸ்கிரீன்ஷாட் பாதுகாப்பு). உங்களுக்காக யாராலும் அவற்றை மீட்டெடுக்க முடியாது — உங்கள் ரகசிய கீயை காப்புப்பிரதி எடுக்கவும்.",
@@ -238,7 +238,7 @@ const Map<String, String> taTranslations = {
   "common.retry": "மீண்டும் முயற்சிக்கவும்",
   "common.confirm": "உறுதிப்படுத்தவும்",
   "common.unlock": "அன்லாக் செய்யவும்",
-  "common.unlockReason": "உங்கள் Pyramids Wallet ஐ அன்லாக் செய்யவும்",
+  "common.unlockReason": "உங்கள் Pine Wallet ஐ அன்லாக் செய்யவும்",
   "common.locked": "வாலட் பூட்டப்பட்டுள்ளது",
   "common.back": "பின்",
   "common.next": "அடுத்து",
@@ -373,7 +373,7 @@ const Map<String, String> taTranslations = {
   "seed.method.seed.sub": "BIP-39 மீட்பு சொற்றொடர் — பரிந்துரைக்கப்படுகிறது",
   "seed.generate.title": "உங்கள் மீட்பு சொற்றொடர்",
   "seed.generate.body": "இந்த 12 சொற்களை சரியான வரிசையில் காகிதத்தில் எழுதவும். இவற்றைப் பெறும் எவரும் உங்கள் நிதிகளை கட்டுப்படுத்துவார்கள்.",
-  "seed.generate.warn.share": "சொற்றொடரை ஒருபோதும் பகிர வேண்டாம் — Pyramids Wallet இலிருந்து யாரும் இதை ஒருபோதும் கேட்க மாட்டார்கள்",
+  "seed.generate.warn.share": "சொற்றொடரை ஒருபோதும் பகிர வேண்டாம் — Pine Wallet இலிருந்து யாரும் இதை ஒருபோதும் கேட்க மாட்டார்கள்",
   "seed.generate.warn.digital": "இதை புகைப்படங்கள், கிளவுட் நோட்ஸ் அல்லது மின்னஞ்சலில் ஒருபோதும் சேமிக்க வேண்டாம் — காகிதம் மட்டுமே",
   "seed.generate.screenshotBlocked": "இந்தத் திரையில் ஸ்கிரீன்ஷாட்கள் தடுக்கப்பட்டுள்ளன",
   "seed.generate.reveal": "சொற்களைக் காட்ட அவற்றைத் தட்டவும்",

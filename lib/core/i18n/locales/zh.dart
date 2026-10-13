@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — 中文（简体）.
+// Pine Wallet UI translations — 中文（简体）.
 library;
 
 const Map<String, String> zhTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Massa 区块链自托管钱包",
   "welcome.title": "你的密钥，你的资产",
   "welcome.body": "密钥仅以加密形式存储在本设备上（硬件级 keystore、生物识别解锁、防截屏保护）。任何人都无法帮你找回——请备份好你的私钥。",
@@ -238,7 +238,7 @@ const Map<String, String> zhTranslations = {
   "common.retry": "重试",
   "common.confirm": "确认",
   "common.unlock": "解锁",
-  "common.unlockReason": "解锁你的 Pyramids Wallet",
+  "common.unlockReason": "解锁你的 Pine Wallet",
   "common.locked": "钱包已锁定",
   "common.back": "返回",
   "common.next": "下一步",
@@ -373,7 +373,7 @@ const Map<String, String> zhTranslations = {
   "seed.method.seed.sub": "BIP-39 助记词——推荐",
   "seed.generate.title": "你的助记词",
   "seed.generate.body": "请将这 12 个单词按准确顺序抄写在纸上。任何人得到它们就能控制你的资金。",
-  "seed.generate.warn.share": "切勿分享助记词——Pyramids Wallet 的工作人员绝不会向你索取",
+  "seed.generate.warn.share": "切勿分享助记词——Pine Wallet 的工作人员绝不会向你索取",
   "seed.generate.warn.digital": "切勿存放在照片、云笔记或电子邮件中——只保存在纸上",
   "seed.generate.screenshotBlocked": "此页面已禁止截屏",
   "seed.generate.reveal": "点按单词以显示",

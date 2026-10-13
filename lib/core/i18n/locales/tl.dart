@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — Filipino (Tagalog).
+// Pine Wallet UI translations — Filipino (Tagalog).
 library;
 
 const Map<String, String> tlTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Self-custodial na wallet para sa Massa blockchain",
   "welcome.title": "Ang susi mo, ang pera mo",
   "welcome.body": "Naka-encrypt na nakaimbak ang mga susi sa device na ito lamang (hardware-backed keystore, biometric unlock, screenshot guard). Walang makakabawi nito para sa iyo — i-backup ang iyong secret key.",
@@ -238,7 +238,7 @@ const Map<String, String> tlTranslations = {
   "common.retry": "Subukang muli",
   "common.confirm": "Kumpirmahin",
   "common.unlock": "I-unlock",
-  "common.unlockReason": "I-unlock ang iyong Pyramids Wallet",
+  "common.unlockReason": "I-unlock ang iyong Pine Wallet",
   "common.locked": "Naka-lock ang wallet",
   "common.back": "Bumalik",
   "common.next": "Susunod",
@@ -373,7 +373,7 @@ const Map<String, String> tlTranslations = {
   "seed.method.seed.sub": "BIP-39 recovery phrase — inirerekomenda",
   "seed.generate.title": "Ang iyong recovery phrase",
   "seed.generate.body": "Isulat ang 12 salitang ito sa papel, sa eksaktong pagkakasunud-sunod. Sinumang makakuha nito ay nakokontrol ang iyong pondo.",
-  "seed.generate.warn.share": "Huwag kailanman ibabahagi ang parirala — hindi kailanman hihingin ng kahit sino mula sa Pyramids Wallet ang iyong seed phrase",
+  "seed.generate.warn.share": "Huwag kailanman ibabahagi ang parirala — hindi kailanman hihingin ng kahit sino mula sa Pine Wallet ang iyong seed phrase",
   "seed.generate.warn.digital": "Huwag kailanman iimbak sa mga litrato, cloud notes o email — papel lamang",
   "seed.generate.screenshotBlocked": "Naka-block ang mga screenshot sa screen na ito",
   "seed.generate.reveal": "I-tap ang mga salita para ipakita ang mga ito",

@@ -33,16 +33,16 @@ import 'features/tokens/tokens_screen.dart';
 import 'ui/home_shell.dart';
 import 'ui/theme.dart';
 
-/// Pyramids Wallet application widget.
-class PyramidsWalletApp extends StatefulWidget {
+/// Pine Wallet application widget.
+class PineWalletApp extends StatefulWidget {
   /// Creates the app.
-  const PyramidsWalletApp({super.key});
+  const PineWalletApp({super.key});
 
   @override
-  State<PyramidsWalletApp> createState() => _PyramidsWalletAppState();
+  State<PineWalletApp> createState() => _PineWalletAppState();
 }
 
-class _PyramidsWalletAppState extends State<PyramidsWalletApp>
+class _PineWalletAppState extends State<PineWalletApp>
     with WidgetsBindingObserver {
   final ValueNotifier<AppLanguage> _language = ValueNotifier(
     AppLanguage.english,
@@ -108,7 +108,7 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
       final service = BackgroundSyncService();
       await service.configure(
         autoStart: false,
-        title: 'Pyramids Wallet',
+        title: 'Pine Wallet',
         content: 'Balance sync active',
       );
       final sdk = await DeviceSystemService().androidSdkInt();
@@ -174,7 +174,7 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
           // NOTE: never mutate _language here — build-phase notifications
           // throw; sync happens via _onSettingsChanged instead.
           return MaterialApp(
-            title: 'Pyramids Wallet',
+            title: 'Pine Wallet',
             debugShowCheckedModeBanner: false,
             // MaterialLocalizations must exist for EVERY supported locale —
             // DefaultMaterialLocalizations is English-only, so switching to
@@ -302,21 +302,21 @@ class _RootGateState extends State<_RootGate> {
   Widget build(BuildContext context) {
     final security = context.watch<SecurityService>();
     if (!_decided) {
-      // Branded splash: red pyramid logo while accounts are loading.
+      // Branded splash: red pine logo while accounts are loading.
       return Scaffold(
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                'assets/icon/pyramids_logo.png',
+                'assets/icon/pine_logo.png',
                 width: 112,
                 height: 112,
                 filterQuality: FilterQuality.high,
               ),
               const SizedBox(height: 24),
               Text(
-                'Pyramids Wallet',
+                'Pine Wallet',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.4,
@@ -339,7 +339,7 @@ class _RootGateState extends State<_RootGate> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.lock, size: 64, color: PyramidsColors.brand),
+              Icon(Icons.lock, size: 64, color: PineColors.brand),
               const SizedBox(height: 16),
               Text(
                 context.t('common.locked'),

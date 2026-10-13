@@ -1,8 +1,8 @@
-// Pyramids Wallet UI translations — Tiếng Việt (Vietnamese).
+// Pine Wallet UI translations — Tiếng Việt (Vietnamese).
 library;
 
 const Map<String, String> viTranslations = {
-  "app.title": "Pyramids Wallet",
+  "app.title": "Pine Wallet",
   "app.tagline": "Ví tự quản lý cho blockchain Massa",
   "welcome.title": "Khoá của bạn, tiền của bạn",
   "welcome.body": "Khoá được lưu mã hoá chỉ trên thiết bị này (keystore do phần cứng bảo vệ, mở khoá sinh trắc học, chặn chụp màn hình). Không ai có thể khôi phục giúp bạn — hãy sao lưu khoá bí mật của bạn.",
@@ -238,7 +238,7 @@ const Map<String, String> viTranslations = {
   "common.retry": "Thử lại",
   "common.confirm": "Xác nhận",
   "common.unlock": "Mở khoá",
-  "common.unlockReason": "Mở khoá Pyramids Wallet của bạn",
+  "common.unlockReason": "Mở khoá Pine Wallet của bạn",
   "common.locked": "Ví đã khoá",
   "common.back": "Quay lại",
   "common.next": "Tiếp theo",
@@ -373,7 +373,7 @@ const Map<String, String> viTranslations = {
   "seed.method.seed.sub": "Cụm từ khôi phục BIP-39 — được khuyến nghị",
   "seed.generate.title": "Cụm từ khôi phục của bạn",
   "seed.generate.body": "Ghi 12 từ này ra giấy, đúng thứ tự. Bất kỳ ai có được chúng đều kiểm soát được tiền của bạn.",
-  "seed.generate.warn.share": "Đừng bao giờ chia sẻ cụm từ này — không ai ở Pyramids Wallet sẽ bao giờ hỏi bạn về nó",
+  "seed.generate.warn.share": "Đừng bao giờ chia sẻ cụm từ này — không ai ở Pine Wallet sẽ bao giờ hỏi bạn về nó",
   "seed.generate.warn.digital": "Đừng bao giờ lưu trong ảnh, ghi chú đám mây hay email — chỉ giấy thôi.",
   "seed.generate.screenshotBlocked": "Chụp màn hình bị chặn trên màn hình này",
   "seed.generate.reveal": "Chạm vào các từ để hiện chúng",

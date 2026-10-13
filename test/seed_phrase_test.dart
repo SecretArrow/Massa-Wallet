@@ -1,5 +1,5 @@
 /// Seed-phrase crypto tests: official BIP-39 + SLIP-0010 vectors and the
-/// Pyramids Wallet derivation pin (m/44'/4478'/0'/0'/0').
+/// Pine Wallet derivation pin (m/44'/4478'/0'/0'/0').
 ///
 /// The expected values were computed independently in Python (hashlib /
 /// hmac) and cross-checked against the published spec vectors
@@ -217,7 +217,7 @@ void main() {
     });
   });
 
-  group('Pyramids Wallet derivation (m/44\'/4478\'/0\'/0\'/0\')', () {
+  group('Pine Wallet derivation (m/44\'/4478\'/0\'/0\'/0\')', () {
     const vector = 'abandon abandon abandon abandon abandon abandon '
         'abandon abandon abandon abandon abandon about';
 
@@ -225,7 +225,7 @@ void main() {
     const expectedKeyHex =
         '56f4d7e8c10ce6398f878b413e716ef44be0f13ce9bf18b1bd5fc9571020b820';
 
-    test('deterministic key at the Pyramids path', () {
+    test('deterministic key at the Pine path', () {
       final priv = privateKeyFromMnemonic(vector);
       expect(bytesToHex(priv.raw), expectedKeyHex);
       // re-derivation is stable and case/whitespace-insensitive
