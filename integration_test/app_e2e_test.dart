@@ -196,8 +196,20 @@ void main() {
 
     expect(find.byType(OnboardingScreen), findsOneWidget);
 
-    // Tap "Create new wallet" (keystore encryption may take a while).
+    // Tap "Create new wallet" — v1.6.0 opens the method chooser first.
     await tester.tap(find.text('Create new wallet'));
+    expect(
+      await _waitUntil(
+        tester,
+        find.text('Standard wallet'),
+        timeout: const Duration(seconds: 15),
+      ),
+      true,
+      reason: 'create-method chooser must appear',
+    );
+    // Pick the standard random-key wallet (keystore encryption may take
+    // a while before the backup sheet appears).
+    await tester.tap(find.text('Standard wallet'));
     expect(
       await _waitUntil(
         tester,
