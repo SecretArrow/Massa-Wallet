@@ -6,12 +6,72 @@
 /// (SLIP-0010 Test Vector 1, BIP-39 trezor vectors).
 library;
 
+import 'package:flutter_secure_storage_platform_interface/flutter_secure_storage_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:massa_wallet/core/crypto/bip39.dart';
 import 'package:massa_wallet/core/crypto/seed_derivation.dart';
 import 'package:massa_wallet/core/crypto/slip10.dart';
+import 'package:massa_wallet/core/services/wallet_repository.dart';
+
+import 'helpers/in_memory_secure_storage.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() {
+    FlutterSecureStoragePlatform.instance = InMemorySecureStorage();
+  });
+
+  group('WalletRepository — seed-phrase accounts', () {
+    const vector = 'abandon abandon abandon abandon abandon abandon '
+        'abandon abandon abandon abandon abandon about';
+
+    test('createWalletFromMnemonic stores keySource seed + derived key',
+        () async {
+      final repo = WalletRepository();
+      final account = await repo.createWalletFromMnemonic(vector);
+      expect(account.keySource, 'seed');
+      expect(account.address, privateKeyFromMnemonic(vector).publicKey.address.encoded);
+      // stored secret key round-trips to the same address
+      final versioned = await repo.readVersionedSecretKey(account.address);
+      expect(versioned.sublist(1), privateKeyFromMnemonic(vector).raw);
+      // the phrase itself is NOT stored anywhere
+      expect(
+        (FlutterSecureStoragePlatform.instance as InMemorySecureStorage)
+            .store
+            .containsValue(vector),
+        isFalse,
+        reason: 'plaintext mnemonic must never hit storage',
+      );
+    });
+
+    test('importMnemonic dedupes to the same account', () async {
+      final repo = WalletRepository();
+      final a = await repo.createWalletFromMnemonic(vector);
+      final b = await repo.importMnemonic('  ${vector.toUpperCase()}  ');
+      expect(b.address, a.address);
+      expect((await repo.listAccounts()).where((x) => x.address == a.address), hasLength(1));
+    });
+
+    test('importMnemonic upgrades a watch-only entry', () async {
+      final repo = WalletRepository();
+      final address = privateKeyFromMnemonic(vector).publicKey.address.encoded;
+      final watch = await repo.addWatchOnly(address);
+      expect(watch.isWatchOnly, isTrue);
+      final imported = await repo.importMnemonic(vector);
+      expect(imported.isWatchOnly, isFalse);
+      expect(imported.keySource, 'seed');
+    });
+
+    test('invalid phrase throws and stores nothing', () async {
+      final repo = WalletRepository();
+      final before = (await repo.listAccounts()).length;
+      expect(() => repo.createWalletFromMnemonic('not a real phrase'),
+          throwsFormatException);
+      final after = await repo.listAccounts();
+      expect(after, hasLength(before));
+    });
+  });
+
   group('BIP-39 — official vectors (mnemonic + seed)', () {
     const vectors = <(String, String, String)>[
       (

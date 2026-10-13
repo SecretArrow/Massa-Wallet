@@ -39,7 +39,7 @@ class SettingsScreen extends StatelessWidget {
   }
 
   /// Opens the 27-language picker sheet (searchable, native names).
-  Future<void> _pickLanguage(BuildContext context) {
+  Future<void> _pickLanguage(BuildContext context, SettingsProvider settings) {
     return showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -128,7 +128,7 @@ class SettingsScreen extends StatelessWidget {
               settings.language.nativeName,
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
-            onTap: () => _pickLanguage(context),
+            onTap: () => _pickLanguage(context, settings),
           ),
           const Divider(),
 

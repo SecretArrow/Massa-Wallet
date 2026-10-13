@@ -272,7 +272,8 @@ void main() {
     expect(settings.themeMode, ThemeMode.system);
   });
 
-  testWidgets('4. settings: language switch EN → ID → EN', (tester) async {
+  testWidgets('4. settings: language switch EN → ID → EN (picker sheet)',
+      (tester) async {
     IntegrationTestWidgetsFlutterBinding.instance.framePolicy =
         LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
     final (settings, _) = await _pumpSeededApp(tester);
@@ -280,12 +281,24 @@ void main() {
 
     expect(find.text('Settings'), findsOneWidget);
 
-    await tester.tap(find.text('ID'));
+    // Open the 27-language picker sheet (row title 'Language').
+    await tester.ensureVisible(find.byIcon(Icons.language));
+    await tester.tap(find.byIcon(Icons.language));
+    await _pumpFor(tester, const Duration(milliseconds: 500));
+
+    // Pick Bahasa Indonesia by its native name (unique in the sheet,
+    // second item — ensureVisible no-ops when already on screen).
+    await tester.ensureVisible(find.text('Bahasa Indonesia'));
+    await tester.tap(find.text('Bahasa Indonesia'));
     await _pumpFor(tester, const Duration(milliseconds: 500));
     expect(find.text('Pengaturan'), findsOneWidget);
     expect(settings.language, AppLanguage.indonesian);
 
-    await tester.tap(find.text('EN'));
+    // Reopen the picker via the leading icon (title is localized now).
+    await tester.ensureVisible(find.byIcon(Icons.language));
+    await tester.tap(find.byIcon(Icons.language));
+    await _pumpFor(tester, const Duration(milliseconds: 500));
+    await tester.tap(find.text('English'));
     await _pumpFor(tester, const Duration(milliseconds: 500));
     expect(find.text('Settings'), findsOneWidget);
     expect(settings.language, AppLanguage.english);

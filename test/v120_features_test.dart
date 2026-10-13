@@ -9,54 +9,12 @@ import 'package:massa_wallet/core/services/backup_service.dart';
 import 'package:massa_wallet/core/services/wallet_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// In-memory FlutterSecureStorage platform for tests.
-class _InMemorySecureStorage extends FlutterSecureStoragePlatform {
-  final Map<String, String> store = {};
-
-  @override
-  Future<void> write({
-    required String key,
-    required String value,
-    required Map<String, String> options,
-  }) async => store[key] = value;
-
-  @override
-  Future<String?> read({
-    required String key,
-    required Map<String, String> options,
-  }) async => store[key];
-
-  @override
-  Future<bool> containsKey({
-    required String key,
-    required Map<String, String> options,
-  }) async => store.containsKey(key);
-
-  @override
-  Future<void> delete({
-    required String key,
-    required Map<String, String> options,
-  }) async => store.remove(key);
-
-  @override
-  Future<Map<String, String>> readAll({
-    required Map<String, String> options,
-  }) async => Map.of(store);
-
-  @override
-  Future<void> deleteAll({required Map<String, String> options}) async =>
-      store.clear();
-
-  @override
-  Future<SecureStorageUpgradeStatus> checkUpgradeStatus({
-    required Map<String, String> options,
-  }) async => SecureStorageUpgradeStatus.unsupported;
-}
+import 'helpers/in_memory_secure_storage.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() {
-    FlutterSecureStoragePlatform.instance = _InMemorySecureStorage();
+    FlutterSecureStoragePlatform.instance = InMemorySecureStorage();
   });
 
   group('Auto-compound decision logic', () {

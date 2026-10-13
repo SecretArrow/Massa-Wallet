@@ -11,6 +11,7 @@
 ///    ed25519 key goes into the encrypted secure store.
 library;
 
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
