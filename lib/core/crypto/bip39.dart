@@ -112,7 +112,7 @@ Uint8List mnemonicToSeed(String mnemonic, {String passphrase = ''}) {
   final normalized = normalizeMnemonic(mnemonic);
   // Cheap sanity check first (gives better errors than PBKDF2 silence).
   mnemonicToEntropy(normalized);
-  final derivator = PBKDF2KeyDerivator(HMac(SHA512Digest(), 64))
+  final derivator = PBKDF2KeyDerivator(HMac(SHA512Digest(), 128))
     ..init(
       Pbkdf2Parameters(
         Uint8List.fromList(utf8.encode('mnemonic$passphrase')),

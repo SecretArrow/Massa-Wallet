@@ -17,7 +17,9 @@ import 'helpers/in_memory_secure_storage.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  setUpAll(() {
+  // Fresh in-memory store per test — repository flows assert on absolute
+  // counts and must not see each other's accounts.
+  setUp(() {
     FlutterSecureStoragePlatform.instance = InMemorySecureStorage();
   });
 
@@ -89,15 +91,22 @@ void main() {
         'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong',
         'b6a6d8921942dd9806607ebc2750416b289adea669198769f2e15ed926c3aa92bf88ece232317b4ea463e84b0fcd3b53577812ee449ccc448eb45e6f544e25b6',
       ),
+      // 192-bit entropy → 18 words (empty passphrase).
       (
         '000000000000000000000000000000000000000000000000',
-        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art',
+        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon agent',
         '4975bb3d1faf5308c86a30893ee903a976296609db223fd717e227da5a813a34dc1428b71c84a787fc51f3b9f9dc28e9459f48c08bd9578e9d1b170f2d7ea506',
       ),
       (
         '9e885d952ad362caeb4efe34a8e91bd2',
         'ozone drill grab fiber curtain grace pudding thank cruise elder eight picnic',
         'e2f88a043776c828063d4c3c97173944d32cf847a925b6e40b0b8bd0b4bead3ba734bdda5250d4698b310a71c9934e1a48e562315ce22bf85f89459df0e73a6c',
+      ),
+      // 256-bit entropy → 24 words (empty passphrase).
+      (
+        '0000000000000000000000000000000000000000000000000000000000000000',
+        'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art',
+        '408b285c123836004f4b8842c89324c1f01382450c0d439af345ba7fc49acf705489c6fc77dbd4e3dc1dd8cc6bc9f043db8ada1e243c4a0eafb290d399480840',
       ),
     ];
 

@@ -146,7 +146,7 @@ const Map<String, String> tlTranslations = {
   "node.title": "Node mode (eksperimental)",
   "node.enable": "Gumamit ng custom node",
   "node.url": "URL ng node endpoint",
-  "node.hint": "Default: light client sa pamamagitan ng public RPC. I-on para kumonekta sa sarili mong massa-node (hal. Termux sa device na ito sa http://127.0.0.1:33035, LAN, o VPS). Kailangan ng ~8 GB RAM ng full node\nHindi kailanman kasama ng wallet ang node binary — laging patakbuhin ang opisyal na massalabs release at beripikahin ang checksum nito.",
+  "node.hint": "Default: light client sa pamamagitan ng public RPC. I-on para kumonekta sa sarili mong massa-node (hal. Termux sa device na ito sa http://127.0.0.1:33035, LAN, o VPS). Kailangan ng ~8 GB RAM ng full node\n\nHindi kailanman kasama ng wallet ang node binary — laging patakbuhin ang opisyal na massalabs release at beripikahin ang checksum nito.",
   "node.probe": "Subukan ang koneksyon",
   "node.reachable": "Maabot ang node",
   "node.unreachable": "Hindi maabot ang node",

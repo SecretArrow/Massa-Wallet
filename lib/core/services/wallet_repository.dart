@@ -143,6 +143,10 @@ class WalletRepository {
     String nickname = '',
   }) async {
     final priv = privateKeyFromMnemonic(mnemonic);
+    final address = priv.publicKey.address.encoded;
+    final accounts = await listAccounts();
+    final existing = accounts.where((a) => a.address == address).toList();
+    if (existing.isNotEmpty) return existing.first;
     return _persistPrivateKey(priv, nickname: nickname, keySource: 'seed');
   }
 

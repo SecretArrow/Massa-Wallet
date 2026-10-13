@@ -122,9 +122,14 @@ class _SeedCreateScreenState extends State<SeedCreateScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(context.t('seed.generate.title'))),
       body: SafeArea(
-        child: ListView(
+        // SingleChildScrollView (not a lazy ListView) so every widget is
+        // built up-front — the flow is short and tests/automation can
+        // always find elements below the fold.
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          children: [
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
             if (!_step2) ...[
               _WarningRow(
                 icon: Icons.shield_outlined,

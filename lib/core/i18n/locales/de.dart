@@ -146,7 +146,7 @@ const Map<String, String> deTranslations = {
   "node.title": "Node-Modus (experimentell)",
   "node.enable": "Eigenen Node verwenden",
   "node.url": "Node-Endpoint-URL",
-  "node.hint": "Standard: Light Client über öffentliches RPC. Aktivieren, um Ihren eigenen massa-node zu verbinden (z. B. Termux auf diesem Gerät unter http://127.0.0.1:33035, LAN oder VPS). Full Nodes benötigen ~8 GB RAM.\nDie Wallet bündelt nie ein Node-Binary — verwenden Sie immer die offizielle massalabs-Release und prüfen Sie deren Checksumme.",
+  "node.hint": "Standard: Light Client über öffentliches RPC. Aktivieren, um Ihren eigenen massa-node zu verbinden (z. B. Termux auf diesem Gerät unter http://127.0.0.1:33035, LAN oder VPS). Full Nodes benötigen ~8 GB RAM.\n\nDie Wallet bündelt nie ein Node-Binary — verwenden Sie immer die offizielle massalabs-Release und prüfen Sie deren Checksumme.",
   "node.probe": "Verbindung testen",
   "node.reachable": "Node erreichbar",
   "node.unreachable": "Node nicht erreichbar",

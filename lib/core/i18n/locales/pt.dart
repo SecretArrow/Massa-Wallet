@@ -146,7 +146,7 @@ const Map<String, String> ptTranslations = {
   "node.title": "Modo nó (experimental)",
   "node.enable": "Usar nó personalizado",
   "node.url": "URL do endpoint do nó",
-  "node.hint": "Padrão: light client via RPC público. Ative para conectar ao seu próprio massa-node (p. ex., Termux neste dispositivo em http://127.0.0.1:33035, LAN ou VPS). Nós completos precisam de ~8 GB de RAM.\nA carteira nunca inclui um binário de nó — use sempre a versão oficial da massalabs e verifique o checksum.",
+  "node.hint": "Padrão: light client via RPC público. Ative para conectar ao seu próprio massa-node (p. ex., Termux neste dispositivo em http://127.0.0.1:33035, LAN ou VPS). Nós completos precisam de ~8 GB de RAM.\n\nA carteira nunca inclui um binário de nó — use sempre a versão oficial da massalabs e verifique o checksum.",
   "node.probe": "Testar conexão",
   "node.reachable": "Nó acessível",
   "node.unreachable": "Nó inacessível",

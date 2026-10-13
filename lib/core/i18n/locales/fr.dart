@@ -146,7 +146,7 @@ const Map<String, String> frTranslations = {
   "node.title": "Mode nœud (expérimental)",
   "node.enable": "Utiliser un nœud personnalisé",
   "node.url": "URL de l'endpoint du nœud",
-  "node.hint": "Par défaut : light client via RPC public. Activez pour vous connecter à votre propre massa-node (p. ex. Termux sur cet appareil à l'adresse http://127.0.0.1:33035, LAN ou VPS). Les nœuds complets nécessitent ~8 Go de RAM.\nLe portefeuille n'intègre jamais de binaire de nœud — utilisez toujours la version officielle de massalabs et vérifiez son checksum.",
+  "node.hint": "Par défaut : light client via RPC public. Activez pour vous connecter à votre propre massa-node (p. ex. Termux sur cet appareil à l'adresse http://127.0.0.1:33035, LAN ou VPS). Les nœuds complets nécessitent ~8 Go de RAM.\n\nLe portefeuille n'intègre jamais de binaire de nœud — utilisez toujours la version officielle de massalabs et vérifiez son checksum.",
   "node.probe": "Tester la connexion",
   "node.reachable": "Nœud joignable",
   "node.unreachable": "Nœud injoignable",

@@ -146,7 +146,7 @@ const Map<String, String> viTranslations = {
   "node.title": "Chế độ node (thử nghiệm)",
   "node.enable": "Dùng node tùy chỉnh",
   "node.url": "URL endpoint của node",
-  "node.hint": "Mặc định: light client qua RPC công khai. Bật để kết nối với massa-node của riêng bạn (ví dụ Termux trên thiết bị này tại http://127.0.0.1:33035, LAN hoặc VPS). Full node cần ~8 GB RAM\nVí không bao giờ đóng gói sẵn nhị phân node — luôn dùng bản phát hành chính thức của massalabs và xác minh checksum của nó.",
+  "node.hint": "Mặc định: light client qua RPC công khai. Bật để kết nối với massa-node của riêng bạn (ví dụ Termux trên thiết bị này tại http://127.0.0.1:33035, LAN hoặc VPS). Full node cần ~8 GB RAM\n\nVí không bao giờ đóng gói sẵn nhị phân node — luôn dùng bản phát hành chính thức của massalabs và xác minh checksum của nó.",
   "node.probe": "Kiểm tra kết nối",
   "node.reachable": "Node tiếp cận được",
   "node.unreachable": "Node không tiếp cận được",

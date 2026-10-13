@@ -146,7 +146,7 @@ const Map<String, String> esTranslations = {
   "node.title": "Modo nodo (experimental)",
   "node.enable": "Usar nodo personalizado",
   "node.url": "URL del endpoint del nodo",
-  "node.hint": "Predeterminado: light client vía RPC público. Activa para conectar a tu propio massa-node (p. ej., Termux en este dispositivo en http://127.0.0.1:33035, LAN o VPS). Los nodos completos necesitan ~8 GB de RAM.\nLa billetera nunca incluye un binario de nodo — usa siempre la versión oficial de massalabs y verifica su checksum.",
+  "node.hint": "Predeterminado: light client vía RPC público. Activa para conectar a tu propio massa-node (p. ej., Termux en este dispositivo en http://127.0.0.1:33035, LAN o VPS). Los nodos completos necesitan ~8 GB de RAM.\n\nLa billetera nunca incluye un binario de nodo — usa siempre la versión oficial de massalabs y verifica su checksum.",
   "node.probe": "Probar conexión",
   "node.reachable": "Nodo accesible",
   "node.unreachable": "Nodo inaccesible",

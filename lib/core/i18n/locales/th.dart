@@ -146,7 +146,7 @@ const Map<String, String> thTranslations = {
   "node.title": "โหมดโหนด (ทดลอง)",
   "node.enable": "ใช้โหนดแบบกำหนดเอง",
   "node.url": "URL endpoint ของโหนด",
-  "node.hint": "ค่าเริ่มต้น: light client ผ่าน RPC สาธารณะ เปิดใช้เพื่อเชื่อมต่อกับ massa-node ของคุณเอง (เช่น Termux บนอุปกรณ์นี้ที่ http://127.0.0.1:33035, LAN หรือ VPS) โหนดเต็มต้องใช้ RAM ~8 GB\nวอลเล็ตไม่แถมไบนารีโหนดมาให้ — โปรดใช้รีลีสอย่างเป็นทางการของ massalabs เสมอ และตรวจสอบ checksum ของมัน",
+  "node.hint": "ค่าเริ่มต้น: light client ผ่าน RPC สาธารณะ เปิดใช้เพื่อเชื่อมต่อกับ massa-node ของคุณเอง (เช่น Termux บนอุปกรณ์นี้ที่ http://127.0.0.1:33035, LAN หรือ VPS) โหนดเต็มต้องใช้ RAM ~8 GB\n\nวอลเล็ตไม่แถมไบนารีโหนดมาให้ — โปรดใช้รีลีสอย่างเป็นทางการของ massalabs เสมอ และตรวจสอบ checksum ของมัน",
   "node.probe": "ทดสอบการเชื่อมต่อ",
   "node.reachable": "เข้าถึงโหนดได้",
   "node.unreachable": "เข้าถึงโหนดไม่ได้",
