@@ -23,7 +23,7 @@ enum FeePreset {
 /// Fee math for operation fees in nanoMAS.
 abstract final class FeePolicy {
   /// Offline fallback when the node reports no minimal fee (0.001 MAS).
-  static const BigInt fallbackMinimalFee = BigInt.from(1000000);
+  static final BigInt fallbackMinimalFee = BigInt.from(1000000);
 
   /// Multiplier applied to the minimal fee per non-custom preset.
   static const Map<FeePreset, int> multipliers = {
