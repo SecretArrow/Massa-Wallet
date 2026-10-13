@@ -16,7 +16,8 @@ enum NodeConnectionMode {
   customRpc,
 
   /// A real massa-node binary bundled in the APK and executed inside the
-  /// app sandbox (loopback RPC only). Buildnet only.
+  /// app sandbox (loopback RPC only). Both buildnet and mainnet builds
+  /// are supported (one binary per network).
   embedded,
 }
 
@@ -30,15 +31,18 @@ String resolveEndpoint({
   required String defaultUrl,
   required String embeddedUrl,
   required bool embeddedUsable,
+  bool embeddedHealthy = true,
 }) {
   switch (mode) {
     case 'customRpc':
       if (customUrl.isNotEmpty) return customUrl;
       return defaultUrl;
     case 'embedded':
-      // The embedded binary is buildnet-only; on mainnet fall back to the
-      // public RPC rather than pointing users at the wrong chain.
-      if (embeddedUsable) return embeddedUrl;
+      // Only point at the loopback when the embedded node actually
+      // answers. A dead/failed node used to capture ALL wallet traffic
+      // (balances, sends, faucet) — the wallet appeared totally broken.
+      // Falling back to the public RPC keeps the wallet functional.
+      if (embeddedUsable && embeddedHealthy) return embeddedUrl;
       return defaultUrl;
     default:
       return defaultUrl;
@@ -81,6 +85,7 @@ class SettingsProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
   bool _showFiat = true;
   bool _autoCompound = false;
+  bool _embeddedNodeHealthy = false;
 
   /// Active network.
   MassaNetwork get network => _network;
@@ -121,9 +126,13 @@ class SettingsProvider extends ChangeNotifier {
   /// Loopback endpoint served by the embedded node (API v2).
   String get embeddedEndpoint => 'http://127.0.0.1:$embeddedApiPort/api/v2';
 
-  /// Whether the embedded node can serve the currently selected network
-  /// (the bundled binary targets buildnet only).
-  bool get embeddedUsable => _network == MassaNetwork.buildnet;
+  /// Whether the embedded node currently answers on the loopback.
+  ///
+  /// Maintained by [EmbeddedNodeService] on every start/stop/health
+  /// probe. When false the wallet routes embedded-mode traffic to the
+  /// public RPC instead of a dead node (this used to break the whole
+  /// app whenever the embedded binary failed to launch).
+  bool get embeddedNodeHealthy => _embeddedNodeHealthy;
 
   /// Active theme mode (dark / light / system).
   ThemeMode get themeMode => _themeMode;
@@ -141,7 +150,8 @@ class SettingsProvider extends ChangeNotifier {
     customUrl: _customNodeUrl,
     defaultUrl: _network.apiUrl,
     embeddedUrl: embeddedEndpoint,
-    embeddedUsable: embeddedUsable,
+    embeddedUsable: true,
+    embeddedHealthy: _embeddedNodeHealthy,
   );
 
   /// Loads persisted settings.
@@ -252,6 +262,14 @@ class SettingsProvider extends ChangeNotifier {
     await _set(_kConnectionMode, mode.name);
     // Keep the legacy flag coherent for background isolate reads.
     await _set(_kUseCustomNode, mode == NodeConnectionMode.customRpc);
+  }
+
+  /// Updates the embedded-node reachability flag (called by
+  /// [EmbeddedNodeService] on lifecycle/health changes).
+  Future<void> setEmbeddedNodeHealthy(bool healthy) async {
+    if (_embeddedNodeHealthy == healthy) return;
+    _embeddedNodeHealthy = healthy;
+    notifyListeners();
   }
 
   /// Switches theme mode.

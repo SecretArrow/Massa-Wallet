@@ -9,6 +9,30 @@ import 'package:local_auth/local_auth.dart';
 
 import 'settings_provider.dart';
 
+/// Error codes reported by local_auth that mean "the device has no
+/// usable enrolled credential" — in those cases the only sane policy is
+/// to fail open (the OS itself cannot protect the device either).
+///
+/// Pure function (unit-tested). Covers the android (`noCredentialsSet`,
+/// `notEnrolled`…), darwin (`noCredentialsSet`…) and plugin-level
+/// (`noCredentials`) spellings.
+bool shouldFailOpenOnLocalAuthError(String code) {
+  const failOpenCodes = <String>{
+    'noCredentialsSet',
+    'no_credentials',
+    'noCredentials',
+    'notEnrolled',
+    'not_enrolled',
+    'noBiometricEnrolled',
+    'noneEnrolled',
+    'noHardware',
+    'no_hardware',
+    'notAvailable',
+    'not_available',
+  };
+  return failOpenCodes.contains(code);
+}
+
 /// Security gate status.
 enum SecurityGate {
   /// Locked — user must authenticate.
@@ -44,21 +68,57 @@ class SecurityService extends ChangeNotifier {
     }
   }
 
-  /// Whether any biometric is enrolled.
+  /// Whether any biometric is actually ENROLLED.
+  ///
+  /// The previous implementation returned `isDeviceSupported()`, which
+  /// only checks hardware support — on a device with biometric hardware
+  /// but no enrolled fingerprint/face it reported true, the unlock then
+  /// threw `noCredentialsSet` forever and the wallet was bricked on the
+  /// lock screen.
   Future<bool> get hasEnrolledBiometrics async {
+    try {
+      final available = await _localAuth.getAvailableBiometrics();
+      return available.isNotEmpty;
+    } on PlatformException {
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Whether the user can authenticate at all (biometrics OR device
+  /// credential fallback such as PIN/pattern/password).
+  ///
+  /// With `biometricOnly: false` (our default) local_auth falls back to
+  /// the device credential, so a supported device with a lockscreen is
+  /// always authenticatable — even without enrolled biometrics.
+  Future<bool> get canAuthenticate async {
     try {
       return await _localAuth.isDeviceSupported();
     } on PlatformException {
+      return false;
+    } catch (_) {
       return false;
     }
   }
 
   /// Attempts to unlock the app.
+  ///
+  /// Failure modes:
+  /// * biometric/PIN rejected by the user → returns false (retryable via
+  ///   the lock-screen button);
+  /// * `LocalAuthException` with a no-credentials / not-enrolled code →
+  ///   the gate FAILS OPEN and the biometric requirement is switched off
+  ///   (the device has no screen lock at all, so demanding app-level
+  ///   auth would brick the wallet on the lock screen forever);
+  /// * platform-level `PlatformException` → returns false.
   Future<bool> unlock({String reason = ''}) async {
     try {
       final ok = await _localAuth.authenticate(
         localizedReason: reason.isEmpty ? 'Unlock Pyramids Wallet' : reason,
-        persistAcrossBackgrounding: true,
+        // NOTE: persistAcrossBackgrounding intentionally NOT set —
+        // combined with the lifecycle handler it used to re-prompt in a
+        // loop right after the app resumed (the "crazy unlock bug").
       );
       if (ok) {
         _gate = SecurityGate.unlocked;
@@ -69,10 +129,24 @@ class SecurityService extends ChangeNotifier {
     } on PlatformException {
       notifyListeners();
       return false;
+    } on Exception catch (e) {
+      // local_auth throws LocalAuthException (e.g. noCredentialsSet,
+      // notEnrolled, permanentlyLockedOut) — fail open when the device
+      // simply has no usable credentials, so the user can still get in.
+      final code = e is LocalAuthException
+          ? e.code.toString()
+          : e.runtimeType.toString();
+      if (shouldFailOpenOnLocalAuthError(code)) {
+        _gate = SecurityGate.unlocked;
+        _restartAutoLock();
+        unawaited(settings.setBiometricRequired(false));
+        notifyListeners();
+        return true;
+      }
+      notifyListeners();
+      return false;
     } catch (_) {
-      // local_auth throws LocalAuthException (e.g. noCredentialsSet) on
-      // devices without enrolled credentials — never let it escape and
-      // brick the gate; treat it as a failed unlock instead.
+      // Unknown auth-subsystem error — never brick the gate.
       notifyListeners();
       return false;
     }

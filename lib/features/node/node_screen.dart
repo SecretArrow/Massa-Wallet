@@ -4,13 +4,14 @@
 /// 1. Public RPC — official endpoints, light client (default).
 /// 2. Custom RPC — user-operated node over HTTP.
 /// 3. Embedded node — a real massa-node binary running inside the app
-///    sandbox on loopback (buildnet, experimental).
+///    sandbox on loopback (one binary per network: buildnet + mainnet).
 library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/api/massa_rpc.dart' show MassaNetwork;
 import '../../core/i18n/app_i18n.dart';
 import '../../core/services/embedded_node_service.dart';
 import '../../core/services/node_mode_service.dart';
@@ -116,7 +117,7 @@ class _NodeScreenState extends State<NodeScreen> {
                     title: context.t('node.mode.embedded.title'),
                     subtitle: context.t('node.mode.embedded.sub'),
                     detail: settings.embeddedEndpoint,
-                    trailing: const _BuildnetBadge(),
+                    trailing: const _NetworkBadge(),
                   ),
                 ],
               ),
@@ -257,12 +258,14 @@ class _ModeCard extends StatelessWidget {
   }
 }
 
-/// Small "Buildnet only" badge.
-class _BuildnetBadge extends StatelessWidget {
-  const _BuildnetBadge();
+/// Small network badge (Buildnet / Mainnet) — the release ships one
+/// binary per network.
+class _NetworkBadge extends StatelessWidget {
+  const _NetworkBadge();
 
   @override
   Widget build(BuildContext context) {
+    final network = context.watch<SettingsProvider>().network;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
@@ -270,7 +273,7 @@ class _BuildnetBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        'Buildnet',
+        network == MassaNetwork.mainnet ? 'Mainnet' : 'Buildnet',
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w700,
@@ -391,47 +394,62 @@ class _EmbeddedPanel extends StatelessWidget {
     final embedded = context.watch<EmbeddedNodeService>();
     final settings = context.watch<SettingsProvider>();
 
-    if (!settings.embeddedUsable) {
-      return Card(
-        margin: EdgeInsets.zero,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              const Icon(Icons.swap_horiz, color: Colors.orange, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  context.t('node.embedded.mainnet'),
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
     if (!embedded.binaryAvailable) {
+      // The binary for the ACTIVE network is not bundled in this build
+      // (e.g. a mainnet build without the mainnet binary, or an x86_64
+      // build). The wallet keeps working via the public RPC.
       return Card(
         margin: EdgeInsets.zero,
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.extension_off, color: Colors.orange, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  context.t('node.embedded.unavailable'),
-                  style: const TextStyle(fontSize: 12),
-                ),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.extension_off,
+                    color: Colors.orange,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      settings.network == MassaNetwork.mainnet
+                          ? context.t('node.embedded.mainnet')
+                          : context.t('node.embedded.unavailable'),
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ],
               ),
+              const SizedBox(height: 10),
+              _UsePublicRpcButton(mode: settings.connectionMode),
             ],
           ),
         ),
       );
     }
     return _EmbeddedControl(embedded: embedded);
+  }
+}
+
+/// One-tap escape hatch back to the public RPC — shown whenever the
+/// embedded node cannot serve the wallet, so the user is never stuck.
+class _UsePublicRpcButton extends StatelessWidget {
+  final NodeConnectionMode mode;
+  const _UsePublicRpcButton({required this.mode});
+
+  @override
+  Widget build(BuildContext context) {
+    if (mode != NodeConnectionMode.embedded) return const SizedBox.shrink();
+    return FilledButton.tonalIcon(
+      onPressed: () => context.read<SettingsProvider>().setConnectionMode(
+        NodeConnectionMode.publicRpc,
+      ),
+      icon: const Icon(Icons.public, size: 18),
+      label: Text(context.t('node.embedded.usePublic')),
+    );
   }
 }
 
@@ -484,6 +502,7 @@ class _EmbeddedControl extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = embedded.state;
     final busy = state == EmbeddedNodeState.starting;
+    final settings = context.watch<SettingsProvider>();
     final uptime = embedded.startedAt == null
         ? null
         : DateTime.now().difference(embedded.startedAt!);
@@ -527,7 +546,30 @@ class _EmbeddedControl extends StatelessWidget {
                 style: const TextStyle(fontSize: 12),
               ),
             ],
-            if (embedded.lastError != null) ...[
+            if (embedded.state == EmbeddedNodeState.failed ||
+                embedded.failureKind != EmbeddedFailureKind.none) ...[
+              const SizedBox(height: 8),
+              if (embedded.failureKind == EmbeddedFailureKind.missingLib)
+                Text(
+                  context
+                      .t('node.embedded.linkError')
+                      .replaceFirst('{lib}', embedded.missingLib ?? '?'),
+                  style: const TextStyle(fontSize: 12, color: Colors.red),
+                )
+              else
+                Text(
+                  embedded.lastError ?? '',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Colors.red,
+                    fontFamily: 'monospace',
+                  ),
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              const SizedBox(height: 8),
+              _UsePublicRpcButton(mode: settings.connectionMode),
+            ] else if (embedded.lastError != null) ...[
               const SizedBox(height: 8),
               Text(
                 embedded.lastError!,

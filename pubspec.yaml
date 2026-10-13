@@ -1,7 +1,7 @@
 name: massa_wallet
 description: "Pyramids Wallet - Secure self-custodial Flutter wallet for the Massa blockchain with dApp browser, embedded node, staking and background sync."
 publish_to: "none"
-version: 1.6.0+9
+version: 1.6.1+10
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
@@ -51,12 +51,15 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  # Embedded node base config (official massa DEVN.30.2 buildnet profile,
-  # patched to loopback binds at runtime). See lib/core/services/
-  # embedded_node_service.dart.
+  # Embedded node base configs (official massa profiles patched to
+  # loopback binds at runtime). Buildnet: DEVN.30.2. Mainnet: MAIN.5.0
+  # (real genesis ledger/rolls/deferred-credits). See
+  # lib/core/services/embedded_node_service.dart.
   assets:
     - assets/node/
     - assets/node/gas_costs/
+    - assets/node/mainnet/
+    - assets/node/mainnet/gas_costs/
     - assets/icon/pyramids_logo.png
 
 flutter_launcher_icons:

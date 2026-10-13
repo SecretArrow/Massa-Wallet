@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/api/massa_amount.dart' show formatNano;
-import '../../core/api/massa_rpc.dart' show MassaNetwork;
+import '../../core/api/massa_rpc.dart' show MassaNetwork, MassaRpcClient;
+import '../../core/contracts/mrc20_service.dart';
 import '../../core/i18n/app_i18n.dart';
 import '../../core/services/activity_history_service.dart';
 import '../../core/services/embedded_node_service.dart';
 import '../../core/services/price_service.dart';
 import '../../core/services/settings_provider.dart';
+import '../../core/services/token_list_store.dart';
 import '../../core/services/wallet_provider.dart';
 import '../../ui/home_shell.dart';
 import '../../ui/theme.dart';
@@ -258,65 +260,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ),
             ),
-            SectionHeader(title: context.t('wallet.accounts')),
-            ...wallet.accounts.map(
-              (a) => Card(
-                child: ListTile(
-                  leading: Icon(
-                    a.isWatchOnly
-                        ? Icons.visibility
-                        : a.isActive
-                        ? Icons.radio_button_checked
-                        : Icons.radio_button_off,
-                    color: a.isActive
-                        ? PyramidsColors.brand
-                        : Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  title: Text(
-                    a.nickname.isEmpty ? _shortAddr(a.address) : a.nickname,
-                  ),
-                  subtitle: Text(
-                    _shortAddr(a.address),
-                    style: const TextStyle(fontFamily: 'monospace'),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (a.isWatchOnly)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: Icon(
-                            Icons.remove_red_eye_outlined,
-                            size: 16,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      Text(
-                        wallet.balanceOf(a.address) == null
-                            ? '—'
-                            : '${wallet.formatBalance(a.address, decimals: 2)} MAS',
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    context
-                        .read<WalletProvider>()
-                        .setActive(a.address)
-                        .then(
-                          (_) =>
-                              context.read<WalletProvider>().refreshBalances(),
-                        );
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            OutlinedButton.icon(
-              onPressed: () => Navigator.of(context).pushNamed('/import'),
-              icon: const Icon(Icons.add),
-              label: Text(context.t('wallet.addAccount')),
+            // MRC-20 token balances (account switching lives in the
+            // app-bar sheet; token management lives in the Tokens tab
+            // reachable from the action grid above).
+            _TokensSection(
+              activeAddress: account.address,
+              network: settings.network,
             ),
             if (wallet.lastError != null) ...[
               const SizedBox(height: 16),
@@ -595,6 +544,198 @@ class _RecentTile extends StatelessWidget {
   }
 }
 
+/// Compact MRC-20 balance preview for the active account.
+///
+/// Loads the known-token registry (+ the user's custom list) for the
+/// current network, queries on-chain balances and shows the non-zero
+/// ones. Account switching lives in the app-bar sheet — this section is
+/// purely informational, with a jump into the full Tokens screen.
+class _TokensSection extends StatefulWidget {
+  final String activeAddress;
+  final MassaNetwork network;
+
+  const _TokensSection({required this.activeAddress, required this.network});
+
+  @override
+  State<_TokensSection> createState() => _TokensSectionState();
+}
+
+class _TokensSectionState extends State<_TokensSection> {
+  static const _maxRows = 4;
+
+  List<({Mrc20Token token, BigInt balance})> _rows = const [];
+  bool _loading = false;
+  String _loadedFor = '';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+  }
+
+  @override
+  void didUpdateWidget(covariant _TokensSection old) {
+    super.didUpdateWidget(old);
+    final key = '${widget.activeAddress}|${widget.network.name}';
+    if (key != _loadedFor) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+    }
+  }
+
+  Future<void> _load() async {
+    if (!mounted) return;
+    final key = '${widget.activeAddress}|${widget.network.name}';
+    if (key == _loadedFor && _rows.isNotEmpty) return;
+    _loadedFor = key;
+    setState(() => _loading = true);
+    final endpoint = context.read<SettingsProvider>().effectiveEndpoint;
+    final service = Mrc20Service(
+      clientFactory: () => MassaRpcClient(endpoint: endpoint),
+    );
+    final networkKey = widget.network == MassaNetwork.mainnet
+        ? 'mainnet'
+        : 'buildnet';
+    final registry =
+        (networkKey == 'mainnet'
+                ? KnownTokens.mainnet.values
+                : KnownTokens.buildnet.values)
+            .toList();
+    final custom = await TokenListStore().load(networkKey);
+    final rows = <({Mrc20Token token, BigInt balance})>[];
+    for (final addr in [...registry, ...custom]) {
+      if (rows.length >= _maxRows) break;
+      try {
+        final token = await service.loadToken(addr);
+        final balance = await service.balanceOf(addr, widget.activeAddress);
+        if (balance > BigInt.zero) {
+          rows.add((token: token, balance: balance));
+        }
+      } on Exception {
+        // Skip non-MRC20/broken entries and offline errors silently —
+        // the dashboard must stay clean; details live in /tokens.
+      }
+    }
+    if (!mounted) return;
+    setState(() {
+      _rows = rows;
+      _loading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 16, bottom: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  context.t('wallet.tokens'),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => Navigator.of(context).pushNamed('/tokens'),
+                child: Text(
+                  context.t('wallet.viewAll'),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (_loading)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: LinearProgressIndicator(minHeight: 2),
+          )
+        else if (_rows.isEmpty)
+          Card(
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => Navigator.of(context).pushNamed('/tokens'),
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.token_outlined,
+                      size: 20,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        context.t('tokens.none'),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right, size: 18),
+                  ],
+                ),
+              ),
+            ),
+          )
+        else
+          ..._rows.map(
+            (r) => Card(
+              child: ListTile(
+                dense: true,
+                leading: CircleAvatar(
+                  radius: 16,
+                  backgroundColor: PyramidsColors.brand.withValues(alpha: 0.15),
+                  child: Text(
+                    r.token.symbol.isNotEmpty
+                        ? r.token.symbol.substring(0, 1)
+                        : '?',
+                    style: const TextStyle(
+                      color: PyramidsColors.brand,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                title: Text(
+                  r.token.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 13),
+                ),
+                subtitle: Text(
+                  r.token.symbol,
+                  style: const TextStyle(fontSize: 11),
+                ),
+                trailing: Text(
+                  r.token.formatAmount(r.balance),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                onTap: () => Navigator.of(context).pushNamed('/tokens'),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
 /// Compact MAS price ticker (CoinGecko, offline-tolerant).
 class _PriceTicker extends StatelessWidget {
   final MasPrice? price;
@@ -674,7 +815,7 @@ class _EmbeddedNodeBanner extends StatelessWidget {
     }
     final node = context.watch<EmbeddedNodeService>();
     final ok =
-        node.state == EmbeddedNodeState.running && settings.embeddedUsable;
+        node.state == EmbeddedNodeState.running && settings.embeddedNodeHealthy;
     if (ok) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),

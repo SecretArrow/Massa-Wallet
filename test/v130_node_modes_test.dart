@@ -121,25 +121,37 @@ void main() {
       expect(s.effectiveEndpoint, MassaNetwork.buildnet.apiUrl);
     });
 
-    test('embedded mode serves loopback API v2 on buildnet', () async {
-      SharedPreferences.setMockInitialValues({});
-      final s = SettingsProvider();
-      await s.load();
-      await s.setConnectionMode(NodeConnectionMode.embedded);
-      expect(s.embeddedEndpoint, 'http://127.0.0.1:33036/api/v2');
-      expect(s.effectiveEndpoint, 'http://127.0.0.1:33036/api/v2');
-      expect(s.embeddedUsable, isTrue);
-    });
+    test(
+      'embedded mode serves loopback API v2 while node is healthy',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final s = SettingsProvider();
+        await s.load();
+        await s.setConnectionMode(NodeConnectionMode.embedded);
+        expect(s.embeddedEndpoint, 'http://127.0.0.1:33036/api/v2');
+        // Dead node (default) → public RPC, never a dead loopback.
+        expect(s.effectiveEndpoint, MassaNetwork.buildnet.apiUrl);
+        await s.setEmbeddedNodeHealthy(true);
+        expect(s.effectiveEndpoint, 'http://127.0.0.1:33036/api/v2');
+      },
+    );
 
-    test('embedded mode falls back to public RPC on mainnet', () async {
-      SharedPreferences.setMockInitialValues({});
-      final s = SettingsProvider();
-      await s.load();
-      await s.setConnectionMode(NodeConnectionMode.embedded);
-      await s.setNetwork(MassaNetwork.mainnet);
-      expect(s.embeddedUsable, isFalse);
-      expect(s.effectiveEndpoint, MassaNetwork.mainnet.apiUrl);
-    });
+    test(
+      'embedded mode falls back to public RPC when node unhealthy',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final s = SettingsProvider();
+        await s.load();
+        await s.setConnectionMode(NodeConnectionMode.embedded);
+        await s.setNetwork(MassaNetwork.mainnet);
+        expect(s.embeddedNodeHealthy, isFalse);
+        expect(s.effectiveEndpoint, MassaNetwork.mainnet.apiUrl);
+        await s.setEmbeddedNodeHealthy(true);
+        expect(s.effectiveEndpoint, 'http://127.0.0.1:33036/api/v2');
+        await s.setEmbeddedNodeHealthy(false);
+        expect(s.effectiveEndpoint, MassaNetwork.mainnet.apiUrl);
+      },
+    );
 
     test('mode persists and keeps the legacy flag coherent', () async {
       SharedPreferences.setMockInitialValues({});

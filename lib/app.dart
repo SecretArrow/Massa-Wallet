@@ -137,14 +137,15 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final security = context.read<SecurityService>();
-    final settings = context.read<SettingsProvider>();
     if (state == AppLifecycleState.paused) {
       security.registerInteraction();
     } else if (state == AppLifecycleState.resumed) {
       security.checkIdle();
-      if (settings.biometricRequired && security.gate == SecurityGate.locked) {
-        security.unlock();
-      }
+      // NOTE: no automatic biometric prompt here. Triggering authenticate()
+      // during onResume used to fight with the activity transition — the
+      // prompt failed/re-queued and the user was stuck in an unlock loop.
+      // The lock screen shows an Unlock button; unlocking is always a
+      // user-gesture action now.
       // Sync-on-open: the most reliable path there is (no OS quota
       // applies in the foreground). Cheap — refreshBalances no-ops
       // without accounts.
@@ -262,18 +263,23 @@ class _RootGateState extends State<_RootGate> {
     var unlocked = true;
     if (has && settings.biometricRequired) {
       try {
-        final canAuth = await security.canCheckBiometrics;
-        if (canAuth) {
+        final canAuth = await security.canAuthenticate;
+        final enrolled = await security.hasEnrolledBiometrics;
+        if (canAuth && enrolled) {
           unlocked = await security.unlock();
         } else {
-          // Device has no usable biometrics — requiring them here would
-          // leave the wallet stuck on the splash forever (LocalAuthException
-          // noCredentialsSet). Fail open and stop demanding biometrics so
-          // the user can re-enable the toggle after enrolling.
+          // Device has no usable biometrics (or none enrolled) — demanding
+          // them here would leave the wallet stuck on the lock screen
+          // forever (LocalAuthException noCredentialsSet). Fail open and
+          // stop demanding biometrics so the user can re-enable the
+          // toggle after enrolling.
+          unlocked = true;
           unawaited(settings.setBiometricRequired(false));
+          security.markUnlocked();
         }
       } catch (_) {
         // Never brick the gate on an auth subsystem error.
+        security.markUnlocked();
         unlocked = true;
       }
     } else {

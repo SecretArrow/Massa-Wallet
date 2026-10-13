@@ -6,32 +6,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/api/massa_rpc.dart';
 import '../../core/contracts/mrc20_service.dart';
 import '../../core/i18n/app_i18n.dart';
 import '../../core/services/activity_history_service.dart';
 import '../../core/services/settings_provider.dart';
+import '../../core/services/token_list_store.dart';
 import '../../core/services/wallet_provider.dart';
 import '../../ui/theme.dart';
-
-/// Persists the user's token list in SharedPreferences.
-class TokenListStore {
-  static const _kKey = 'wallet.tokens';
-
-  /// Loads saved custom token addresses for [networkKey].
-  Future<List<String>> load(String networkKey) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList('$_kKey.$networkKey') ?? const [];
-  }
-
-  /// Saves [addresses] for [networkKey].
-  Future<void> save(String networkKey, List<String> addresses) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('$_kKey.$networkKey', addresses);
-  }
-}
 
 /// A row in the tokens list.
 class _TokenRow {
