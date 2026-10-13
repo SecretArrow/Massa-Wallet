@@ -1,25 +1,83 @@
-/// Lightweight bilingual i18n (Bahasa Indonesia / English).
+/// Lightweight i18n for 27 locales (English + 26 more languages).
 ///
 /// Chosen over `gen-l10n` so unit/widget tests and CI need no codegen
 /// step. Keys are grouped in [AppStrings] for compile-time safety.
+///
+/// Supported languages (native names shown in the picker):
+/// English, Bahasa Indonesia, 中文, Español, हिन्दी, Français, العربية,
+/// বাংলা, Русский, Português, اردو, Deutsch, 日本語, मराठी, తెలుగు,
+/// Türkçe, தமிழ், Tiếng Việt, 한국어, Italiano, ไทย, فارسی, Polski,
+/// Nederlands, Bahasa Melayu, Filipino, Українська.
+///
+/// Arabic, Urdu and Persian are right-to-left — directionality is
+/// handled automatically by `GlobalWidgetsLocalizations`.
 library;
 
 import 'package:flutter/material.dart';
 
 import 'translations.dart';
 
-/// UI language.
-enum AppLanguage {
-  /// English.
-  english('en'),
+/// A UI language descriptor (code + native display name).
+class AppLanguage {
+  /// ISO 639-1 code, also used as the persistence key.
+  final String code;
+
+  /// Endonym shown in the language picker (never translated).
+  final String nativeName;
+
+  const AppLanguage(this.code, this.nativeName);
+
+  /// English (default).
+  static const AppLanguage english = AppLanguage('en', 'English');
 
   /// Bahasa Indonesia.
-  indonesian('id');
+  static const AppLanguage indonesian = AppLanguage('id', 'Bahasa Indonesia');
 
-  const AppLanguage(this.code);
+  /// All supported languages, picker order (English first).
+  static const List<AppLanguage> all = [
+    english,
+    indonesian,
+    AppLanguage('zh', '中文（简体）'),
+    AppLanguage('es', 'Español'),
+    AppLanguage('hi', 'हिन्दी'),
+    AppLanguage('fr', 'Français'),
+    AppLanguage('ar', 'العربية'),
+    AppLanguage('bn', 'বাংলা'),
+    AppLanguage('ru', 'Русский'),
+    AppLanguage('pt', 'Português'),
+    AppLanguage('ur', 'اردو'),
+    AppLanguage('de', 'Deutsch'),
+    AppLanguage('ja', '日本語'),
+    AppLanguage('mr', 'मराठी'),
+    AppLanguage('te', 'తెలుగు'),
+    AppLanguage('tr', 'Türkçe'),
+    AppLanguage('ta', 'தமிழ்'),
+    AppLanguage('vi', 'Tiếng Việt'),
+    AppLanguage('ko', '한국어'),
+    AppLanguage('it', 'Italiano'),
+    AppLanguage('th', 'ไทย'),
+    AppLanguage('fa', 'فارسی'),
+    AppLanguage('pl', 'Polski'),
+    AppLanguage('nl', 'Nederlands'),
+    AppLanguage('ms', 'Bahasa Melayu'),
+    AppLanguage('tl', 'Filipino'),
+    AppLanguage('uk', 'Українська'),
+  ];
 
-  /// ISO code.
-  final String code;
+  /// Resolves [code] to a language; unknown codes fall back to English
+  /// (graceful migration when a locale is ever retired).
+  static AppLanguage fromCode(String code) =>
+      all.firstWhere((l) => l.code == code, orElse: () => english);
+
+  /// All locale codes (for `supportedLocales`).
+  static List<Locale> get locales =>
+      all.map((l) => Locale(l.code)).toList(growable: false);
+
+  @override
+  bool operator ==(Object other) => other is AppLanguage && other.code == code;
+
+  @override
+  int get hashCode => code.hashCode;
 }
 
 /// Locale change notifier + lookup helper.
@@ -84,4 +142,10 @@ abstract final class AppStrings {
 
   /// Settings.
   static const settings = 'settings.title';
+
+  /// Seed phrase.
+  static const seedPhrase = 'seed.method.seed.title';
+
+  /// Language.
+  static const language = 'settings.language';
 }

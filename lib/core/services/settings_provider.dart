@@ -151,10 +151,9 @@ class SettingsProvider extends ChangeNotifier {
     _network = p.getString(_kNetwork) == 'mainnet'
         ? MassaNetwork.mainnet
         : MassaNetwork.buildnet;
-    // English is the default; only an explicit 'id' selects Indonesian.
-    _language = p.getString(_kLanguage) == 'id'
-        ? AppLanguage.indonesian
-        : AppLanguage.english;
+    // English is the default; any persisted supported code wins.
+    // (Legacy 'id'-only keys and unknown codes fall back to English.)
+    _language = AppLanguage.fromCode(p.getString(_kLanguage) ?? 'en');
     _autoLockSeconds = p.getInt(_kAutoLockSeconds) ?? 120;
     _biometricRequired = p.getBool(_kBiometricRequired) ?? true;
     _backgroundSync = p.getBool(_kBackgroundSync) ?? true;

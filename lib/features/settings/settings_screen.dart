@@ -38,6 +38,77 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
+  /// Opens the 27-language picker sheet (searchable, native names).
+  Future<void> _pickLanguage(BuildContext context) {
+    return showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetCtx) {
+        var query = '';
+        return StatefulBuilder(
+          builder: (sheetCtx, setSheet) {
+            final q = query.trim().toLowerCase();
+            final matches = AppLanguage.all
+                .where(
+                  (l) =>
+                      q.isEmpty ||
+                      l.nativeName.toLowerCase().contains(q) ||
+                      l.code.contains(q),
+                )
+                .toList();
+            return SafeArea(
+              child: SizedBox(
+                height: 480,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                      child: TextField(
+                        onChanged: (v) => setSheet(() => query = v),
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.search),
+                          hintText: sheetCtx.t('settings.language.search'),
+                          isDense: true,
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: matches.length,
+                        itemBuilder: (sheetCtx, i) {
+                          final lang = matches[i];
+                          final selected = lang.code == settings.language.code;
+                          return ListTile(
+                            title: Text(lang.nativeName),
+                            subtitle: Text(lang.code.toUpperCase()),
+                            trailing: selected
+                                ? Icon(
+                                    Icons.check_circle,
+                                    color: PyramidsColors.brand,
+                                  )
+                                : null,
+                            onTap: () {
+                              context
+                                  .read<SettingsProvider>()
+                                  .setLanguage(lang);
+                              Navigator.of(sheetCtx).pop();
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
@@ -48,23 +119,16 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Language
+          // Language — searchable 27-language picker
           ListTile(
             leading: const Icon(Icons.language),
             title: Text(context.t('settings.language')),
-            trailing: SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(value: 'en', label: Text('EN')),
-                ButtonSegment(value: 'id', label: Text('ID')),
-              ],
-              selected: {settings.language.code},
-              onSelectionChanged: (s) =>
-                  context.read<SettingsProvider>().setLanguage(
-                    s.first == 'en'
-                        ? AppLanguage.english
-                        : AppLanguage.indonesian,
-                  ),
+            subtitle: Text(context.t('settings.language.sub')),
+            trailing: Text(
+              settings.language.nativeName,
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
+            onTap: () => _pickLanguage(context),
           ),
           const Divider(),
 

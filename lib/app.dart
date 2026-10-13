@@ -187,7 +187,9 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
             darkTheme: AppTheme.dark,
             themeMode: settings.themeMode,
             locale: Locale(settings.language.code),
-            supportedLocales: const [Locale('id'), Locale('en')],
+            // 27 supported locales — ar/ur/fa get RTL automatically via
+            // GlobalWidgetsLocalizations.
+            supportedLocales: AppLanguage.locales,
             initialRoute: '/',
             // Edge-to-edge: keep system-bar icon brightness correct on
             // screens that have no AppBar (covers the whole navigator).

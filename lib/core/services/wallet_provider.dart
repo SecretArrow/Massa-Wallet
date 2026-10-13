@@ -102,6 +102,35 @@ class WalletProvider extends ChangeNotifier {
     return account;
   }
 
+  /// Creates a wallet from a BIP-39 seed phrase (12 or 24 words).
+  ///
+  /// The phrase is never persisted; only the derived key is stored
+  /// encrypted. Throws [FormatException] for an invalid phrase.
+  Future<StoredAccount> createWalletFromSeedPhrase(
+    String mnemonic, {
+    String nickname = '',
+  }) async {
+    final account = await repository.createWalletFromMnemonic(
+      mnemonic,
+      nickname: nickname,
+    );
+    await loadAccounts();
+    return account;
+  }
+
+  /// Imports a wallet from a BIP-39 seed phrase (12 or 24 words).
+  Future<StoredAccount> importMnemonic(
+    String mnemonic, {
+    String nickname = '',
+  }) async {
+    final account = await repository.importMnemonic(
+      mnemonic,
+      nickname: nickname,
+    );
+    await loadAccounts();
+    return account;
+  }
+
   /// Imports a secret key (`S...`).
   Future<StoredAccount> importSecretKey(
     String sk, {

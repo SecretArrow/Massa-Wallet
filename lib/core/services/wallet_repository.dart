@@ -13,6 +13,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../crypto/keystore_file.dart';
 import '../crypto/massa_keys.dart';
+import '../crypto/seed_derivation.dart';
 
 /// A stored wallet account.
 class StoredAccount {
@@ -36,6 +37,11 @@ class StoredAccount {
   /// and history are visible, spending is impossible).
   final bool isWatchOnly;
 
+  /// Where the key came from: `random` (generated), `seed` (BIP-39
+  /// phrase), `imported` (secret key string), `keystore` (file) or `''`
+  /// for accounts stored by older versions. Informational only.
+  final String keySource;
+
   /// Creates a stored account.
   const StoredAccount({
     required this.address,
@@ -44,6 +50,7 @@ class StoredAccount {
     this.isActive = false,
     this.networkName = 'Buildnet',
     this.isWatchOnly = false,
+    this.keySource = '',
   });
 
   /// Serializes to JSON.
@@ -54,6 +61,7 @@ class StoredAccount {
     'isActive': isActive,
     'networkName': networkName,
     'isWatchOnly': isWatchOnly,
+    if (keySource.isNotEmpty) 'keySource': keySource,
   };
 
   /// Deserializes from JSON.
@@ -64,6 +72,7 @@ class StoredAccount {
     isActive: (json['isActive'] ?? false) as bool,
     networkName: (json['networkName'] ?? 'Buildnet') as String,
     isWatchOnly: (json['isWatchOnly'] ?? false) as bool,
+    keySource: (json['keySource'] ?? '') as String,
   );
 
   StoredAccount copyWith({
@@ -72,6 +81,7 @@ class StoredAccount {
     String? networkName,
     bool? isWatchOnly,
     String? publicKey,
+    String? keySource,
   }) => StoredAccount(
     address: address,
     publicKey: publicKey ?? this.publicKey,
@@ -79,6 +89,7 @@ class StoredAccount {
     isActive: isActive ?? this.isActive,
     networkName: networkName ?? this.networkName,
     isWatchOnly: isWatchOnly ?? this.isWatchOnly,
+    keySource: keySource ?? this.keySource,
   );
 }
 
@@ -118,7 +129,59 @@ class WalletRepository {
   /// Creates a new random wallet and stores it.
   Future<StoredAccount> createWallet({String nickname = ''}) async {
     final priv = MassaPrivateKey.generate();
-    return _persistPrivateKey(priv, nickname: nickname);
+    return _persistPrivateKey(priv, nickname: nickname, keySource: 'random');
+  }
+
+  /// Creates a wallet from a BIP-39 [mnemonic] (12 or 24 words).
+  ///
+  /// The phrase itself is NEVER persisted — only the derived ed25519 key
+  /// goes into the encrypted secure store (keySource `seed`). Throws
+  /// [FormatException] for an invalid phrase.
+  Future<StoredAccount> createWalletFromMnemonic(
+    String mnemonic, {
+    String nickname = '',
+  }) async {
+    final priv = privateKeyFromMnemonic(mnemonic);
+    return _persistPrivateKey(priv, nickname: nickname, keySource: 'seed');
+  }
+
+  /// Imports a wallet from a BIP-39 seed phrase (12 or 24 words).
+  ///
+  /// Dedupes by address like [importSecretKey]; watch-only entries with
+  /// the same address are upgraded in place.
+  Future<StoredAccount> importMnemonic(
+    String mnemonic, {
+    String nickname = '',
+  }) async {
+    final normalized = normalizeMnemonic(mnemonic);
+    final priv = privateKeyFromMnemonic(normalized);
+    final address = priv.publicKey.address.encoded;
+    final accounts = await listAccounts();
+    final existing = accounts.where((a) => a.address == address).toList();
+    if (existing.isNotEmpty) {
+      // Upgrade a watch-only entry into a full account if needed.
+      if (existing.first.isWatchOnly) {
+        await _storage.write(
+          key: 'mw.sk.$address',
+          value: base64.encode(priv.versionedBytes),
+        );
+        await saveAccounts(
+          accounts
+              .map(
+                (a) => a.address == address
+                    ? a.copyWith(
+                        isWatchOnly: false,
+                        publicKey: priv.publicKey.encoded,
+                        keySource: 'seed',
+                      )
+                    : a,
+              )
+              .toList(),
+        );
+      }
+      return existing.first;
+    }
+    return _persistPrivateKey(priv, nickname: nickname, keySource: 'seed');
   }
 
   /// Imports a wallet from a `S...` secret key string.
@@ -133,7 +196,11 @@ class WalletRepository {
     if (existing.isNotEmpty) {
       return existing.first;
     }
-    return _persistPrivateKey(priv, nickname: nickname);
+    return _persistPrivateKey(
+      priv,
+      nickname: nickname,
+      keySource: 'imported',
+    );
   }
 
   /// Adds a watch-only address (no private key — monitoring only).
@@ -229,7 +296,7 @@ class WalletRepository {
     final accounts = await listAccounts();
     final existing = accounts.where((a) => a.address == address).toList();
     if (existing.isNotEmpty) return existing.first;
-    return _persistPrivateKey(priv, nickname: nickname);
+    return _persistPrivateKey(priv, nickname: nickname, keySource: 'keystore');
   }
 
   /// Exports the account as a Massa Standard keystore JSON string.
@@ -281,6 +348,7 @@ class WalletRepository {
   Future<StoredAccount> _persistPrivateKey(
     MassaPrivateKey priv, {
     required String nickname,
+    String keySource = '',
   }) async {
     final address = priv.publicKey.address.encoded;
     await _storage.write(
@@ -293,6 +361,7 @@ class WalletRepository {
       publicKey: priv.publicKey.encoded,
       nickname: nickname,
       isActive: accounts.isEmpty,
+      keySource: keySource,
     );
     accounts.add(account);
     await saveAccounts(accounts);
