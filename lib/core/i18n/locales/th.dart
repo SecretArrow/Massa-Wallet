@@ -52,7 +52,7 @@ const Map<String, String> thTranslations = {
   "send.title": "ส่ง MAS",
   "send.recipient": "ที่อยู่ผู้รับ",
   "send.amount": "จำนวน (MAS)",
-  "send.fee": "ค่าธรรมเนียม (MAS)",
+  "send.fee": "ค่าธรรมเนียม",
   "send.max": "สูงสุด",
   "send.review": "ตรวจสอบ",
   "send.confirm": "ยืนยันและลงนาม",
@@ -399,4 +399,9 @@ const Map<String, String> thTranslations = {
   "account.source.keystore": "ไฟล์ keystore",
   "settings.language.sub": "27 ภาษา",
   "settings.language.search": "ค้นหาภาษา",
+  "send.fee.economy": "ประหยัด",
+  "send.fee.standard": "มาตรฐาน",
+  "send.fee.fast": "เร็ว",
+  "send.fee.custom": "กำหนดเอง",
+  "send.fee.customHint": "ค่าธรรมเนียมแบบกำหนดเองใน MAS — ค่าธรรมเนียมที่ต่ำกว่าขั้นต่ำของเครือข่ายจะถูกปรับเป็นขั้นต่ำ",
 };

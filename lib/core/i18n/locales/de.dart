@@ -52,7 +52,7 @@ const Map<String, String> deTranslations = {
   "send.title": "MAS senden",
   "send.recipient": "Empfängeradresse",
   "send.amount": "Betrag (MAS)",
-  "send.fee": "Gebühr (MAS)",
+  "send.fee": "Gebühr",
   "send.max": "Max",
   "send.review": "Prüfen",
   "send.confirm": "Bestätigen & signieren",
@@ -399,4 +399,9 @@ const Map<String, String> deTranslations = {
   "account.source.keystore": "Keystore-Datei",
   "settings.language.sub": "27 Sprachen",
   "settings.language.search": "Sprache suchen",
+  "send.fee.economy": "Sparsam",
+  "send.fee.standard": "Standard",
+  "send.fee.fast": "Schnell",
+  "send.fee.custom": "Benutzerdefiniert",
+  "send.fee.customHint": "Individuelle Gebühr in MAS — Gebühren unter dem Netzwerkminimum werden auf das Minimum angehoben",
 };

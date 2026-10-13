@@ -52,7 +52,7 @@ const Map<String, String> zhTranslations = {
   "send.title": "发送 MAS",
   "send.recipient": "收款地址",
   "send.amount": "金额（MAS）",
-  "send.fee": "手续费（MAS）",
+  "send.fee": "手续费",
   "send.max": "最大",
   "send.review": "核对",
   "send.confirm": "确认并签名",
@@ -399,4 +399,9 @@ const Map<String, String> zhTranslations = {
   "account.source.keystore": "keystore 文件",
   "settings.language.sub": "27 种语言",
   "settings.language.search": "搜索语言",
+  "send.fee.economy": "经济",
+  "send.fee.standard": "标准",
+  "send.fee.fast": "快速",
+  "send.fee.custom": "自定义",
+  "send.fee.customHint": "自定义手续费（MAS）——低于网络最低值的将按最低值收取",
 };

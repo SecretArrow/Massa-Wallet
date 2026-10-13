@@ -52,7 +52,7 @@ const Map<String, String> teTranslations = {
   "send.title": "MAS పంపండి",
   "send.recipient": "స్వీకర్త చిరునామా",
   "send.amount": "మొత్తం (MAS)",
-  "send.fee": "ఫీజు (MAS)",
+  "send.fee": "ఫీజు",
   "send.max": "గరిష్టం",
   "send.review": "సమీక్షించండి",
   "send.confirm": "నిర్ధారించి సంతకం చేయండి",
@@ -399,4 +399,9 @@ const Map<String, String> teTranslations = {
   "account.source.keystore": "కీస్టోర్ ఫైల్",
   "settings.language.sub": "27 భాషలు",
   "settings.language.search": "భాషను వెతకండి",
+  "send.fee.economy": "ఆర్థిక",
+  "send.fee.standard": "ప్రామాణిక",
+  "send.fee.fast": "వేగవంతం",
+  "send.fee.custom": "అనుకూల",
+  "send.fee.customHint": "MAS లో అనుకూల ఫీజు — నెట్‌వర్క్ కనిష్టం కంటే తక్కువ ఫీజు కనిష్టానికి పెంచబడుతుంది",
 };

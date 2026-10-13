@@ -53,7 +53,7 @@ const Map<String, String> idTranslations = {
   "send.title": "Kirim MAS",
   "send.recipient": "Alamat penerima",
   "send.amount": "Jumlah (MAS)",
-  "send.fee": "Biaya (MAS)",
+  "send.fee": "Biaya",
   "send.max": "Maks",
   "send.review": "Tinjau",
   "send.confirm": "Konfirmasi & tanda tangani",
@@ -401,4 +401,9 @@ const Map<String, String> idTranslations = {
   "account.source.keystore": "File keystore",
   "settings.language.sub": "27 bahasa",
   "settings.language.search": "Cari bahasa",
+  "send.fee.economy": "Ekonomi",
+  "send.fee.standard": "Standar",
+  "send.fee.fast": "Cepat",
+  "send.fee.custom": "Khusus",
+  "send.fee.customHint": "Biaya khusus dalam MAS — biaya di bawah minimum jaringan dinaikkan ke minimum",
 };

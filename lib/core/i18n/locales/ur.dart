@@ -52,7 +52,7 @@ const Map<String, String> urTranslations = {
   "send.title": "MAS بھیجیں",
   "send.recipient": "وصول کنندہ کا ایڈریس",
   "send.amount": "رقم (MAS)",
-  "send.fee": "فیس (MAS)",
+  "send.fee": "فیس",
   "send.max": "زیادہ سے زیادہ",
   "send.review": "جائزہ لیں",
   "send.confirm": "تصدیق اور سائن",
@@ -399,4 +399,9 @@ const Map<String, String> urTranslations = {
   "account.source.keystore": "کیسٹور فائل",
   "settings.language.sub": "27 زبانیں",
   "settings.language.search": "زبان تلاش کریں",
+  "send.fee.economy": "اکنامی",
+  "send.fee.standard": "معیاری",
+  "send.fee.fast": "تیز",
+  "send.fee.custom": "حسب ضرورت",
+  "send.fee.customHint": "MAS میں حسب ضرورت فیس — نیٹ ورک کی کم از کم فیس سے کم فیس کم از کم پر بڑھا دی جاتی ہے",
 };

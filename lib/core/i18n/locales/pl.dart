@@ -52,7 +52,7 @@ const Map<String, String> plTranslations = {
   "send.title": "Wyślij MAS",
   "send.recipient": "Adres odbiorcy",
   "send.amount": "Kwota (MAS)",
-  "send.fee": "Opłata (MAS)",
+  "send.fee": "Opłata",
   "send.max": "Maks.",
   "send.review": "Przegląd",
   "send.confirm": "Potwierdź i podpisz",
@@ -399,4 +399,9 @@ const Map<String, String> plTranslations = {
   "account.source.keystore": "Plik keystore",
   "settings.language.sub": "27 języków",
   "settings.language.search": "Szukaj języka",
+  "send.fee.economy": "Ekonomiczna",
+  "send.fee.standard": "Standardowa",
+  "send.fee.fast": "Szybka",
+  "send.fee.custom": "Własna",
+  "send.fee.customHint": "Własna opłata w MAS — opłaty poniżej minimum sieci są podnoszone do minimum",
 };

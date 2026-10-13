@@ -52,7 +52,7 @@ const Map<String, String> ukTranslations = {
   "send.title": "Надіслати MAS",
   "send.recipient": "Адреса отримувача",
   "send.amount": "Сума (MAS)",
-  "send.fee": "Комісія (MAS)",
+  "send.fee": "Комісія",
   "send.max": "Макс.",
   "send.review": "Перевірити",
   "send.confirm": "Підтвердити та підписати",
@@ -399,4 +399,9 @@ const Map<String, String> ukTranslations = {
   "account.source.keystore": "Файл keystore",
   "settings.language.sub": "27 мов",
   "settings.language.search": "Пошук мови",
+  "send.fee.economy": "Економна",
+  "send.fee.standard": "Стандартна",
+  "send.fee.fast": "Швидка",
+  "send.fee.custom": "Власна",
+  "send.fee.customHint": "Власна комісія в MAS — комісія нижче мінімуму мережі підвищується до мінімуму",
 };

@@ -52,7 +52,7 @@ const Map<String, String> ptTranslations = {
   "send.title": "Enviar MAS",
   "send.recipient": "Endereço do destinatário",
   "send.amount": "Valor (MAS)",
-  "send.fee": "Taxa (MAS)",
+  "send.fee": "Taxa",
   "send.max": "Máx.",
   "send.review": "Revisar",
   "send.confirm": "Confirmar e assinar",
@@ -399,4 +399,9 @@ const Map<String, String> ptTranslations = {
   "account.source.keystore": "Arquivo keystore",
   "settings.language.sub": "27 idiomas",
   "settings.language.search": "Pesquisar idioma",
+  "send.fee.economy": "Econômica",
+  "send.fee.standard": "Padrão",
+  "send.fee.fast": "Rápida",
+  "send.fee.custom": "Personalizada",
+  "send.fee.customHint": "Taxa personalizada em MAS — taxas abaixo do mínimo da rede são elevadas ao mínimo",
 };

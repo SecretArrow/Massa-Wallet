@@ -52,7 +52,7 @@ const Map<String, String> taTranslations = {
   "send.title": "MAS அனுப்பவும்",
   "send.recipient": "பெறுநர் முகவரி",
   "send.amount": "தொகை (MAS)",
-  "send.fee": "கட்டணம் (MAS)",
+  "send.fee": "கட்டணம்",
   "send.max": "அதிகபட்சம்",
   "send.review": "மதிப்பாய்வு",
   "send.confirm": "உறுதிசெய்து கையொப்பமிடவும்",
@@ -399,4 +399,9 @@ const Map<String, String> taTranslations = {
   "account.source.keystore": "கீஸ்டோர் கோப்பு",
   "settings.language.sub": "27 மொழிகள்",
   "settings.language.search": "மொழியைத் தேடவும்",
+  "send.fee.economy": "சிக்கனம்",
+  "send.fee.standard": "நிலையான",
+  "send.fee.fast": "விரைவு",
+  "send.fee.custom": "தனிப்பயன்",
+  "send.fee.customHint": "MAS-இல் தனிப்பயன் கட்டணம் — நெட்வொர்க் குறைந்தபட்சத்திற்குக் கீழே உள்ள கட்டணம் குறைந்தபட்சமாக உயர்த்தப்படும்",
 };

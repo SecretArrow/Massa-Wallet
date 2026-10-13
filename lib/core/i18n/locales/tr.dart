@@ -52,7 +52,7 @@ const Map<String, String> trTranslations = {
   "send.title": "MAS gönder",
   "send.recipient": "Alıcı adresi",
   "send.amount": "Miktar (MAS)",
-  "send.fee": "Ücret (MAS)",
+  "send.fee": "Ücret",
   "send.max": "Maks.",
   "send.review": "Gözden geçir",
   "send.confirm": "Onayla ve imzala",
@@ -399,4 +399,9 @@ const Map<String, String> trTranslations = {
   "account.source.keystore": "Keystore dosyası",
   "settings.language.sub": "27 dil",
   "settings.language.search": "Dil ara",
+  "send.fee.economy": "Ekonomik",
+  "send.fee.standard": "Standart",
+  "send.fee.fast": "Hızlı",
+  "send.fee.custom": "Özel",
+  "send.fee.customHint": "MAS cinsinden özel ücret — ağ minimumunun altındaki ücretler minimuma yükseltilir",
 };

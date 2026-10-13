@@ -52,7 +52,7 @@ const Map<String, String> ruTranslations = {
   "send.title": "Отправить MAS",
   "send.recipient": "Адрес получателя",
   "send.amount": "Сумма (MAS)",
-  "send.fee": "Комиссия (MAS)",
+  "send.fee": "Комиссия",
   "send.max": "Макс.",
   "send.review": "Проверить",
   "send.confirm": "Подтвердить и подписать",
@@ -399,4 +399,9 @@ const Map<String, String> ruTranslations = {
   "account.source.keystore": "Файл keystore",
   "settings.language.sub": "27 языков",
   "settings.language.search": "Поиск языка",
+  "send.fee.economy": "Экономный",
+  "send.fee.standard": "Обычный",
+  "send.fee.fast": "Быстрый",
+  "send.fee.custom": "Своя",
+  "send.fee.customHint": "Своя комиссия в MAS — комиссия ниже минимума сети повышается до минимума",
 };

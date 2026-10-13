@@ -52,7 +52,7 @@ const Map<String, String> koTranslations = {
   "send.title": "MAS 보내기",
   "send.recipient": "받는 주소",
   "send.amount": "금액(MAS)",
-  "send.fee": "수수료(MAS)",
+  "send.fee": "수수료",
   "send.max": "최대",
   "send.review": "검토",
   "send.confirm": "확인 및 서명",
@@ -399,4 +399,9 @@ const Map<String, String> koTranslations = {
   "account.source.keystore": "키스토어 파일",
   "settings.language.sub": "27개 언어",
   "settings.language.search": "언어 검색",
+  "send.fee.economy": "절약",
+  "send.fee.standard": "표준",
+  "send.fee.fast": "빠름",
+  "send.fee.custom": "사용자 지정",
+  "send.fee.customHint": "MAS 단위 사용자 지정 수수료 — 네트워크 최소값 미만은 최소값으로 조정됩니다",
 };

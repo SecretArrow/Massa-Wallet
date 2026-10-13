@@ -52,7 +52,7 @@ const Map<String, String> faTranslations = {
   "send.title": "ارسال MAS",
   "send.recipient": "آدرس گیرنده",
   "send.amount": "مبلغ (MAS)",
-  "send.fee": "کارمزد (MAS)",
+  "send.fee": "کارمزد",
   "send.max": "حداکثر",
   "send.review": "بازبینی",
   "send.confirm": "تأیید و امضا",
@@ -399,4 +399,9 @@ const Map<String, String> faTranslations = {
   "account.source.keystore": "فایل keystore",
   "settings.language.sub": "27 زبان",
   "settings.language.search": "جست‌وجوی زبان",
+  "send.fee.economy": "اقتصادی",
+  "send.fee.standard": "استاندارد",
+  "send.fee.fast": "سریع",
+  "send.fee.custom": "سفارشی",
+  "send.fee.customHint": "کارمزد سفارشی به MAS — کارمزدهای کمتر از حداقل شبکه به حداقل افزایش می‌یابند",
 };

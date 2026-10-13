@@ -52,7 +52,7 @@ const Map<String, String> jaTranslations = {
   "send.title": "MASを送信",
   "send.recipient": "送信先アドレス",
   "send.amount": "金額（MAS）",
-  "send.fee": "手数料（MAS）",
+  "send.fee": "手数料",
   "send.max": "最大",
   "send.review": "内容確認",
   "send.confirm": "確認して署名",
@@ -399,4 +399,9 @@ const Map<String, String> jaTranslations = {
   "account.source.keystore": "キーストアファイル",
   "settings.language.sub": "27言語",
   "settings.language.search": "言語を検索",
+  "send.fee.economy": "エコノミー",
+  "send.fee.standard": "標準",
+  "send.fee.fast": "高速",
+  "send.fee.custom": "カスタム",
+  "send.fee.customHint": "カスタム手数料（MAS）— ネットワーク最小値未満は最小値に引き上げられます",
 };

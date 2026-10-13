@@ -52,7 +52,7 @@ const Map<String, String> msTranslations = {
   "send.title": "Hantar MAS",
   "send.recipient": "Alamat penerima",
   "send.amount": "Jumlah (MAS)",
-  "send.fee": "Yuran (MAS)",
+  "send.fee": "Yuran",
   "send.max": "Maks",
   "send.review": "Semak",
   "send.confirm": "Sahkan & tandatangan",
@@ -399,4 +399,9 @@ const Map<String, String> msTranslations = {
   "account.source.keystore": "Fail keystore",
   "settings.language.sub": "27 bahasa",
   "settings.language.search": "Cari bahasa",
+  "send.fee.economy": "Jimat",
+  "send.fee.standard": "Standard",
+  "send.fee.fast": "Pantas",
+  "send.fee.custom": "Tersuai",
+  "send.fee.customHint": "Yuran tersuai dalam MAS — yuran di bawah minimum rangkaian dinaikkan ke minimum",
 };

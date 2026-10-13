@@ -52,7 +52,7 @@ const Map<String, String> nlTranslations = {
   "send.title": "MAS verzenden",
   "send.recipient": "Ontvangersadres",
   "send.amount": "Bedrag (MAS)",
-  "send.fee": "Fee (MAS)",
+  "send.fee": "Vergoeding",
   "send.max": "Max",
   "send.review": "Controleren",
   "send.confirm": "Bevestigen & ondertekenen",
@@ -399,4 +399,9 @@ const Map<String, String> nlTranslations = {
   "account.source.keystore": "Keystorebestand",
   "settings.language.sub": "27 talen",
   "settings.language.search": "Taal zoeken",
+  "send.fee.economy": "Zuinig",
+  "send.fee.standard": "Standaard",
+  "send.fee.fast": "Snel",
+  "send.fee.custom": "Aangepast",
+  "send.fee.customHint": "Aangepaste vergoeding in MAS — vergoedingen onder het netwerkminimum worden verhoogd naar het minimum",
 };

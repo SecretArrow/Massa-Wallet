@@ -53,7 +53,7 @@ const Map<String, String> enTranslations = {
   "send.title": "Send MAS",
   "send.recipient": "Recipient address",
   "send.amount": "Amount (MAS)",
-  "send.fee": "Fee (MAS)",
+  "send.fee": "Fee",
   "send.max": "Max",
   "send.review": "Review",
   "send.confirm": "Confirm & sign",
@@ -401,4 +401,9 @@ const Map<String, String> enTranslations = {
   "account.source.keystore": "Keystore file",
   "settings.language.sub": "27 languages",
   "settings.language.search": "Search language",
+  "send.fee.economy": "Economy",
+  "send.fee.standard": "Standard",
+  "send.fee.fast": "Fast",
+  "send.fee.custom": "Custom",
+  "send.fee.customHint": "Custom fee in MAS — fees below the network minimum are raised to the minimum",
 };

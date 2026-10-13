@@ -52,7 +52,7 @@ const Map<String, String> itTranslations = {
   "send.title": "Invia MAS",
   "send.recipient": "Indirizzo del destinatario",
   "send.amount": "Importo (MAS)",
-  "send.fee": "Commissione (MAS)",
+  "send.fee": "Commissione",
   "send.max": "Max",
   "send.review": "Verifica",
   "send.confirm": "Conferma e firma",
@@ -399,4 +399,9 @@ const Map<String, String> itTranslations = {
   "account.source.keystore": "File keystore",
   "settings.language.sub": "27 lingue",
   "settings.language.search": "Cerca lingua",
+  "send.fee.economy": "Economica",
+  "send.fee.standard": "Standard",
+  "send.fee.fast": "Veloce",
+  "send.fee.custom": "Personalizzata",
+  "send.fee.customHint": "Commissione personalizzata in MAS — le commissioni sotto il minimo di rete vengono portate al minimo",
 };

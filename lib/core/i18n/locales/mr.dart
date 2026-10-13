@@ -52,7 +52,7 @@ const Map<String, String> mrTranslations = {
   "send.title": "MAS पाठवा",
   "send.recipient": "प्राप्तकर्त्याचा पत्ता",
   "send.amount": "रक्कम (MAS)",
-  "send.fee": "शुल्क (MAS)",
+  "send.fee": "शुल्क",
   "send.max": "कमाल",
   "send.review": "तपासा",
   "send.confirm": "पुष्टी करा आणि साइन करा",
@@ -399,4 +399,9 @@ const Map<String, String> mrTranslations = {
   "account.source.keystore": "कीस्टोअर फाइल",
   "settings.language.sub": "27 भाषा",
   "settings.language.search": "भाषा शोधा",
+  "send.fee.economy": "किफायती",
+  "send.fee.standard": "प्रमाणित",
+  "send.fee.fast": "जलद",
+  "send.fee.custom": "सानुकूल",
+  "send.fee.customHint": "MAS मध्ये सानुकूल शुल्क — नेटवर्कच्या किमानीपेक्षा कमी शुल्क किमानवर वाढवले जाते",
 };

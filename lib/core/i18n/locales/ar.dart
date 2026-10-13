@@ -52,7 +52,7 @@ const Map<String, String> arTranslations = {
   "send.title": "إرسال MAS",
   "send.recipient": "عنوان المستلم",
   "send.amount": "المبلغ (MAS)",
-  "send.fee": "الرسوم (MAS)",
+  "send.fee": "الرسوم",
   "send.max": "الحد الأقصى",
   "send.review": "مراجعة",
   "send.confirm": "تأكيد وتوقيع",
@@ -399,4 +399,9 @@ const Map<String, String> arTranslations = {
   "account.source.keystore": "ملف Keystore",
   "settings.language.sub": "27 لغة",
   "settings.language.search": "البحث عن لغة",
+  "send.fee.economy": "اقتصادي",
+  "send.fee.standard": "عادي",
+  "send.fee.fast": "سريع",
+  "send.fee.custom": "مخصص",
+  "send.fee.customHint": "رسوم مخصصة بعملة MAS — تُرفع الرسوم الأقل من الحد الأدنى للشبكة إلى الحد الأدنى",
 };

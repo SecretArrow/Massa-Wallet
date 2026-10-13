@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../api/massa_amount.dart';
 import '../api/massa_models.dart';
 import '../api/massa_rpc.dart';
+import '../api/fee_policy.dart';
 import '../crypto/massa_keys.dart';
 import '../crypto/operation_serializer.dart';
 import 'activity_history_service.dart';
@@ -259,6 +260,23 @@ class WalletProvider extends ChangeNotifier {
         .toList();
     await repository.saveAccounts(_accounts);
     notifyListeners();
+  }
+
+  /// Node's minimal accepted operation fee (nanoMAS).
+  ///
+  /// Falls back to [FeePolicy.fallbackMinimalFee] when the node is
+  /// unreachable or reports no minimum, so the send screen can always
+  /// render fee presets.
+  Future<BigInt> nodeMinimalFee() async {
+    final client = MassaRpcClient(endpoint: settings.effectiveEndpoint);
+    try {
+      final status = await client.getStatus();
+      return status.minimalFee == BigInt.zero
+          ? FeePolicy.fallbackMinimalFee
+          : status.minimalFee;
+    } catch (_) {
+      return FeePolicy.fallbackMinimalFee;
+    }
   }
 
   /// Fetches balances for all accounts.

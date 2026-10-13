@@ -52,7 +52,7 @@ const Map<String, String> viTranslations = {
   "send.title": "Gửi MAS",
   "send.recipient": "Địa chỉ người nhận",
   "send.amount": "Số lượng (MAS)",
-  "send.fee": "Phí (MAS)",
+  "send.fee": "Phí",
   "send.max": "Tối đa",
   "send.review": "Xem lại",
   "send.confirm": "Xác nhận & ký",
@@ -399,4 +399,9 @@ const Map<String, String> viTranslations = {
   "account.source.keystore": "Tệp keystore",
   "settings.language.sub": "27 ngôn ngữ",
   "settings.language.search": "Tìm ngôn ngữ",
+  "send.fee.economy": "Tiết kiệm",
+  "send.fee.standard": "Chuẩn",
+  "send.fee.fast": "Nhanh",
+  "send.fee.custom": "Tùy chỉnh",
+  "send.fee.customHint": "Phí tùy chỉnh theo MAS — phí thấp hơn mức tối thiểu của mạng sẽ được nâng lên mức tối thiểu",
 };

@@ -52,7 +52,7 @@ const Map<String, String> bnTranslations = {
   "send.title": "MAS পাঠান",
   "send.recipient": "প্রাপকের ঠিকানা",
   "send.amount": "পরিমাণ (MAS)",
-  "send.fee": "ফি (MAS)",
+  "send.fee": "ফি",
   "send.max": "সর্বোচ্চ",
   "send.review": "পর্যালোচনা করুন",
   "send.confirm": "নিশ্চিত করে সাইন করুন",
@@ -399,4 +399,9 @@ const Map<String, String> bnTranslations = {
   "account.source.keystore": "কিস্টোর ফাইল",
   "settings.language.sub": "27টি ভাষা",
   "settings.language.search": "ভাষা খুঁজুন",
+  "send.fee.economy": "ইকোনমি",
+  "send.fee.standard": "স্ট্যান্ডার্ড",
+  "send.fee.fast": "ফাস্ট",
+  "send.fee.custom": "কাস্টম",
+  "send.fee.customHint": "MAS-এ কাস্টম ফি — নেটওয়ার্কের সর্বনিম্নের নিচের ফি সর্বনিম্নে উন্নীত হয়",
 };

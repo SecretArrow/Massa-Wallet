@@ -52,7 +52,7 @@ const Map<String, String> tlTranslations = {
   "send.title": "Magpadala ng MAS",
   "send.recipient": "Address ng tatanggap",
   "send.amount": "Halaga (MAS)",
-  "send.fee": "Fee (MAS)",
+  "send.fee": "Singil",
   "send.max": "Max",
   "send.review": "Suriin",
   "send.confirm": "Kumpirmahin at pirmahan",
@@ -399,4 +399,9 @@ const Map<String, String> tlTranslations = {
   "account.source.keystore": "Keystore file",
   "settings.language.sub": "27 wika",
   "settings.language.search": "Maghanap ng wika",
+  "send.fee.economy": "Makamura",
+  "send.fee.standard": "Karaniwan",
+  "send.fee.fast": "Mabilis",
+  "send.fee.custom": "Pasadya",
+  "send.fee.customHint": "Pasadyang singil sa MAS — ang singil na mas mababa sa minimum ng network itataas sa minimum",
 };

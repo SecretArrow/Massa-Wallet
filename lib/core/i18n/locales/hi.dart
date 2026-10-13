@@ -52,7 +52,7 @@ const Map<String, String> hiTranslations = {
   "send.title": "MAS भेजें",
   "send.recipient": "प्राप्तकर्ता का पता",
   "send.amount": "राशि (MAS)",
-  "send.fee": "शुल्क (MAS)",
+  "send.fee": "शुल्क",
   "send.max": "अधिकतम",
   "send.review": "समीक्षा करें",
   "send.confirm": "पुष्टि करें और साइन करें",
@@ -399,4 +399,9 @@ const Map<String, String> hiTranslations = {
   "account.source.keystore": "कीस्टोर फ़ाइल",
   "settings.language.sub": "27 भाषाएँ",
   "settings.language.search": "भाषा खोजें",
+  "send.fee.economy": "इकोनॉमी",
+  "send.fee.standard": "मानक",
+  "send.fee.fast": "तेज़",
+  "send.fee.custom": "कस्टम",
+  "send.fee.customHint": "MAS में कस्टम शुल्क — नेटवर्क न्यूनतम से कम शुल्क को न्यूनतम पर बढ़ा दिया जाता है",
 };
