@@ -4,13 +4,16 @@ library;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/api/massa_amount.dart' show formatNano;
 import '../../core/api/massa_rpc.dart' show MassaNetwork;
 import '../../core/i18n/app_i18n.dart';
-import '../../ui/theme.dart';
+import '../../core/services/activity_history_service.dart';
 import '../../core/services/embedded_node_service.dart';
 import '../../core/services/price_service.dart';
 import '../../core/services/settings_provider.dart';
 import '../../core/services/wallet_provider.dart';
+import '../../ui/home_shell.dart';
+import '../../ui/theme.dart';
 import '../../ui/widgets.dart';
 
 /// Dashboard screen.
@@ -24,6 +27,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final PriceService _price = PriceService();
+  List<Activity> _recent = const [];
 
   @override
   void initState() {
@@ -31,12 +35,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<WalletProvider>().refreshBalances();
       _loadPrice();
+      _loadRecent();
     });
   }
 
   Future<void> _loadPrice() async {
     await _price.fetch();
     if (mounted) setState(() {});
+  }
+
+  Future<void> _loadRecent() async {
+    final wallet = context.read<WalletProvider>();
+    final account = wallet.activeAccount;
+    final items = await wallet.history.load(accountAddress: account?.address);
+    if (!mounted) return;
+    setState(() => _recent = items.take(3).toList());
+  }
+
+  /// Jumps to the History tab inside the shell (falls back to a pushed
+  /// route when the dashboard is displayed outside the shell).
+  void _openHistory(BuildContext context) {
+    HomeTabs.maybeOf(context)?.goTo(1);
   }
 
   @override
@@ -114,10 +133,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.refresh),
-          ),
-          IconButton(
-            onPressed: () => Navigator.of(context).pushNamed('/settings'),
-            icon: const Icon(Icons.settings_outlined),
           ),
         ],
         backgroundColor: Colors.transparent,
@@ -217,36 +232,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   color: const Color(0xFFF0883E),
                 ),
                 ActionTile(
-                  icon: Icons.code,
-                  label: context.t('wallet.contracts'),
-                  onTap: () => Navigator.of(context).pushNamed('/contracts'),
-                  color: const Color(0xFFA371F7),
-                ),
-                ActionTile(
-                  icon: Icons.public,
-                  label: context.t('wallet.browser'),
-                  onTap: () => Navigator.of(context).pushNamed('/browser'),
-                  color: const Color(0xFF58A6FF),
-                ),
-                ActionTile(
                   icon: Icons.token,
                   label: context.t('wallet.tokens'),
                   onTap: () => Navigator.of(context).pushNamed('/tokens'),
-                  color: PyramidsColors.brand,
-                ),
-                ActionTile(
-                  icon: Icons.receipt_long,
-                  label: context.t('wallet.history'),
-                  onTap: () => Navigator.of(context).pushNamed('/history'),
-                  color: const Color(0xFFD2A8FF),
-                ),
-                ActionTile(
-                  icon: Icons.import_contacts,
-                  label: context.t('wallet.addressBook'),
-                  onTap: () => Navigator.of(context).pushNamed('/addressBook'),
-                  color: const Color(0xFF7EE787),
                 ),
               ],
+            ),
+            // Recent activity preview → full list lives in the History tab.
+            _RecentActivitySection(
+              items: _recent,
+              onViewAll: () => _openHistory(context),
             ),
             SectionHeader(title: context.t('wallet.rolls')),
             Card(
@@ -417,6 +412,189 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 }
 
+/// Compact last-3-activity preview on the dashboard.
+class _RecentActivitySection extends StatelessWidget {
+  final List<Activity> items;
+  final VoidCallback onViewAll;
+
+  const _RecentActivitySection({required this.items, required this.onViewAll});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 16, bottom: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  context.t('wallet.recentActivity'),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: onViewAll,
+                child: Text(
+                  context.t('wallet.viewAll'),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (items.isEmpty)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.receipt_long_outlined,
+                    size: 20,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      context.t('history.empty'),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          ...items.map((a) => _RecentTile(item: a)),
+      ],
+    );
+  }
+}
+
+/// One compact activity row in the dashboard preview.
+class _RecentTile extends StatelessWidget {
+  final Activity item;
+
+  const _RecentTile({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    final (icon, color, label) = _kindInfo(context);
+    final amount = _amountLabel();
+    return Card(
+      child: ListTile(
+        dense: true,
+        leading: CircleAvatar(
+          radius: 16,
+          backgroundColor: color.withValues(alpha: 0.15),
+          child: Icon(icon, size: 16, color: color),
+        ),
+        title: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontSize: 13),
+        ),
+        subtitle: Text(
+          _timeLabel(),
+          style: TextStyle(
+            fontSize: 11,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+        trailing: amount.isEmpty
+            ? null
+            : Text(
+                amount,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: item.status == ActivityStatus.failed
+                      ? PyramidsColors.error
+                      : null,
+                ),
+              ),
+      ),
+    );
+  }
+
+  (IconData, Color, String) _kindInfo(BuildContext context) =>
+      switch (item.kind) {
+        ActivityKind.send => (
+          Icons.north_east,
+          PyramidsColors.orange,
+          context.t('history.sent'),
+        ),
+        ActivityKind.receive => (
+          Icons.south_west,
+          PyramidsColors.green,
+          context.t('history.received'),
+        ),
+        ActivityKind.rollBuy => (
+          Icons.stacked_bar_chart,
+          PyramidsColors.brand,
+          context.t('history.rollBuy'),
+        ),
+        ActivityKind.rollSell => (
+          Icons.south,
+          PyramidsColors.brand,
+          context.t('history.rollSell'),
+        ),
+        ActivityKind.callSC => (
+          Icons.code,
+          PyramidsColors.deepBrand,
+          context.t('history.call'),
+        ),
+        ActivityKind.tokenTransfer => (
+          Icons.token,
+          PyramidsColors.deepBrand,
+          context.t('history.token'),
+        ),
+        ActivityKind.dapp => (
+          Icons.public,
+          PyramidsColors.deepBrand,
+          context.t('history.dapp'),
+        ),
+      };
+
+  String _amountLabel() {
+    switch (item.kind) {
+      case ActivityKind.tokenTransfer:
+        return item.tokenAmount == null
+            ? ''
+            : '${item.tokenAmount} ${item.tokenSymbol ?? ''}';
+      case ActivityKind.rollBuy:
+      case ActivityKind.rollSell:
+        return '';
+      default:
+        if (item.amountNano == BigInt.zero) return '';
+        return '${formatNano(item.amountNano, decimals: 4)} MAS';
+    }
+  }
+
+  String _timeLabel() {
+    final local = item.createdAt.toLocal();
+    return '${local.day.toString().padLeft(2, '0')}/'
+        '${local.month.toString().padLeft(2, '0')} '
+        '${local.hour.toString().padLeft(2, '0')}:'
+        '${local.minute.toString().padLeft(2, '0')}';
+  }
+}
+
 /// Compact MAS price ticker (CoinGecko, offline-tolerant).
 class _PriceTicker extends StatelessWidget {
   final MasPrice? price;
@@ -454,7 +632,7 @@ class _PriceTicker extends StatelessWidget {
           ),
           subtitle: Text(
             '${context.t('price.masPrice')} · '
-            '${changeSign}${change.toStringAsFixed(2)}% 24h',
+            '$changeSign${change.toStringAsFixed(2)}% 24h',
             style: const TextStyle(fontSize: 11),
           ),
           trailing: Row(

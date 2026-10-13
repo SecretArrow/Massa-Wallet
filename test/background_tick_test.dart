@@ -13,8 +13,6 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:massa_wallet/core/api/massa_rpc.dart';
-
 import 'package:massa_wallet/core/services/background_tick.dart';
 
 /// A fake Massa RPC served entirely in-memory (flutter_test's binding

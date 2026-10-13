@@ -29,7 +29,7 @@ import 'features/send/send_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/staking/staking_screen.dart';
 import 'features/tokens/tokens_screen.dart';
-import 'features/wallet/dashboard_screen.dart';
+import 'ui/home_shell.dart';
 import 'ui/theme.dart';
 
 /// Pyramids Wallet application widget.
@@ -208,7 +208,9 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
               '/': (_) => const _RootGate(),
               '/onboarding': (_) => const OnboardingScreen(),
               '/import': (_) => const ImportScreen(),
-              '/home': (_) => const DashboardScreen(),
+              // Post-onboarding / gate landing: bottom-nav shell with
+              // Home · History · Browser · More tabs.
+              '/home': (_) => const HomeShell(),
               '/send': (_) => const SendScreen(),
               '/receive': (_) => const ReceiveScreen(),
               '/staking': (_) => const StakingScreen(),
@@ -348,7 +350,7 @@ class _RootGateState extends State<_RootGate> {
         ),
       );
     }
-    return _hasAccounts ? const DashboardScreen() : const OnboardingScreen();
+    return _hasAccounts ? const HomeShell() : const OnboardingScreen();
   }
 }
 

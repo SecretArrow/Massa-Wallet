@@ -34,6 +34,7 @@ import 'package:massa_wallet/core/services/wallet_provider.dart';
 import 'package:massa_wallet/core/services/wallet_repository.dart';
 import 'package:massa_wallet/features/onboarding/onboarding_screen.dart';
 import 'package:massa_wallet/features/wallet/dashboard_screen.dart';
+import 'package:massa_wallet/ui/home_shell.dart';
 import 'package:massa_wallet/ui/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -370,11 +371,15 @@ void main() {
     expect(find.text('Deferred calls (ASC)'), findsOneWidget);
   });
 
-  testWidgets('10. history: activity screen opens', (tester) async {
+  testWidgets('10. history: activity tab opens via bottom navigation', (
+    tester,
+  ) async {
     IntegrationTestWidgetsFlutterBinding.instance.framePolicy =
         LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
     await _pumpSeededApp(tester);
-    await _goto(tester, '/history');
+    // History is a primary tab — switch via the bottom bar (index 1).
+    await tester.tap(find.text('History'));
+    await _pumpFor(tester, const Duration(seconds: 1));
 
     expect(find.text('Activity'), findsOneWidget);
   });
@@ -454,7 +459,9 @@ void main() {
     IntegrationTestWidgetsFlutterBinding.instance.framePolicy =
         LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
     await _pumpSeededApp(tester);
-    await _goto(tester, '/browser');
+    // Browser is a primary tab — switch via the bottom bar (index 2).
+    await tester.tap(find.text('Browser'));
+    await _pumpFor(tester, const Duration(seconds: 1));
 
     // Start page: brand title + curated sections (no WebView yet).
     expect(find.text('Pyramids Wallet'), findsOneWidget);
@@ -538,5 +545,57 @@ void main() {
     await tester.tap(find.byIcon(Icons.sync));
     await _pumpFor(tester, const Duration(milliseconds: 600));
     expect(settings.backgroundSync, isTrue);
+  });
+  testWidgets('16. navigation: bottom bar tabs + More entries', (tester) async {
+    IntegrationTestWidgetsFlutterBinding.instance.framePolicy =
+        LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
+    await _pumpSeededApp(tester);
+
+    // Shell renders a 4-destination Material 3 navigation bar.
+    expect(find.byType(HomeShell), findsOneWidget);
+    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.text('History'), findsOneWidget);
+    expect(find.text('Browser'), findsOneWidget);
+    expect(find.text('More'), findsOneWidget);
+
+    NavigationBar bar() =>
+        tester.widget<NavigationBar>(find.byType(NavigationBar));
+
+    // More tab: grouped entries for every secondary surface.
+    await tester.tap(find.byIcon(Icons.apps));
+    await _pumpFor(tester, const Duration(milliseconds: 600));
+    expect(bar().selectedIndex, 3);
+    expect(
+      find.text('Buy or sell rolls, auto-compound rewards'),
+      findsOneWidget,
+    );
+
+    // Open Settings from the More tab — assert via the navigator stack
+    // (text finders would collide with the More tab's own entry).
+    final navContext = tester.element(find.byType(NavigationBar));
+    expect(Navigator.of(navContext).canPop(), isFalse);
+    await tester.tap(find.text('Settings'));
+    await _pumpFor(tester, const Duration(seconds: 1));
+    expect(
+      Navigator.of(navContext).canPop(),
+      isTrue,
+      reason: 'Settings must be pushed on the root navigator',
+    );
+
+    // Back to the shell (More tab still selected).
+    await tester.pageBack();
+    await _pumpFor(tester, const Duration(seconds: 1));
+    expect(bar().selectedIndex, 3);
+
+    // Jump to the History tab and back Home.
+    await tester.tap(find.text('History'));
+    await _pumpFor(tester, const Duration(milliseconds: 600));
+    expect(bar().selectedIndex, 1);
+    expect(find.text('Activity'), findsOneWidget);
+
+    await tester.tap(find.text('Home'));
+    await _pumpFor(tester, const Duration(milliseconds: 600));
+    expect(bar().selectedIndex, 0);
   });
 }

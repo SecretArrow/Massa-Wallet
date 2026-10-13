@@ -46,7 +46,10 @@ class DappBrowserScreen extends StatefulWidget {
 }
 
 class _DappBrowserScreenState extends State<DappBrowserScreen> {
-  late final WebViewController _controller;
+  /// WebView controller — created lazily on first navigation. The start
+  /// page never needs a WebView, so an idle Browser tab stays cheap in
+  /// memory (no platform view, no native controller allocated).
+  WebViewController? _controller;
   final TextEditingController _urlInput = TextEditingController();
 
   late final MnsService _mns;
@@ -82,23 +85,6 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
           MassaRpcClient(endpoint: _settings!.effectiveEndpoint),
     );
     _server = LocalSiteServer(deweb: _deweb);
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onProgress: (p) => setState(() => _progress = p / 100),
-          onPageStarted: (url) => setState(() {
-            _loading = true;
-            _currentUrl = url;
-          }),
-          onPageFinished: _onPageFinished,
-          onNavigationRequest: _onNavigationRequest,
-        ),
-      )
-      ..addJavaScriptChannel(
-        'MassaMobile',
-        onMessageReceived: (msg) => _onWeb3Message(msg.message),
-      );
     _start(widget.initialUrl ?? 'home');
     // Load persisted bookmarks/history (start page data).
     SharedPreferences.getInstance().then((prefs) {
@@ -118,6 +104,31 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
     super.dispose();
   }
 
+  /// Creates and configures the WebView controller on first use.
+  WebViewController _ensureController() {
+    final existing = _controller;
+    if (existing != null) return existing;
+    final controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (p) => setState(() => _progress = p / 100),
+          onPageStarted: (url) => setState(() {
+            _loading = true;
+            _currentUrl = url;
+          }),
+          onPageFinished: _onPageFinished,
+          onNavigationRequest: _onNavigationRequest,
+        ),
+      )
+      ..addJavaScriptChannel(
+        'MassaMobile',
+        onMessageReceived: (msg) => _onWeb3Message(msg.message),
+      );
+    _controller = controller;
+    return controller;
+  }
+
   Future<void> _start(String input) async {
     final settings = _settings!;
     setState(() => _loading = true);
@@ -134,7 +145,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
           setState(() => _showStartPage = false);
         }
         _recordVisit(_hostOf(url), url);
-        await _controller.loadRequest(Uri.parse(url));
+        await _ensureController().loadRequest(Uri.parse(url));
         return;
       }
 
@@ -180,7 +191,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
         _resolvedDomain != null ? '${_resolvedDomain!}.massa' : sc,
         _resolvedDomain != null ? 'https://${_resolvedDomain!}.massa' : sc,
       );
-      await _controller.loadRequest(Uri.parse(localUrl));
+      await _ensureController().loadRequest(Uri.parse(localUrl));
     } on MnsException catch (e) {
       _showError(e.message);
     } on DeWebException catch (e) {
@@ -250,7 +261,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
       networkName: settings.network.name,
     );
     try {
-      await _controller.runJavaScript(script);
+      await _ensureController().runJavaScript(script);
     } on Exception {
       // Page may have navigated mid-injection.
     }
@@ -259,7 +270,7 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
     }
     // Read <title> best-effort.
     try {
-      final title = await _controller.runJavaScriptReturningResult(
+      final title = await _ensureController().runJavaScriptReturningResult(
         'document.title',
       );
       if (mounted) {
@@ -284,10 +295,10 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
         account?.address ?? '',
       );
       if (!mounted) return;
-      await _controller.runJavaScript(req.resolveJs(result));
+      await _ensureController().runJavaScript(req.resolveJs(result));
     } on Exception catch (e) {
       if (!mounted) return;
-      await _controller.runJavaScript(req.rejectJs(e.toString()));
+      await _ensureController().runJavaScript(req.rejectJs(e.toString()));
     }
   }
 
@@ -677,7 +688,11 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
               children: [
                 Offstage(
                   offstage: _showStartPage,
-                  child: WebViewWidget(controller: _controller),
+                  // Controller is null until the first navigation — the
+                  // start page replaces the WebView entirely.
+                  child: _controller == null
+                      ? const SizedBox.shrink()
+                      : WebViewWidget(controller: _controller!),
                 ),
                 if (_showStartPage)
                   _StartPage(
@@ -715,15 +730,16 @@ class _DappBrowserScreenState extends State<DappBrowserScreen> {
               icon: const Icon(Icons.arrow_back),
               tooltip: context.t('browser.back'),
               onPressed: () async {
-                if (await _controller.canGoBack()) {
-                  await _controller.goBack();
+                final controller = _ensureController();
+                if (await controller.canGoBack()) {
+                  await controller.goBack();
                 }
               },
             ),
             IconButton(
               icon: const Icon(Icons.refresh),
               tooltip: context.t('browser.reload'),
-              onPressed: () => _controller.reload(),
+              onPressed: () => _ensureController().reload(),
             ),
             IconButton(
               icon: const Icon(Icons.history),

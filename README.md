@@ -23,6 +23,15 @@ Flutter • Android • Material Design 3 (dark/light/system) • Bilingual (�
 
 **ID** — Wallet mobile self-custodial kualitas production untuk [blockchain Massa](https://massa.net), dibangun dengan Flutter. Berjalan sebagai **light client** yang terhubung ke API publik Massa JSON-RPC v2 (atau node milik Anda sendiri), dengan tumpukan kripto lokal yang diporting 1:1 dari SDK resmi `@massalabs/massa-web3` dan divalidasi terhadap test vector resminya. Termasuk **browser dApp bawaan untuk situs `.massa` on-chain (DeWeb)** dengan provider `window.massa` terinjeksi, **pengelolaan token MRC-20**, riwayat aktivitas, buku alamat, staking, panggilan smart contract, sinkronisasi saldo latar belakang dengan notifikasi, penyimpanan kunci hardware-backed, buka kunci biometrik, tema gelap/terang, mode eksperimental "hubungkan ke node sendiri", dan — baru di v1.3.0 — **hybrid sejati**: pilih antara RPC Publik, RPC Kustom milik Anda, atau **node massa-node asli yang berjalan di dalam sandbox aplikasi** (Buildnet, eksperimental).
 
+## 🆕 What's new in v1.6.0
+
+| Feature | Description / Keterangan |
+|---|---|
+| 🧭 **Bottom navigation — Home · History · Browser · More** | The app now has a Material 3 `NavigationBar` shell: the four primary surfaces are always one tap away and stay alive in an `IndexedStack` (scroll positions, browser session and loaded data are preserved when switching tabs). History and Browser are now first-class tabs; the dashboard quick-action grid is slimmed to Send / Receive / Staking / Tokens. / *Navigasi bawah dengan 4 tab utama; posisi scroll dan sesi browser tetap tersimpan saat berpindah tab.* |
+| ⋯ **More tab** | Grouped hub for everything else — **Earn** (Staking, Deferred calls), **Assets & tools** (MRC-20 tokens, Smart contracts, Contacts) and **System** (Node mode, Settings), topped with an active-account header card and a network/version footer. / *Tab Lainnya berisi Staking, Deferred calls, Token, Kontrak, Kontak, Node, dan Settings — dikelompokkan rapi.* |
+| 🕐 **Recent activity on Home** | The dashboard shows the last 3 activities with a **View all** link that jumps straight to the History tab. / *Dashboard menampilkan 3 aktivitas terbaru dengan tautan "Lihat semua" langsung ke tab Riwayat.* |
+| 💾 **Idle browser costs nothing** | The WebView controller is now created lazily on first navigation — an idle Browser tab allocates no platform view or native controller (memory/CPU hygiene). / *Controller WebView dibuat hanya saat pertama kali membuka situs — tab Browser yang idle tidak memakan memori.* |
+
 ## 🆕 What's new in v1.5.0
 
 | Feature | Description / Keterangan |
