@@ -23,11 +23,18 @@ Flutter • Android • Material Design 3 (dark/light/system) • Bilingual (�
 
 **ID** — Wallet mobile self-custodial kualitas production untuk [blockchain Massa](https://massa.net), dibangun dengan Flutter. Berjalan sebagai **light client** yang terhubung ke API publik Massa JSON-RPC v2 (atau node milik Anda sendiri), dengan tumpukan kripto lokal yang diporting 1:1 dari SDK resmi `@massalabs/massa-web3` dan divalidasi terhadap test vector resminya. Termasuk **browser dApp bawaan untuk situs `.massa` on-chain (DeWeb)** dengan provider `window.massa` terinjeksi, **pengelolaan token MRC-20**, riwayat aktivitas, buku alamat, staking, panggilan smart contract, sinkronisasi saldo latar belakang dengan notifikasi, penyimpanan kunci hardware-backed, buka kunci biometrik, tema gelap/terang, mode eksperimental "hubungkan ke node sendiri", dan — baru di v1.3.0 — **hybrid sejati**: pilih antara RPC Publik, RPC Kustom milik Anda, atau **node massa-node asli yang berjalan di dalam sandbox aplikasi** (Buildnet, eksperimental).
 
+## 🆕 What's new in v1.8.1
+
+| Feature | Description / Keterangan |
+|---|---|
+| 🔐 **Real release signing** | Every `v*` tag now produces APKs signed with a dedicated **RSA-4096 release key** (`pine-wallet`, valid until 2056). The keystore ships in-repo as an **AES-256-encrypted `key-sign-apk.zip`**; its password lives only in the GitHub secret `KEY_SIGN_PASSWORD` (never committed). CI restores → builds → verifies with `apksigner` → **wipes all unpacked material**. Local: `scripts/with_signing_key.sh <build-command>` (same extract → use → wipe lifecycle). See `docs/SIGNING.md`. / *APK rilis kini ditandatangani release key asli; kunci hanya tersimpan terenkripsi, password hanya di secret GitHub, hasil unzip selalu dihapus.* |
+| ⛽ **Fee selector (v1.8.0 follow-up)** | Economy / Standard / Fast / **Custom** fee presets on the Send screen with live fee preview, minimal-fee clamping and an offline fallback (0.001 MAS), localized across all 27 locales. / *Pilihan biaya transfer dengan pratinjau langsung, tersedia di 27 bahasa.* |
+
 ## 🆕 What's new in v1.7.0
 
 | Feature | Description / Keterangan |
 |---|---|
-| 🌲 **Pine Wallet** | Full rebrand from "Pyramids Wallet" to **Pine Wallet**: display name (Android launcher, iOS, widget), in-app titles, all 27 locale tables, unlock/lock strings, notification channels, CI artifact names — plus a brand-new layered **red pine-tree** logo (launcher, adaptive foreground, native + in-app splash, all iOS icons). Same applicationId `site.massawallet.app`, so existing installs update in place. / *Rebrand total menjadi "Pine Wallet": nama, judul, 27 bahasa, dan logo pohon pinus merah baru di ikon dan splash.* |
+| 🌲 **Pine Wallet** | Full rebrand to **Pine Wallet** — new name, new identity: display name (Android launcher, iOS, widget), in-app titles, all 27 locale tables, unlock/lock strings, notification channels, CI artifact names — plus a brand-new layered **red pine-tree** logo (launcher, adaptive foreground, native + in-app splash, all iOS icons). Same applicationId `site.massawallet.app`, so existing installs update in place. / *Rebrand total menjadi "Pine Wallet": nama, judul, 27 bahasa, dan logo pohon pinus merah baru di ikon dan splash.* |
 | 🖧 **One binary, two networks** | Embedded node ships **one** per-ABI binary; mainnet vs buildnet is purely configuration — per-network `assets/node/mainnet/` & `assets/node/buildnet/` config/genesis/bootstrap sets with separate data dirs. Node screen lets you pick the network; no binary duplication. / *Satu binary, mainnet/buildnet cukup beda config & folder data.* |
 | 🔓 **Unlock repair** | Fixed the "crazy unlock" bug: no more re-prompt loop after resume (`persistAcrossBackgrounding` removed), hardware-support vs enrolled-biometrics distinction, and a defined fail-open only when the device has no usable credential at all (so the wallet can never be bricked on the lock screen). / *Bug unlock diperbaiki; gagal-buka hanya bila perangkat tidak punya kredensial sama sekali.* |
 | 🪙 **Home tokens section** | Dashboard shows the **Tokens** section (native MAS + MRC20 when present); the old accounts block and the add-accounts button under rolls are gone. / *Home menampilkan Tokens; blok accounts & tombol add-accounts dihapus.* |
@@ -105,7 +112,7 @@ Flutter • Android • Material Design 3 (dark/light/system) • Bilingual (�
 
 ```text
 ┌───────────────────────────────────────────────────────────────┐
-│                     Massa Wallet (Flutter)                     │
+│                     Pine Wallet (Flutter)                      │
 ├───────────────┬───────────────────────────────────────────────┤
 │   UI Layer    │  Onboarding · Dashboard · Send/Receive (QR)   │
 │ (Bilingual)   │  Staking · Contracts · Node mode · Settings   │

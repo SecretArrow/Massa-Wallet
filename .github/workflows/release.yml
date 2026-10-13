@@ -273,6 +273,47 @@ jobs:
       - name: Tests (gate)
         run: flutter test --reporter compact
 
+      - name: Restore signing keystore from encrypted key-sign-apk.zip
+        id: keystore
+        env:
+          KEY_SIGN_PASSWORD: ${{ secrets.KEY_SIGN_PASSWORD }}
+        run: |
+          if [ -z "$KEY_SIGN_PASSWORD" ]; then
+            echo "::warning::Secret KEY_SIGN_PASSWORD not set - APKs will be debug-signed"
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ ! -f key-sign-apk.zip ]; then
+            echo "::warning::key-sign-apk.zip not found - APKs will be debug-signed"
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          SIGN_DIR="$RUNNER_TEMP/signing"
+          mkdir -p "$SIGN_DIR"
+          # AES-256 zip requires 7z (preinstalled on GitHub runners);
+          # standard unzip cannot read WinZip-AES archives.
+          7z x -y -p"$KEY_SIGN_PASSWORD" -o"$SIGN_DIR" key-sign-apk.zip > /dev/null
+          KS_FILE="$SIGN_DIR/pine-release.keystore"
+          test -f "$KS_FILE"
+          # key.properties is transient build config (git-ignored).
+          {
+            echo "storeFile=$KS_FILE"
+            echo "storePassword=$KEY_SIGN_PASSWORD"
+            echo "keyAlias=pine-wallet"
+            echo "keyPassword=$KEY_SIGN_PASSWORD"
+          } > android/key.properties
+          echo "signed=true" >> "$GITHUB_OUTPUT"
+          FPR="$(keytool -list -v -keystore "$KS_FILE" -storepass "$KEY_SIGN_PASSWORD" -alias pine-wallet 2>/dev/null | grep 'SHA256:' | head -1 | sed 's/^[[:space:]]*//')"
+          {
+            echo "### 🔐 Release signing active"
+            echo ""
+            echo "Keystore restored from \`key-sign-apk.zip\` (AES-256) — alias \`pine-wallet\`."
+            echo ""
+            echo '```'
+            echo "$FPR"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Build split APKs (${{ github.event.inputs.channel || 'release' }})
         run: |
           flutter build apk \
@@ -288,6 +329,28 @@ jobs:
             cp "$f" "dist/PineWallet-$(basename "$f")"
           done
           ls -la dist
+
+      - name: Verify release signatures (apksigner)
+        if: steps.keystore.outputs.signed == 'true'
+        run: |
+          APKSIGNER="$(ls "$ANDROID_HOME/build-tools/"*/apksigner | sort -V | tail -1)"
+          {
+            echo "### Signature verification (apksigner)"
+            echo '```'
+            for apk in build/app/outputs/flutter-apk/*-release.apk; do
+              [ -f "$apk" ] || continue
+              echo "--- $(basename "$apk")"
+              "$APKSIGNER" verify --print-certs "$apk" | sed -n '1,2p'
+            done
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Wipe signing material from runner
+        if: always()
+        run: |
+          rm -rf "$RUNNER_TEMP/signing"
+          rm -f android/key.properties
+          echo "signing material wiped (unpacked keystore + key.properties)"
 
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')

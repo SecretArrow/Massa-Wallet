@@ -6,7 +6,7 @@ WebSite: https://github.com/SecretArrow/Massa-Wallet
 SourceCode: https://github.com/SecretArrow/Massa-Wallet
 IssueTracker: https://github.com/SecretArrow/Massa-Wallet/issues
 
-Name: Massa Wallet
+Name: Pine Wallet
 Summary: Self-custodial wallet for the Massa blockchain
 Description: |-
     Secure self-custodial Flutter wallet for Massa (MAS):

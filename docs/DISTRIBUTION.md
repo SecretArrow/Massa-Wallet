@@ -1,6 +1,8 @@
 # Distribusi — Play Store, F-Droid, iOS
 
-Panduan mempublikasikan Massa Wallet v1.2.0+ ke tiap kanal.
+Panduan mempublikasikan Pine Wallet v1.2.0+ ke tiap kanal. Release APK dari tag
+`v*` sekarang sudah ditandatangani release key otomatis di CI — lihat
+`docs/SIGNING.md`.
 
 ## 1. Play Store (Google Play)
 
@@ -49,7 +51,7 @@ Catatan kepatuhan F-Droid:
 ## 3. iOS
 
 CI menambahkan job `build-ios` (macos-15, `flutter build ios --no-codesign`)
-yang menghasilkan **MassaWallet-ios-unsigned.zip** (Payload/Runner.app) di
+yang menghasilkan **PineWallet-ios-unsigned.zip** (Payload/Runner.app) di
 setiap tag `v*`. Karena unsigned:
 
 - **Sideload**: AltStore / Sideloadly / Xcode (personal cert, 7 hari).
