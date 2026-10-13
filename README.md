@@ -23,6 +23,13 @@ Flutter • Android • Material Design 3 (dark/light/system) • Bilingual (�
 
 **ID** — Wallet mobile self-custodial kualitas production untuk [blockchain Massa](https://massa.net), dibangun dengan Flutter. Berjalan sebagai **light client** yang terhubung ke API publik Massa JSON-RPC v2 (atau node milik Anda sendiri), dengan tumpukan kripto lokal yang diporting 1:1 dari SDK resmi `@massalabs/massa-web3` dan divalidasi terhadap test vector resminya. Termasuk **browser dApp bawaan untuk situs `.massa` on-chain (DeWeb)** dengan provider `window.massa` terinjeksi, **pengelolaan token MRC-20**, riwayat aktivitas, buku alamat, staking, panggilan smart contract, sinkronisasi saldo latar belakang dengan notifikasi, penyimpanan kunci hardware-backed, buka kunci biometrik, tema gelap/terang, mode eksperimental "hubungkan ke node sendiri", dan — baru di v1.3.0 — **hybrid sejati**: pilih antara RPC Publik, RPC Kustom milik Anda, atau **node massa-node asli yang berjalan di dalam sandbox aplikasi** (Buildnet, eksperimental).
 
+## 🆕 What's new in v1.9.0
+
+| Feature | Description / Keterangan |
+|---|---|
+| 🪙 **Full-screen token send** | MRC-20 transfers get the same UX as native MAS sends: address-book picker, QR scanner, MNS `name.massa` resolution, MAX button, **fee presets** (Economy/Standard/Fast/Custom) and a live **storage-cost preview** when the recipient has no token balance entry yet. Pure amount parsing moved into `Mrc20Service.parseUserAmount` (unit-tested). / *Kirim token kini setara kirim MAS: buku alamat, QR, MNS, MAX, pilihan fee, dan pratinjau biaya penyimpanan penerima.* |
+| ⚡ **Compound now + reserve + history** | Auto-compound gains a manual **"Compound now"** button (bypasses the once-per-cycle watermark, `tick(force:)`), an editable **fee reserve** (default 1 MAS), and a persistent **activity history** (last 10 actions with cycle, rolls, op id, detail). / *Auto-compound: tombol compound manual, cadangan biaya bisa diatur, dan riwayat 10 aksi terakhir.* |
+
 ## 🆕 What's new in v1.8.1
 
 | Feature | Description / Keterangan |

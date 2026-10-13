@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:massa_wallet/core/api/massa_rpc.dart';
 import 'package:massa_wallet/core/contracts/mrc20_service.dart';
+import 'package:massa_wallet/core/crypto/sc_args.dart';
 
 http.Response _rpc(dynamic result, {int id = 0}) => http.Response(
   json.encode({'jsonrpc': '2.0', 'id': id, 'result': result}),
@@ -134,6 +135,41 @@ void main() {
       expect(t.formatAmount(BigInt.from(1500000000)), '1.5');
       expect(t.formatAmount(BigInt.from(1000000005)), '1.000000005');
       expect(t.formatAmount(BigInt.from(2000000000)), '2');
+    });
+  });
+
+  group('Mrc20Service.transferArgs / parseUserAmount', () {
+    test('transferArgs encodes string + u256le', () {
+      final expected =
+          (ScArgs()..addString('AU1x')..addU256(BigInt.from(42))).bytes;
+      expect(Mrc20Service.transferArgs('AU1x', BigInt.from(42)), expected);
+    });
+
+    test('parseUserAmount: decimals, comma, spaces', () {
+      expect(Mrc20Service.parseUserAmount('1.5', 9), BigInt.from(1500000000));
+      expect(Mrc20Service.parseUserAmount('1,5', 9), BigInt.from(1500000000));
+      expect(
+        Mrc20Service.parseUserAmount('  2.5 ', 9),
+        BigInt.from(2500000000),
+      );
+      expect(Mrc20Service.parseUserAmount('.5', 9), BigInt.from(500000000));
+      expect(Mrc20Service.parseUserAmount('2', 9), BigInt.from(2000000000));
+      expect(Mrc20Service.parseUserAmount('0.000000001', 9), BigInt.one);
+    });
+
+    test('parseUserAmount: invalid inputs return null', () {
+      expect(Mrc20Service.parseUserAmount('', 9), isNull);
+      expect(Mrc20Service.parseUserAmount('   ', 9), isNull);
+      expect(Mrc20Service.parseUserAmount('1.2.3', 9), isNull);
+      expect(Mrc20Service.parseUserAmount('abc', 9), isNull);
+      expect(Mrc20Service.parseUserAmount('1,2,3', 9), isNull);
+      expect(Mrc20Service.parseUserAmount('1.1234567890', 9), isNull);
+      expect(Mrc20Service.parseUserAmount('1.5', 0), isNull);
+    });
+
+    test('parseUserAmount: 0-decimals tokens accept whole amounts', () {
+      expect(Mrc20Service.parseUserAmount('12', 0), BigInt.from(12));
+      expect(Mrc20Service.parseUserAmount('12.', 0), BigInt.from(12));
     });
   });
 }

@@ -200,4 +200,25 @@ class Mrc20Service {
         .bytes
         .toList();
   }
+
+  /// Parses a user-entered token amount into raw units ([decimals]).
+  ///
+  /// Accepts `.` or `,` as the decimal separator; returns null when the
+  /// input is empty, non-numeric or has more fraction digits than
+  /// [decimals] allows.
+  static BigInt? parseUserAmount(String input, int decimals) {
+    final cleaned = input.trim().replaceAll(',', '.');
+    if (cleaned.isEmpty) return null;
+    final parts = cleaned.split('.');
+    if (parts.length > 2) return null;
+    final intPart = parts[0].isEmpty ? '0' : parts[0];
+    var fracPart = parts.length > 1 ? parts[1] : '';
+    if (intPart.contains(RegExp(r'[^0-9]')) ||
+        fracPart.contains(RegExp(r'[^0-9]'))) {
+      return null;
+    }
+    if (fracPart.length > decimals) return null;
+    fracPart = fracPart.padRight(decimals, '0');
+    return BigInt.tryParse('$intPart$fracPart');
+  }
 }

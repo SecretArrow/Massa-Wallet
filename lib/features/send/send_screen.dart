@@ -2,7 +2,6 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/api/massa_amount.dart';
@@ -11,10 +10,11 @@ import '../../core/api/massa_rpc.dart';
 import '../../core/contracts/mns_service.dart';
 import '../../core/crypto/massa_keys.dart';
 import '../../core/i18n/app_i18n.dart';
-import '../../core/services/address_book_service.dart';
 import '../../core/services/settings_provider.dart';
 import '../../core/services/wallet_provider.dart';
 import '../history/address_book_screen.dart';
+import 'contact_saver.dart';
+import 'qr_scan_page.dart';
 
 /// Send screen.
 class SendScreen extends StatefulWidget {
@@ -177,7 +177,12 @@ class _SendScreenState extends State<SendScreen> {
       );
       setState(() => _opId = result.operationId);
       await wallet.refreshBalances();
-      await _maybeSaveContact(recipient);
+      await maybeSaveContact(
+        context,
+        recipient,
+        resolvedDomain: _resolvedDomain,
+        resolvedAddress: _resolvedAddress,
+      );
     } catch (e) {
       setState(() => _error = e.toString());
     } finally {
@@ -188,7 +193,7 @@ class _SendScreenState extends State<SendScreen> {
   void _openScanner() async {
     final code = await Navigator.of(
       context,
-    ).push<String>(MaterialPageRoute(builder: (_) => const _QrScanPage()));
+    ).push<String>(MaterialPageRoute(builder: (_) => const QrScanPage()));
     if (code != null && code.isNotEmpty) {
       setState(() => _recipient.text = code);
     }
@@ -202,76 +207,6 @@ class _SendScreenState extends State<SendScreen> {
     );
     if (address != null && address.isNotEmpty) {
       setState(() => _recipient.text = address);
-    }
-  }
-
-  Future<void> _maybeSaveContact(String address) async {
-    final book = AddressBookService();
-    final known = await book.load();
-    if (known.any((c) => c.address == address)) return;
-    // MNS sends save the domain as the contact name automatically.
-    if (_resolvedDomain != null && _resolvedAddress == address) {
-      await book.save(
-        Contact(
-          name: _resolvedDomain!,
-          address: address,
-          domain: _resolvedDomain!,
-        ),
-      );
-      return;
-    }
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(ctx.t('book.saveTitle')),
-        content: Text(
-          ctx.t(
-            'book.saveBody',
-            args: [
-              '${address.substring(0, 10)}…${address.substring(address.length - 6)}',
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(ctx.t('common.no')),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(ctx.t('common.yes')),
-          ),
-        ],
-      ),
-    );
-    if (ok != true || !mounted) return;
-    final nameCtrl = TextEditingController();
-    final nameOk = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(ctx.t('book.name')),
-        content: TextField(
-          controller: nameCtrl,
-          autofocus: true,
-          decoration: InputDecoration(labelText: ctx.t('book.name')),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(ctx.t('common.cancel')),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(ctx.t('book.save')),
-          ),
-        ],
-      ),
-    );
-    if (nameOk == true && mounted) {
-      final name = nameCtrl.text.trim();
-      await book.save(
-        Contact(name: name.isEmpty ? 'Contact' : name, address: address),
-      );
     }
   }
 
@@ -320,6 +255,7 @@ class _SendScreenState extends State<SendScreen> {
               ),
               const SizedBox(height: 16),
             ],
+
             TextField(
               controller: _recipient,
               decoration: InputDecoration(
@@ -493,29 +429,6 @@ class _SendScreenState extends State<SendScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Full-screen QR scanner page.
-class _QrScanPage extends StatelessWidget {
-  const _QrScanPage();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(context.t('send.scanTitle'))),
-      body: MobileScanner(
-        onDetect: (capture) {
-          for (final barcode in capture.barcodes) {
-            final value = barcode.rawValue;
-            if (value != null && value.isNotEmpty) {
-              Navigator.of(context).pop(value);
-              return;
-            }
-          }
-        },
       ),
     );
   }

@@ -221,7 +221,9 @@ class WalletProvider extends ChangeNotifier {
   }
 
   /// Runs one auto-compound evaluation for the active account.
-  Future<AutoCompoundOutcome> runAutoCompound() async {
+  ///
+  /// [force] bypasses the once-per-cycle watermark (manual "Compound now").
+  Future<AutoCompoundOutcome> runAutoCompound({bool force = false}) async {
     final account = activeAccount;
     if (account == null) {
       throw StateError('no active account');
@@ -231,11 +233,34 @@ class WalletProvider extends ChangeNotifier {
     final outcome = await service.tick(
       address: account.address,
       endpoint: settings.effectiveEndpoint,
+      force: force,
     );
     if (outcome.action == AutoCompoundAction.bought) {
       await refreshBalances();
     }
     return outcome;
+  }
+
+  /// Current auto-compound fee reserve (nanoMAS).
+  Future<BigInt> autoCompoundReserve() async {
+    final prefs = await SharedPreferences.getInstance();
+    return AutoCompoundService(prefs: prefs, repository: repository)
+        .reserveNano;
+  }
+
+  /// Updates the auto-compound fee reserve (nanoMAS).
+  Future<void> setAutoCompoundReserve(BigInt nano) async {
+    final prefs = await SharedPreferences.getInstance();
+    await AutoCompoundService(
+      prefs: prefs,
+      repository: repository,
+    ).setReserveNano(nano);
+  }
+
+  /// Recent auto-compound activity (newest first, capped at 10).
+  Future<List<AutoCompoundRecord>> autoCompoundHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+    return AutoCompoundService(prefs: prefs, repository: repository).history;
   }
 
   /// Removes an account.

@@ -10,11 +10,11 @@ import 'package:provider/provider.dart';
 import '../../core/api/massa_rpc.dart';
 import '../../core/contracts/mrc20_service.dart';
 import '../../core/i18n/app_i18n.dart';
-import '../../core/services/activity_history_service.dart';
 import '../../core/services/settings_provider.dart';
 import '../../core/services/token_list_store.dart';
 import '../../core/services/wallet_provider.dart';
 import '../../ui/theme.dart';
+import 'token_send_screen.dart';
 
 /// A row in the tokens list.
 class _TokenRow {
@@ -161,126 +161,13 @@ class _TokensScreenState extends State<TokensScreen> {
   }
 
   Future<void> _sendToken(_TokenRow row) async {
-    final wallet = context.read<WalletProvider>();
-    final account = wallet.activeAccount;
-    if (account == null) return;
-
-    final toCtrl = TextEditingController();
-    final amountCtrl = TextEditingController();
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('${ctx.t('tokens.send')} ${row.token.symbol}'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: toCtrl,
-              decoration: InputDecoration(
-                labelText: ctx.t('send.to'),
-                hintText: 'AU1…',
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: amountCtrl,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              decoration: InputDecoration(
-                labelText: ctx.t('send.amount'),
-                suffixText: row.token.symbol,
-                helperText:
-                    '${ctx.t('tokens.balance')}: ${row.token.formatAmount(row.balance)}',
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(ctx.t('common.cancel')),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(ctx.t('tokens.send')),
-          ),
-        ],
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => TokenSendScreen(token: row.token, balance: row.balance),
       ),
     );
-    if (ok != true) return;
-
-    final to = toCtrl.text.trim();
-    final amountStr = amountCtrl.text.trim().replaceAll(',', '.');
-    final amountRaw = _parseTokenAmount(amountStr, row.token.decimals);
-    if (!to.startsWith('AU1') && !to.startsWith('AS1')) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.t('send.invalidAddress'))));
-      return;
-    }
-    if (amountRaw == null || amountRaw <= BigInt.zero) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.t('send.invalidAmount'))));
-      return;
-    }
-
-    // Storage cost when the recipient has no balance entry yet.
-    BigInt? coins;
-    try {
-      final hasEntry = await _mrc20.hasBalanceEntry(row.token.address, to);
-      if (!hasEntry) {
-        coins = Mrc20Service.balanceCreationCost(to);
-      }
-    } on Exception {
-      // Keep coins null on lookup failure.
-    }
-
-    try {
-      final res = await wallet.callSmartContract(
-        fromAddress: account.address,
-        target: row.token.address,
-        function: 'transfer',
-        parameter: Mrc20Service.transferArgs(to, amountRaw),
-        maxGas: BigInt.from(10000000),
-        coinsNano: coins,
-        activityKind: ActivityKind.tokenTransfer,
-        tokenSymbol: row.token.symbol,
-        tokenAmount: row.token.formatAmount(amountRaw),
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${context.t('send.success')}: ${row.token.symbol} · OP ${res.operationId.substring(0, 12)}…',
-          ),
-        ),
-      );
-      unawaited(_refresh());
-    } on Exception catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${context.t('send.failed')}: $e')),
-      );
-    }
-  }
-
-  BigInt? _parseTokenAmount(String input, int decimals) {
-    final cleaned = input.trim();
-    if (cleaned.isEmpty) return null;
-    final parts = cleaned.split('.');
-    if (parts.length > 2) return null;
-    final intPart = parts[0].isEmpty ? '0' : parts[0];
-    var fracPart = parts.length > 1 ? parts[1] : '';
-    if (intPart.contains(RegExp(r'[^0-9]')) ||
-        fracPart.contains(RegExp(r'[^0-9]'))) {
-      return null;
-    }
-    if (fracPart.length > decimals) return null;
-    fracPart = fracPart.padRight(decimals, '0');
-    final combined = '$intPart$fracPart';
-    return BigInt.tryParse(combined);
+    // Refresh balances when the transfer screen is closed (success or not).
+    unawaited(_refresh());
   }
 
   @override
