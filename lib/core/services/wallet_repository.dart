@@ -170,19 +170,17 @@ class WalletRepository {
           key: 'mw.sk.$address',
           value: base64.encode(priv.versionedBytes),
         );
+        final upgraded = existing.first.copyWith(
+          isWatchOnly: false,
+          publicKey: priv.publicKey.encoded,
+          keySource: 'seed',
+        );
         await saveAccounts(
           accounts
-              .map(
-                (a) => a.address == address
-                    ? a.copyWith(
-                        isWatchOnly: false,
-                        publicKey: priv.publicKey.encoded,
-                        keySource: 'seed',
-                      )
-                    : a,
-              )
+              .map((a) => a.address == address ? upgraded : a)
               .toList(),
         );
+        return upgraded;
       }
       return existing.first;
     }

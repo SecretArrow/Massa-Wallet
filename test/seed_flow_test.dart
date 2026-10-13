@@ -64,12 +64,24 @@ void main() {
     await tester.pump();
 
     // Read the 12 hidden words by revealing all, extracting the RichText
-    // spans, then hiding again — the grid order is deterministic.
+    // spans (word tiles are the only RichTexts shaped [number, word] —
+    // plain Text widgets also emit RichTexts, so filter precisely), then
+    // the grid order is deterministic.
     await tester.ensureVisible(find.text('Reveal all'));
     await tester.tap(find.text('Reveal all'));
     await tester.pump();
+    final tileRichTexts = tester
+        .widgetList<RichText>(
+          find.byWidgetPredicate(
+            (w) =>
+                w is RichText &&
+                w.text is TextSpan &&
+                ((w.text as TextSpan).children?.length ?? 0) == 2,
+          ),
+        )
+        .toList();
     final words = <String>[];
-    for (final rt in tester.widgetList<RichText>(find.byType(RichText))) {
+    for (final rt in tileRichTexts) {
       final span = (rt.text as TextSpan).children![1] as TextSpan;
       words.add(span.text!);
     }
