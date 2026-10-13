@@ -12,6 +12,162 @@ import '../../ui/theme.dart';
 import '../../core/services/security_service.dart';
 import '../../core/services/wallet_provider.dart';
 
+/// Create-wallet method chooser (standard random key vs BIP-39 phrase).
+Future<void> showCreateMethodSheet(
+  BuildContext context, {
+  required VoidCallback onStandard,
+}) {
+  return showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    isScrollControlled: true,
+    builder: (sheetCtx) => SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12, top: 4),
+              child: Text(
+                sheetCtx.t('seed.method.title'),
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            _MethodCard(
+              icon: Icons.psychology_alt_outlined,
+              color: PyramidsColors.brand,
+              title: sheetCtx.t('seed.method.seed.title'),
+              subtitle: sheetCtx.t('seed.method.seed.sub'),
+              recommended: true,
+              onTap: () {
+                Navigator.of(sheetCtx).pop();
+                unawaited(Navigator.of(context).pushNamed('/seedCreate'));
+              },
+            ),
+            const SizedBox(height: 10),
+            _MethodCard(
+              icon: Icons.vpn_key_outlined,
+              color: PyramidsColors.orange,
+              title: sheetCtx.t('seed.method.random.title'),
+              subtitle: sheetCtx.t('seed.method.random.sub'),
+              onTap: () {
+                Navigator.of(sheetCtx).pop();
+                onStandard();
+              },
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+/// One selectable method card.
+class _MethodCard extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String subtitle;
+  final bool recommended;
+  final VoidCallback onTap;
+
+  const _MethodCard({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.recommended = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: recommended
+                ? PyramidsColors.brand.withValues(alpha: 0.5)
+                : Theme.of(context).colorScheme.outlineVariant,
+          ),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: color.withValues(alpha: 0.15),
+              child: Icon(icon, color: color),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          title,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      if (recommended) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: PyramidsColors.brand.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            '★',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: PyramidsColors.brand,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// Welcome + entry screen.
 class OnboardingScreen extends StatefulWidget {
   /// Creates the screen.
@@ -217,7 +373,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                       const Spacer(),
                       FilledButton(
-                        onPressed: _busy ? null : _create,
+                        onPressed: _busy
+                            ? null
+                            : () => showCreateMethodSheet(
+                                  context,
+                                  onStandard: _create,
+                                ),
                         child: _busy
                             ? const SizedBox(
                                 height: 20,
@@ -278,8 +439,9 @@ class _ImportScreenState extends State<ImportScreen> {
   final _pwController = TextEditingController();
   final _nickController = TextEditingController();
   final _watchController = TextEditingController();
+  final _seedController = TextEditingController();
   bool _busy = false;
-  int _mode = 0; // 0 = secret key, 1 = keystore, 2 = watch-only
+  int _mode = 0; // 0 = secret key, 1 = keystore, 2 = watch-only, 3 = seed
 
   @override
   void dispose() {
@@ -287,7 +449,20 @@ class _ImportScreenState extends State<ImportScreen> {
     _pwController.dispose();
     _nickController.dispose();
     _watchController.dispose();
+    _seedController.dispose();
     super.dispose();
+  }
+
+  /// Maps BIP-39 `code:` FormatExceptions to localized messages.
+  String _seedError(FormatException e) {
+    final msg = e.message;
+    if (msg == 'code:length') return context.t('seed.import.badLength');
+    if (msg.startsWith('code:word:')) {
+      final pos = int.tryParse(msg.substring('code:word:'.length)) ?? 0;
+      return context.t('seed.import.badWord', args: ['${pos + 1}']);
+    }
+    if (msg == 'code:checksum') return context.t('seed.badChecksum');
+    return context.t('seed.import.invalid');
   }
 
   Future<void> _import() async {
@@ -306,6 +481,11 @@ class _ImportScreenState extends State<ImportScreen> {
           _pwController.text,
           nickname: _nickController.text.trim(),
         );
+      } else if (_mode == 3) {
+        await wallet.importMnemonic(
+          _seedController.text,
+          nickname: _nickController.text.trim(),
+        );
       } else {
         await wallet.addWatchOnly(
           _watchController.text,
@@ -314,14 +494,16 @@ class _ImportScreenState extends State<ImportScreen> {
       }
       if (!mounted) return;
       unawaited(Navigator.of(context).pushReplacementNamed('/home'));
-    } on FormatException {
+    } on FormatException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               _mode == 2
                   ? context.t('send.invalidRecipient')
-                  : context.t('onboarding.invalidKey'),
+                  : _mode == 3
+                      ? _seedError(e)
+                      : context.t('onboarding.invalidKey'),
             ),
             backgroundColor: const Color(0xFFF85149),
           ),
@@ -349,26 +531,35 @@ class _ImportScreenState extends State<ImportScreen> {
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
-            SegmentedButton<int>(
-              segments: [
-                ButtonSegment(
-                  value: 0,
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                ChoiceChip(
+                  avatar: const Icon(Icons.key, size: 16),
                   label: Text(context.t('onboarding.import.sk')),
-                  icon: const Icon(Icons.key),
+                  selected: _mode == 0,
+                  onSelected: (_) => setState(() => _mode = 0),
                 ),
-                ButtonSegment(
-                  value: 1,
+                ChoiceChip(
+                  avatar: const Icon(Icons.file_open, size: 16),
                   label: Text(context.t('onboarding.import.keystore')),
-                  icon: const Icon(Icons.file_open),
+                  selected: _mode == 1,
+                  onSelected: (_) => setState(() => _mode = 1),
                 ),
-                ButtonSegment(
-                  value: 2,
+                ChoiceChip(
+                  avatar: const Icon(Icons.visibility, size: 16),
                   label: Text(context.t('onboarding.import.watch')),
-                  icon: const Icon(Icons.visibility),
+                  selected: _mode == 2,
+                  onSelected: (_) => setState(() => _mode = 2),
+                ),
+                ChoiceChip(
+                  avatar: const Icon(Icons.psychology_alt_outlined, size: 16),
+                  label: Text(context.t('seed.import.segment')),
+                  selected: _mode == 3,
+                  onSelected: (_) => setState(() => _mode = 3),
                 ),
               ],
-              selected: {_mode},
-              onSelectionChanged: (s) => setState(() => _mode = s.first),
             ),
             const SizedBox(height: 24),
             if (_mode == 2) ...[
@@ -399,6 +590,18 @@ class _ImportScreenState extends State<ImportScreen> {
                 decoration: InputDecoration(
                   labelText: context.t('wallet.address'),
                   hintText: 'AU1...',
+                ),
+              ),
+            ] if (_mode == 3) ...[
+              TextField(
+                controller: _seedController,
+                maxLines: 3,
+                autocorrect: false,
+                enableSuggestions: false,
+                keyboardType: TextInputType.visiblePassword,
+                decoration: InputDecoration(
+                  labelText: context.t('seed.import.label'),
+                  hintText: context.t('seed.import.hint'),
                 ),
               ),
             ] else ...[

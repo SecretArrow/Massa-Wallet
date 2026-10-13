@@ -24,6 +24,7 @@ import 'features/history/address_book_screen.dart';
 import 'features/history/history_screen.dart';
 import 'features/node/node_screen.dart';
 import 'features/onboarding/onboarding_screen.dart';
+import 'features/onboarding/seed_create_screen.dart';
 import 'features/receive/receive_screen.dart';
 import 'features/send/send_screen.dart';
 import 'features/settings/settings_screen.dart';
@@ -210,6 +211,7 @@ class _PyramidsWalletAppState extends State<PyramidsWalletApp>
               '/': (_) => const _RootGate(),
               '/onboarding': (_) => const OnboardingScreen(),
               '/import': (_) => const ImportScreen(),
+              '/seedCreate': (_) => const SeedCreateScreen(),
               // Post-onboarding / gate landing: bottom-nav shell with
               // Home · History · Browser · More tabs.
               '/home': (_) => const HomeShell(),
