@@ -217,7 +217,9 @@ jobs:
 
   build-apk:
     name: Build & publish APK
-    needs: build-node
+    # Wait for BOTH node jobs (otherwise the mainnet artifact upload races
+    # the build and the APK ships without the mainnet embedded node).
+    needs: [build-node, build-node-mainnet]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
