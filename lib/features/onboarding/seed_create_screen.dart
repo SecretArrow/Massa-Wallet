@@ -335,6 +335,7 @@ class _SeedCreateScreenState extends State<SeedCreateScreen> {
               const SizedBox(height: 24),
             ],
           ],
+          ),
         ),
       ),
     );
