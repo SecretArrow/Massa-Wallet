@@ -592,7 +592,7 @@ class _ImportScreenState extends State<ImportScreen> {
                   hintText: 'AU1...',
                 ),
               ),
-            ] if (_mode == 3) ...[
+            ] else if (_mode == 3) ...[
               TextField(
                 controller: _seedController,
                 maxLines: 3,

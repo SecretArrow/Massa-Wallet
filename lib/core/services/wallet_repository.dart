@@ -11,6 +11,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../crypto/bip39.dart';
 import '../crypto/keystore_file.dart';
 import '../crypto/massa_keys.dart';
 import '../crypto/seed_derivation.dart';

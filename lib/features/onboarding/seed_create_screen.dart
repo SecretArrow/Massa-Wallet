@@ -20,7 +20,6 @@ import 'package:provider/provider.dart';
 
 import '../../core/crypto/bip39.dart';
 import '../../core/crypto/bip39_wordlist.dart';
-import '../../core/crypto/seed_derivation.dart';
 import '../../core/i18n/app_i18n.dart';
 import '../../core/services/wallet_provider.dart';
 import '../../ui/theme.dart';
