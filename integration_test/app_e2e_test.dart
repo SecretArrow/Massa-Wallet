@@ -575,6 +575,11 @@ void main() {
     // (text finders would collide with the More tab's own entry).
     final navContext = tester.element(find.byType(NavigationBar));
     expect(Navigator.of(navContext).canPop(), isFalse);
+    // The System section sits below the fold on small screens — the
+    // lazy ListView must scroll before the entry is built (same lesson
+    // as test 15).
+    await tester.scrollUntilVisible(find.text('Settings'), 200);
+    await _pumpFor(tester, const Duration(milliseconds: 400));
     await tester.tap(find.text('Settings'));
     await _pumpFor(tester, const Duration(seconds: 1));
     expect(
