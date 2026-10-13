@@ -68,7 +68,7 @@ Uint8List mnemonicToEntropy(String mnemonic) {
     }
     bits += index.toRadixString(2).padLeft(11, '0');
   }
-  final checksumLen = bits.length * 32 ~/ 33;
+  final checksumLen = bits.length ~/ 33; // total/33 = entropy/32
   final entropyLen = bits.length - checksumLen;
   final entropyBits = bits.substring(0, entropyLen);
   final checksumBits = bits.substring(entropyLen);

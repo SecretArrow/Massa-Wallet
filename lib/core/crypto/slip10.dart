@@ -62,8 +62,10 @@ Uint8List slip10DeriveEd25519(List<int> seed, List<int> path) {
 }
 
 /// Parses `"m/44'/4478'/0'/0'/0'"` into hardened indexes.
+/// The bare master path `"m"` yields an empty list.
 List<int> parseDerivationPath(String path) {
   final p = path.trim();
+  if (p == 'm') return const [];
   if (!p.startsWith('m/')) {
     throw const FormatException('path must start with m/');
   }
