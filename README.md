@@ -23,6 +23,12 @@ Flutter • Android • Material Design 3 (dark/light/system) • Bilingual (�
 
 **ID** — Wallet mobile self-custodial kualitas production untuk [blockchain Massa](https://massa.net), dibangun dengan Flutter. Berjalan sebagai **light client** yang terhubung ke API publik Massa JSON-RPC v2 (atau node milik Anda sendiri), dengan tumpukan kripto lokal yang diporting 1:1 dari SDK resmi `@massalabs/massa-web3` dan divalidasi terhadap test vector resminya. Termasuk **browser dApp bawaan untuk situs `.massa` on-chain (DeWeb)** dengan provider `window.massa` terinjeksi, **pengelolaan token MRC-20**, riwayat aktivitas, buku alamat, staking, panggilan smart contract, sinkronisasi saldo latar belakang dengan notifikasi, penyimpanan kunci hardware-backed, buka kunci biometrik, tema gelap/terang, mode eksperimental "hubungkan ke node sendiri", dan — baru di v1.3.0 — **hybrid sejati**: pilih antara RPC Publik, RPC Kustom milik Anda, atau **node massa-node asli yang berjalan di dalam sandbox aplikasi** (Buildnet, eksperimental).
 
+## 🆕 What's new in v1.9.1
+
+| Feature | Description / Keterangan |
+|---|---|
+| 🛠 **Install-fix release** | Fixes "App not installed as package appears to be invalid" reports: every tag now also ships a **universal APK** (all ABIs in one file) alongside the per-ABI splits, release signing explicitly enables the **v1 + v2 + v3 schemes** (some OEM installers reject v2-only APKs), and every release body carries an **install guide + exact byte size / SHA-256 table** so truncated downloads are caught immediately. Full troubleshooting: `docs/INSTALL.md`. / *Rilis perbaikan instalasi: APK universal, skema tanda tangan lengkap v1+v2+v3, panduan install + ukuran/SHA-256 persis di setiap catatan rilis.* |
+
 ## 🆕 What's new in v1.9.0
 
 | Feature | Description / Keterangan |
@@ -245,7 +251,7 @@ flutter run                 # debug
 flutter build apk --release --split-per-abi   # release APKs
 ```
 
-Or simply download a signed APK from [Releases](https://github.com/SecretArrow/Massa-Wallet/releases) — every `v*` tag triggers an automatic release build. / *Atau unduh APK dari Releases — setiap tag `v*` otomatis memicu build release.*
+Or simply download a signed APK from [Releases](https://github.com/SecretArrow/Massa-Wallet/releases) — every `v*` tag triggers an automatic release build. Having install trouble (**"App not installed as package appears to be invalid"**)? Follow [docs/INSTALL.md](docs/INSTALL.md) — uninstall any version ≤ 1.8.0 first, then install. / *Atau unduh APK dari Releases — setiap tag `v*` otomatis memicu build release. Gagal install? Ikuti [docs/INSTALL.md](docs/INSTALL.md): uninstall dulu versi ≤ 1.8.0, lalu pasang.*
 
 ### Get test MAS (Buildnet faucet) / Dapatkan MAS test
 

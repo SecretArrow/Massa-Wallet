@@ -324,11 +324,27 @@ jobs:
             --build-name="${GITHUB_REF_NAME#v}" \
             --build-number="$(git rev-list --count HEAD)"
 
+      # Fat APK containing every ABI — a fallback for users who are unsure
+      # which split matches their phone (wrong-ABI download is a classic
+      # cause of "App not installed").
+      - name: Build universal APK (${{ github.event.inputs.channel || 'release' }})
+        run: |
+          flutter build apk \
+            --${{ github.event.inputs.channel || 'release' }} \
+            --build-name="${GITHUB_REF_NAME#v}" \
+            --build-number="$(git rev-list --count HEAD)"
+
       - name: Rename artifacts
         run: |
           mkdir -p dist
           for f in build/app/outputs/flutter-apk/*.apk; do
-            cp "$f" "dist/PineWallet-$(basename "$f")"
+            b="$(basename "$f")"
+            case "$b" in
+              app-release.apk) out="dist/PineWallet-universal-release.apk" ;;
+              app-debug.apk)   out="dist/PineWallet-universal-debug.apk" ;;
+              *)               out="dist/PineWallet-$b" ;;
+            esac
+            cp "$f" "$out"
           done
           ls -la dist
 
@@ -342,7 +358,10 @@ jobs:
             for apk in build/app/outputs/flutter-apk/*-release.apk; do
               [ -f "$apk" ] || continue
               echo "--- $(basename "$apk")"
-              "$APKSIGNER" verify --print-certs "$apk" | sed -n '1,2p'
+              # --verbose prints per-scheme results (v1/v2/v3) so a missing
+              # scheme can never go unnoticed in the summary.
+              "$APKSIGNER" verify --verbose --print-certs "$apk" \
+                | grep -E '^Verifies|Verified using|Signer #1 certificate SHA-256' || true
             done
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
@@ -354,11 +373,38 @@ jobs:
           rm -f android/key.properties
           echo "signing material wiped (unpacked keystore + key.properties)"
 
+      # Auto-generated install guide + download verification table. Truncated
+      # downloads (the #1 cause of "App not installed as package appears to
+      # be invalid") are caught immediately by comparing byte sizes.
+      - name: Install guide + SHA-256 checksums (release notes)
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          {
+            echo "## 📲 Cara install / How to install (Android)"
+            echo ""
+            echo "1. **Pernah memasang versi 1.8.0 atau lebih lama? UNINSTALL dulu** — rilis lama ditandatangani debug key sehingga Android menolak diperbarui dengan APK bertanda tangan baru; galatnya biasanya tampil sebagai *“App not installed as package appears to be invalid”*. Buka Setelan → Aplikasi → Pine Wallet (atau Pyramids Wallet) → Uninstall. / *If you ever installed v1.8.0 or older, uninstall it first — Android refuses to update a debug-signed install with a new signing key.*"
+            echo "2. Pilih file sesuai HP Anda: **arm64-v8a** (hampir semua HP sejak 2019 — pilihan utama) · **armeabi-v7a** (HP 32-bit lama) · **x86_64** (emulator/Chromebook) · **universal** (semua arsitektur dalam satu file — paling aman bila ragu)."
+            echo "3. Unduh **langsung di HP**, buka filenya, izinkan *Install unknown apps* bila diminta."
+            echo ""
+            echo "Install masih gagal? Cek ukuran file — harus **persis sama** dengan tabel di bawah (unduhan terpotong adalah penyebab tersering), lalu baca [docs/INSTALL.md](https://github.com/SecretArrow/Massa-Wallet/blob/main/docs/INSTALL.md)."
+            echo ""
+            echo "## 🔍 SHA-256 & ukuran unduhan"
+            echo ""
+            echo "| File | Ukuran (byte) | SHA-256 |"
+            echo "|------|--------------:|---------|"
+            for f in dist/*.apk; do
+              s=$(stat -c%s "$f")
+              h=$(sha256sum "$f" | cut -d' ' -f1)
+              echo "| $(basename "$f") | $s | \`$h\` |"
+            done
+          } > release_body.md
+
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*.apk
+          body_path: release_body.md
           generate_release_notes: true
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
