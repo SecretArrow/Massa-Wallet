@@ -118,6 +118,52 @@ enum EmbeddedFailureKind {
   return (kind: EmbeddedFailureKind.generic, missingLib: null);
 }
 
+/// SharedPreferences key: epoch-millis until which the background
+/// keepalive must NOT respawn the node (set after a deterministic
+/// start failure such as a missing dynamic library). A manual "Start
+/// node" tap always clears it by succeeding (or re-arms it on failure).
+const kAutoRestartBlockPref = 'node.autoRestartBlockedUntil';
+
+/// How long a deterministic start failure pauses background respawn.
+const nodeRestartCooldown = Duration(minutes: 10);
+
+/// Whether the background keepalive respawn is blocked at [now].
+/// Pure function (unit-tested).
+bool nodeRestartBlocked(int? blockedUntilMs, DateTime now) =>
+    blockedUntilMs != null &&
+    DateTime.fromMillisecondsSinceEpoch(blockedUntilMs).isAfter(now);
+
+/// Builds the child-process environment for the embedded node.
+///
+/// `Process.start(environment: …)` REPLACES the inherited environment —
+/// it does not merge. Shipping only `MASSA_CONFIG_PATH` stripped
+/// `LD_LIBRARY_PATH`, so the Bionic linker could not resolve
+/// `libc++_shared.so` sitting in the SAME directory as the executable
+/// (unlike glibc, Bionic does not search the executable's own
+/// directory) — the classic
+/// "CANNOT LINK EXECUTABLE: library libc++_shared.so not found"
+/// crash loop on every released build. This helper merges the
+/// caller-provided base (defaults to the current process environment)
+/// and puts [libDir] at the FRONT of `LD_LIBRARY_PATH` so app-bundled
+/// runtime libraries always win. Pure function (unit-tested).
+Map<String, String> buildNodeEnv(
+  String libDir,
+  String configPath, {
+  Map<String, String>? base,
+}) {
+  final env = Map<String, String>.from(base ?? Platform.environment);
+  final current = env['LD_LIBRARY_PATH'];
+  final rest = (current == null || current.isEmpty)
+      ? <String>[]
+      : current
+            .split(':')
+            .where((p) => p.isNotEmpty && p != libDir)
+            .toList();
+  env['LD_LIBRARY_PATH'] = [libDir, ...rest].join(':');
+  env['MASSA_CONFIG_PATH'] = configPath;
+  return env;
+}
+
 /// ELF executable shipped in jniLibs for [network].
 String binaryNameFor(MassaNetwork network) => network == MassaNetwork.mainnet
     ? 'libmassa_node_mainnet.so'
@@ -328,13 +374,25 @@ class EmbeddedNodeService extends ChangeNotifier {
         await prefs.setString(_kStakingPwdPref, pwd);
       }
 
+      // Belt-and-braces preflight: the binary needs libc++_shared.so
+      // next to it; warn early in the log stream when it is missing.
+      if (!File('$_libDir/libc++_shared.so').existsSync()) {
+        _log('WARN: libc++_shared.so not found in $_libDir — the node '
+            'binary may fail to link on this device');
+      }
+
       final process = await Process.start(
         _binaryPath()!,
         ['-p', pwd, '--accept-community-charter'],
         workingDirectory: dataDir.path,
-        environment: {
-          'MASSA_CONFIG_PATH': '${dataDir.path}/base_config/config.toml',
-        },
+        // MUST merge the full environment (incl. LD_LIBRARY_PATH) —
+        // a bare {MASSA_CONFIG_PATH} map makes the Bionic linker fail
+        // with "CANNOT LINK EXECUTABLE: library libc++_shared.so not
+        // found" even though the library sits right next to the binary.
+        environment: buildNodeEnv(
+          _libDir!,
+          '${dataDir.path}/base_config/config.toml',
+        ),
       );
       _process = process;
       _startedAt = DateTime.now();
@@ -351,14 +409,28 @@ class EmbeddedNodeService extends ChangeNotifier {
       unawaited(
         process.exitCode.then((code) {
           if (_state != EmbeddedNodeState.stopped) {
-            _failureKind = diagnoseStartFailure(_logs).kind;
-            _missingLib = diagnoseStartFailure(_logs).missingLib;
+            final diag = diagnoseStartFailure(_logs);
+            _failureKind = diag.kind;
+            _missingLib = diag.missingLib;
             _lastError = _failureKind == EmbeddedFailureKind.generic
                 ? 'node exited with code $code'
                 : 'node exited with code $code '
                       '(linker/runtime failure)';
             _process = null;
             _state = EmbeddedNodeState.failed;
+            // Deterministic failures (missing lib, exec format, no exec
+            // permission) can NEVER succeed by retrying — pause the
+            // background keepalive so it cannot turn one bad binary
+            // into a device-hammering crash loop. A manual "Start"
+            // tap still works and clears the block on success.
+            if (_failureKind == EmbeddedFailureKind.missingLib ||
+                _failureKind == EmbeddedFailureKind.permissionDenied ||
+                _failureKind == EmbeddedFailureKind.execFormat) {
+              unawaited(_setRestartBlocked(true));
+              _log('auto-restart paused for '
+                  '${nodeRestartCooldown.inMinutes} min '
+                  '(deterministic failure — press Start to retry)');
+            }
             unawaited(settings.setEmbeddedNodeHealthy(false));
             notifyListeners();
           }
@@ -383,6 +455,7 @@ class EmbeddedNodeService extends ChangeNotifier {
         _state = EmbeddedNodeState.running;
         _failureKind = EmbeddedFailureKind.none;
         _missingLib = null;
+        unawaited(_setRestartBlocked(false));
         unawaited(settings.setEmbeddedNodeHealthy(true));
       }
     } on Exception catch (e) {
@@ -539,6 +612,23 @@ class EmbeddedNodeService extends ChangeNotifier {
     _process = null;
   }
 
+  /// Persists/clears the background-keepalive cooldown marker.
+  Future<void> _setRestartBlocked(bool blocked) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (blocked) {
+        await prefs.setInt(
+          kAutoRestartBlockPref,
+          DateTime.now().add(nodeRestartCooldown).millisecondsSinceEpoch,
+        );
+      } else {
+        await prefs.remove(kAutoRestartBlockPref);
+      }
+    } on Exception {
+      // Best-effort — a failed write must not break the state machine.
+    }
+  }
+
   void _log(String line) {
     _logs.add('${DateTime.now().toIso8601String().substring(11, 19)} $line');
     if (_logs.length > 1000) {
@@ -568,6 +658,14 @@ class EmbeddedNodeService extends ChangeNotifier {
       if (libDir == null || libDir.isEmpty) return;
       final bin = File('$libDir/${binaryNameFor(network)}');
       if (!bin.existsSync()) return;
+      // Honor the crash-loop cooldown: a deterministic failure (e.g.
+      // missing libc++_shared.so) must not be retried every tick.
+      if (nodeRestartBlocked(
+        prefs.getInt(kAutoRestartBlockPref),
+        DateTime.now(),
+      )) {
+        return;
+      }
 
       final endpoint =
           'http://127.0.0.1:${SettingsProvider.embeddedApiPort}/api/v2';
@@ -594,9 +692,11 @@ class EmbeddedNodeService extends ChangeNotifier {
         bin.path,
         ['-p', pwd, '--accept-community-charter'],
         workingDirectory: root.path,
-        environment: {
-          'MASSA_CONFIG_PATH': '${root.path}/base_config/config.toml',
-        },
+        // Merge (not replace) the environment — see [buildNodeEnv].
+        environment: buildNodeEnv(
+          libDir,
+          '${root.path}/base_config/config.toml',
+        ),
         mode: ProcessStartMode.detached,
       );
     } on Exception {

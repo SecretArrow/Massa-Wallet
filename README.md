@@ -23,6 +23,13 @@ Flutter • Android • Material Design 3 (dark/light/system) • Bilingual (�
 
 **ID** — Wallet mobile self-custodial kualitas production untuk [blockchain Massa](https://massa.net), dibangun dengan Flutter. Berjalan sebagai **light client** yang terhubung ke API publik Massa JSON-RPC v2 (atau node milik Anda sendiri), dengan tumpukan kripto lokal yang diporting 1:1 dari SDK resmi `@massalabs/massa-web3` dan divalidasi terhadap test vector resminya. Termasuk **browser dApp bawaan untuk situs `.massa` on-chain (DeWeb)** dengan provider `window.massa` terinjeksi, **pengelolaan token MRC-20**, riwayat aktivitas, buku alamat, staking, panggilan smart contract, sinkronisasi saldo latar belakang dengan notifikasi, penyimpanan kunci hardware-backed, buka kunci biometrik, tema gelap/terang, mode eksperimental "hubungkan ke node sendiri", dan — baru di v1.3.0 — **hybrid sejati**: pilih antara RPC Publik, RPC Kustom milik Anda, atau **node massa-node asli yang berjalan di dalam sandbox aplikasi** (Buildnet, eksperimental).
 
+## 🆕 What's new in v1.9.3
+
+| Fix | Description / Keterangan |
+|---|---|
+| 🔗 **Embedded node link-failure fix** | Field reports showed the embedded node crash-looping with `CANNOT LINK EXECUTABLE: library "libc++_shared.so" not found`. Root cause: `Process.start(environment:)` **replaces** the inherited environment, stripping `LD_LIBRARY_PATH`, so the Bionic linker could not resolve `libc++_shared.so` even though it ships right next to the binary. Both spawn paths now **merge** the full environment and put `nativeLibraryDir` first in `LD_LIBRARY_PATH`; CI additionally links the node with **`DT_RUNPATH=$ORIGIN`** (works even with a stripped env) and both node jobs bundle their own `libc++_shared.so`. / *Perbaikan akar: environment proses node kini di-merge (LD_LIBRARY_PATH utuh), binary diberi RUNPATH bawaan, dan runtime C++ dibundle di kedua artefak node.* |
+| 🛡 **Anti crash-loop guard** | Deterministic start failures (missing lib / exec format / permission) now **pause the background keepalive for 10 minutes** instead of respawning every tick, with a clear line in the node log; a manual Start tap always retries and clears the block on success. Forensic verifier (`scripts/verify_release_apk_full.py`) now also asserts `libc++_shared.so` presence and `DT_RUNPATH=$ORIGIN` inside every release APK. / *Kegagalan deterministik tidak lagi di-restart terus-menerus; verifikator APK kini mengecek runtime C++ dan RUNPATH.* |
+
 ## 🆕 What's new in v1.9.2
 
 | Feature | Description / Keterangan |

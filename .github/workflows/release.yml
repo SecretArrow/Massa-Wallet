@@ -89,8 +89,12 @@ jobs:
       - name: Build massa-node (aarch64-linux-android)
         working-directory: massa
         env:
-          # 16 KB page compatibility (Pixel 2023+ / Play requirement).
-          RUSTFLAGS: "-C link-arg=-Wl,-z,max-page-size=16384"
+          # 16 KB page compatibility (Pixel 2023+ / Play requirement) +
+          # DT_RUNPATH=$ORIGIN: the Bionic linker then resolves
+          # libc++_shared.so from the executable's OWN directory even if
+          # the spawning environment lacks LD_LIBRARY_PATH (GitHub issue:
+          # "CANNOT LINK EXECUTABLE: library libc++_shared.so not found").
+          RUSTFLAGS: "-C link-arg=-Wl,-z,max-page-size=16384 -C link-arg=-Wl,-rpath,$ORIGIN"
           CARGO_TERM_COLOR: always
         run: |
           # --platform 24: RocksDB's io_posix.cc needs posix_madvise
@@ -99,19 +103,14 @@ jobs:
           cargo ndk --platform 24 -t arm64-v8a build --release -p massa-node
           file target/aarch64-linux-android/release/massa-node
 
-      - name: Stage binary as jniLib
-        run: |
-          mkdir -p out
-          cp massa/target/aarch64-linux-android/release/massa-node out/libmassa_node.so
-          "$(ls -d $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin | sed 's/$//')/llvm-strip" out/libmassa_node.so || true
-          chmod +x out/libmassa_node.so
-          ls -la out
-
       - name: Inspect dynamic dependencies (link diagnostics)
         working-directory: massa
         run: |
           READELF="$(ls -d $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin)/llvm-readelf"
-          "$READELF" -d target/aarch64-linux-android/release/massa-node | grep NEEDED || true
+          "$READELF" -d target/aarch64-linux-android/release/massa-node | grep -E 'NEEDED|RUNPATH|RPATH' || true
+          if ! "$READELF" -d target/aarch64-linux-android/release/massa-node | grep -qE 'RUNPATH|RPATH'; then
+            echo "::error::massa-node binary has no DT_RUNPATH — libc++_shared.so would only resolve via LD_LIBRARY_PATH"
+          fi
 
       - name: Stage binary + C++ runtime as jniLibs
         run: |
@@ -187,7 +186,7 @@ jobs:
       - name: Build massa-node (aarch64-linux-android, mainnet)
         working-directory: massa-mainnet
         env:
-          RUSTFLAGS: "-C link-arg=-Wl,-z,max-page-size=16384"
+          RUSTFLAGS: "-C link-arg=-Wl,-z,max-page-size=16384 -C link-arg=-Wl,-rpath,$ORIGIN"
           CARGO_TERM_COLOR: always
         run: |
           cargo ndk --platform 24 -t arm64-v8a build --release -p massa-node
@@ -197,14 +196,22 @@ jobs:
         working-directory: massa-mainnet
         run: |
           READELF="$(ls -d $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin)/llvm-readelf"
-          "$READELF" -d target/aarch64-linux-android/release/massa-node | grep NEEDED || true
+          "$READELF" -d target/aarch64-linux-android/release/massa-node | grep -E 'NEEDED|RUNPATH|RPATH' || true
+          if ! "$READELF" -d target/aarch64-linux-android/release/massa-node | grep -qE 'RUNPATH|RPATH'; then
+            echo "::error::massa-node binary has no DT_RUNPATH — libc++_shared.so would only resolve via LD_LIBRARY_PATH"
+          fi
 
-      - name: Stage mainnet binary
+      - name: Stage mainnet binary + C++ runtime as jniLibs
         run: |
           mkdir -p out
           cp massa-mainnet/target/aarch64-linux-android/release/massa-node out/libmassa_node_mainnet.so
           "$(ls -d $ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin)/llvm-strip" out/libmassa_node_mainnet.so || true
           chmod +x out/libmassa_node_mainnet.so
+          # Redundant with the buildnet artifact on purpose: when THIS
+          # job is the only node build that succeeds, the C++ runtime
+          # must still ship — a mainnet binary without libc++_shared.so
+          # crashes with "CANNOT LINK EXECUTABLE" at first start.
+          cp "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so" out/libc++_shared.so
           ls -la out
 
       - name: Upload mainnet node binary artifact
