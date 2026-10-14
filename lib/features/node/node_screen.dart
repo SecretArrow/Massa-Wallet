@@ -16,6 +16,7 @@ import '../../core/i18n/app_i18n.dart';
 import '../../core/services/embedded_node_service.dart';
 import '../../core/services/node_mode_service.dart';
 import '../../core/services/settings_provider.dart';
+import 'node_logs_screen.dart';
 
 /// Node mode screen.
 class NodeScreen extends StatefulWidget {
@@ -623,7 +624,20 @@ class _EmbeddedControl extends StatelessWidget {
                   child: SingleChildScrollView(
                     reverse: true,
                     child: SelectableText(
-                      embedded.logs.isEmpty ? '…' : embedded.logs.join('\n'),
+                      // Inline preview: keep the widget cheap, the full
+                      // viewer renders the whole buffer.
+                      embedded.logs.isEmpty
+                          ? '…'
+                          : (embedded.logs.length > 60
+                                ? '…\n'
+                                : '') +
+                              embedded.logs
+                                  .sublist(
+                                    embedded.logs.length > 60
+                                        ? embedded.logs.length - 60
+                                        : 0,
+                                  )
+                                  .join('\n'),
                       style: const TextStyle(
                         fontSize: 10,
                         fontFamily: 'monospace',
@@ -632,22 +646,35 @@ class _EmbeddedControl extends StatelessWidget {
                     ),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton.icon(
-                    onPressed: () {
-                      Clipboard.setData(
-                        ClipboardData(text: embedded.logs.join('\n')),
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(context.t('node.embedded.logs.copy')),
+                Row(
+                  children: [
+                    TextButton.icon(
+                      onPressed: () {
+                        Clipboard.setData(
+                          ClipboardData(text: embedded.logs.join('\n')),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              context.t('node.embedded.logs.copy'),
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.copy, size: 16),
+                      label: Text(context.t('node.embedded.logs.copy')),
+                    ),
+                    const Spacer(),
+                    TextButton.icon(
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const NodeLogsScreen(),
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.copy, size: 16),
-                    label: Text(context.t('node.embedded.logs.copy')),
-                  ),
+                      ),
+                      icon: const Icon(Icons.open_in_full, size: 16),
+                      label: Text(context.t('node.logs.open')),
+                    ),
+                  ],
                 ),
               ],
             ),

@@ -23,6 +23,12 @@ Flutter • Android • Material Design 3 (dark/light/system) • Bilingual (�
 
 **ID** — Wallet mobile self-custodial kualitas production untuk [blockchain Massa](https://massa.net), dibangun dengan Flutter. Berjalan sebagai **light client** yang terhubung ke API publik Massa JSON-RPC v2 (atau node milik Anda sendiri), dengan tumpukan kripto lokal yang diporting 1:1 dari SDK resmi `@massalabs/massa-web3` dan divalidasi terhadap test vector resminya. Termasuk **browser dApp bawaan untuk situs `.massa` on-chain (DeWeb)** dengan provider `window.massa` terinjeksi, **pengelolaan token MRC-20**, riwayat aktivitas, buku alamat, staking, panggilan smart contract, sinkronisasi saldo latar belakang dengan notifikasi, penyimpanan kunci hardware-backed, buka kunci biometrik, tema gelap/terang, mode eksperimental "hubungkan ke node sendiri", dan — baru di v1.3.0 — **hybrid sejati**: pilih antara RPC Publik, RPC Kustom milik Anda, atau **node massa-node asli yang berjalan di dalam sandbox aplikasi** (Buildnet, eksperimental).
 
+## 🆕 What's new in v1.9.2
+
+| Feature | Description / Keterangan |
+|---|---|
+| 📜 **Full-screen node logs** | New live log viewer (Node screen → Logs → **View all**): terminal-style full screen, **auto-follow** with pause-on-scroll-up + "jump to latest" banner, **severity coloring** (info/warn/error), **level filters**, line counter with LIVE indicator, copy & clear. Log buffer raised 400 → 1000 lines, localized in all 27 locales. / *Penampil log node layar penuh: live, auto-scroll cerdas, filter level, warna severity, penghitung baris, salin & hapus; buffer kini 1000 baris.* |
+
 ## 🆕 What's new in v1.9.1
 
 | Feature | Description / Keterangan |

@@ -223,8 +223,18 @@ class EmbeddedNodeService extends ChangeNotifier {
   /// Resolved native library directory (null before first detection).
   String? get libDir => _libDir;
 
-  /// Recent node logs (oldest first, capped).
+  /// Recent node logs (oldest first, capped at 1000 lines).
   List<String> get logs => List.unmodifiable(_logs);
+
+  /// Clears the in-memory log buffer (viewer "clear" action).
+  void clearLogs() {
+    _logs.clear();
+    notifyListeners();
+  }
+
+  /// Test hook — appends a line exactly like the process pipes do.
+  @visibleForTesting
+  void appendLogLine(String line) => _log(line);
 
   /// Loopback endpoint the embedded node serves.
   String get endpoint => settings.embeddedEndpoint;
@@ -531,8 +541,8 @@ class EmbeddedNodeService extends ChangeNotifier {
 
   void _log(String line) {
     _logs.add('${DateTime.now().toIso8601String().substring(11, 19)} $line');
-    if (_logs.length > 400) {
-      _logs.removeRange(0, _logs.length - 400);
+    if (_logs.length > 1000) {
+      _logs.removeRange(0, _logs.length - 1000);
     }
     // Notify only when someone is listening — logs arrive in bursts.
     notifyListeners();
